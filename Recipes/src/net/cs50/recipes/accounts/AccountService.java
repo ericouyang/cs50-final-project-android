@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.cs50.accounts;
+package net.cs50.recipes.accounts;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -27,7 +27,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-public class RecipesAccountService extends Service {
+public class AccountService extends Service {
     private static final String TAG = "RecipesAccountService";
     private static final String ACCOUNT_TYPE = "net.cs50.recipes";
     public static final String ACCOUNT_NAME = "sync";

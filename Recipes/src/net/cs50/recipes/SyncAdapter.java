@@ -139,7 +139,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 Log.i(TAG, "Streaming data from network: " + location);
                 stream = downloadUrl(location);
-                updateLocalFeedData(stream, syncResult);
+                updateLocalData(stream, syncResult);
                 // Makes sure that the InputStream is closed after the app is
                 // finished using it.
             } finally {
@@ -195,61 +195,61 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
      * (At this point, incoming database only contains missing items.)<br/>
      * 3. For any items remaining in incoming list, ADD to database.
      */
-    public void updateLocalRecipesData(final InputStream stream, final SyncResult syncResult)
+    public void updateLocalData(final InputStream stream, final SyncResult syncResult)
             throws IOException, XmlPullParserException, RemoteException,
             OperationApplicationException, ParseException {
         final RecipeParser recipeParser = new RecipeParser();
         final ContentResolver contentResolver = getContext().getContentResolver();
 
         Log.i(TAG, "Parsing stream as Atom feed");
-        final List<RecipeParser.Entry> recipes = recipeParser.parse(stream);
+        final List<Recipe> recipes = recipeParser.parse(stream);
         Log.i(TAG, "Parsing complete. Found " + recipes.size() + " entries");
 
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         // Build hash table of incoming entries
-        HashMap<String, FeedParser.Entry> entryMap = new HashMap<String, FeedParser.Entry>();
-        for (FeedParser.Entry e : entries) {
-            entryMap.put(e.id, e);
+        HashMap<String, Recipe> recipeMap = new HashMap<String, Recipe>();
+        for (Recipe r : recipes) {
+        	recipeMap.put(r.id, r);
         }
 
         // Get list of all items
         Log.i(TAG, "Fetching local entries for merge");
-        Uri uri = FeedContract.Entry.CONTENT_URI; // Get all entries
+        Uri uri = RecipeProviderContract.Recipe.CONTENT_URI; // Get all entries
         Cursor c = contentResolver.query(uri, PROJECTION, null, null, null);
         assert c != null;
         Log.i(TAG, "Found " + c.getCount() + " local entries. Computing merge solution...");
 
         // Find stale data
         int id;
-        String entryId;
-        String title;
+        String recipeId;
+        String name;
         String link;
-        long published;
+        long created;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
             id = c.getInt(COLUMN_ID);
-            entryId = c.getString(COLUMN_ENTRY_ID);
-            title = c.getString(COLUMN_TITLE);
+            recipeId = c.getString(COLUMN_RECIPE_ID);
+            name = c.getString(COLUMN_NAME);
             link = c.getString(COLUMN_LINK);
-            published = c.getLong(COLUMN_PUBLISHED);
-            FeedParser.Entry match = entryMap.get(entryId);
+            created = c.getLong(COLUMN_CREATED);
+            Recipe match = recipeMap.get(recipeId);
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
-                entryMap.remove(entryId);
+            	recipeMap.remove(recipeId);
                 // Check to see if the entry needs to be updated
-                Uri existingUri = FeedContract.Entry.CONTENT_URI.buildUpon()
+                Uri existingUri = RecipeProviderContract.Recipe.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
-                if ((match.title != null && !match.title.equals(title)) ||
+                if ((match.title != null && !match.title.equals(name)) ||
                         (match.link != null && !match.link.equals(link)) ||
-                        (match.published != published)) {
+                        (match.created != created)) {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
-                            .withValue(FeedContract.Entry.COLUMN_NAME_TITLE, title)
-                            .withValue(FeedContract.Entry.COLUMN_NAME_LINK, link)
-                            .withValue(FeedContract.Entry.COLUMN_NAME_PUBLISHED, published)
+                            .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_NAME, name)
+                            .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_LINK, link)
+                            .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_CREATED, created)
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
@@ -257,7 +257,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             } else {
                 // Entry doesn't exist. Remove it from the database.
-                Uri deleteUri = FeedContract.Entry.CONTENT_URI.buildUpon()
+                Uri deleteUri = RecipeProviderContract.Recipe.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
                 Log.i(TAG, "Scheduling delete: " + deleteUri);
                 batch.add(ContentProviderOperation.newDelete(deleteUri).build());
@@ -267,20 +267,20 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         c.close();
 
         // Add new items
-        for (FeedParser.Entry e : entryMap.values()) {
-            Log.i(TAG, "Scheduling insert: entry_id=" + e.id);
-            batch.add(ContentProviderOperation.newInsert(FeedContract.Entry.CONTENT_URI)
-                    .withValue(FeedContract.Entry.COLUMN_NAME_ENTRY_ID, e.id)
-                    .withValue(FeedContract.Entry.COLUMN_NAME_TITLE, e.title)
-                    .withValue(FeedContract.Entry.COLUMN_NAME_LINK, e.link)
-                    .withValue(FeedContract.Entry.COLUMN_NAME_PUBLISHED, e.published)
+        for (Recipe r : recipeMap.values()) {
+            Log.i(TAG, "Scheduling insert: entry_id=" + r.id);
+            batch.add(ContentProviderOperation.newInsert(RecipeProviderContract.Recipe.CONTENT_URI)
+                    .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_RECIPE_ID, r.id)
+                    .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_NAME, r.name)
+                    .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_LINK, r.link)
+                    .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_CREATED, r.created)
                     .build());
             syncResult.stats.numInserts++;
         }
         Log.i(TAG, "Merge solution ready. Applying batch update");
-        mContentResolver.applyBatch(FeedContract.CONTENT_AUTHORITY, batch);
+        mContentResolver.applyBatch(RecipeProviderContract.CONTENT_AUTHORITY, batch);
         mContentResolver.notifyChange(
-                FeedContract.Entry.CONTENT_URI, // URI where data was modified
+        		RecipeProviderContract.Recipe.CONTENT_URI, // URI where data was modified
                 null,                           // No local observer
                 false);                         // IMPORTANT: Do not sync to network
         // This sample doesn't support uploads, but if *your* code does, make sure you set
