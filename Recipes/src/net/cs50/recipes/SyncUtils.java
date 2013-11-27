@@ -24,14 +24,14 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import net.cs50.recipes.accounts.AccountService;
-import net.cs50.recipes.provider.RecipeProviderContract;
+import net.cs50.recipes.provider.RecipeContract;
 
 /**
  * Static helper methods for working with the sync framework.
  */
 public class SyncUtils {
     private static final long SYNC_FREQUENCY = 60 * 60;  // 1 hour (in seconds)
-    private static final String CONTENT_AUTHORITY = RecipeProviderContract.CONTENT_AUTHORITY;
+    private static final String CONTENT_AUTHORITY = RecipeContract.CONTENT_AUTHORITY;
     private static final String PREF_SETUP_COMPLETE = "setup_complete";
 
     /**
@@ -87,7 +87,7 @@ public class SyncUtils {
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         ContentResolver.requestSync(
                 AccountService.GetAccount(),      // Sync account
-                RecipeProviderContract.CONTENT_AUTHORITY, // Content authority
+                RecipeContract.CONTENT_AUTHORITY, // Content authority
                 b);                                      // Extras
     }
 }

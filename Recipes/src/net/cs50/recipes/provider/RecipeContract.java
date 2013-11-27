@@ -8,8 +8,8 @@ import android.provider.BaseColumns;
  * Field and table name constants for
  * {@link com.example.android.network.sync.basicsyncadapter.provider.FeedProvider}.
  */
-public class RecipeProviderContract {
-    private RecipeProviderContract() {
+public class RecipeContract {
+    private RecipeContract() {
     }
 
     /**
@@ -58,20 +58,33 @@ public class RecipeProviderContract {
          */
         public static final String COLUMN_NAME_RECIPE_ID = "recipe_id";
         
-        /**
-         * Recipe name
-         */
         public static final String COLUMN_NAME_NAME = "name";
         
-        /**
-         * Article hyperlink. Corresponds to the rel="alternate" link in the
-         * Atom spec.
-         */
-        public static final String COLUMN_NAME_LINK = "link";
+        public static final String COLUMN_NAME_IMAGES = "images";
+        
+        public static final String COLUMN_NAME_TAGS = "tags";
+        
+        public static final String COLUMN_NAME_INSTRUCTIONS = "instrutions";
+        
+        public static final String COLUMN_NAME_INGREDIENTS = "ingredients";
+        
+        public static final String COLUMN_NAME_CREATED_AT = "createdAt";
+        
+        public static final String COLUMN_NAME_MODIFIED_AT = "modifiedAt";
         
         /**
-         * Date article was published.
+         * Projections
          */
-        public static final String COLUMN_NAME_CREATED = "createdAt";
+        public static final String[] PROJECTION_ALL_FIELDS = {
+        	_ID,
+        	COLUMN_NAME_RECIPE_ID,
+        	COLUMN_NAME_NAME,
+        	COLUMN_NAME_IMAGES,
+        	COLUMN_NAME_INSTRUCTIONS,
+        	COLUMN_NAME_INGREDIENTS,
+        	COLUMN_NAME_TAGS,
+        	COLUMN_NAME_CREATED_AT,
+        	COLUMN_NAME_MODIFIED_AT
+    	};
     }
 }

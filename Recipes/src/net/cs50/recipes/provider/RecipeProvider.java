@@ -12,12 +12,13 @@ import android.net.Uri;
 import net.cs50.recipes.util.SelectionBuilder;
 
 public class RecipeProvider extends ContentProvider {
-	RecipeDatabase dbHelper;
+	
+	RecipeDatabase mDbHelper;
 
     /**
      * Content authority for this provider.
      */
-    private static final String AUTHORITY = RecipeProviderContract.CONTENT_AUTHORITY;
+    private static final String AUTHORITY = RecipeContract.CONTENT_AUTHORITY;
 
     // The constants below represent individual URI routes, as IDs. Every URI pattern recognized by
     // this ContentProvider is defined using sUriMatcher.addURI(), and associated with one of these
@@ -46,7 +47,7 @@ public class RecipeProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-    	dbHelper = new RecipeDatabase(getContext());
+    	mDbHelper = new RecipeDatabase(getContext());
         return true;
     }
 
@@ -58,9 +59,9 @@ public class RecipeProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case ROUTE_RECIPES:
-                return RecipeProviderContract.Recipe.CONTENT_TYPE;
+                return RecipeContract.Recipe.CONTENT_TYPE;
             case ROUTE_RECIPES_ID:
-                return RecipeProviderContract.Recipe.CONTENT_ITEM_TYPE;
+                return RecipeContract.Recipe.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -75,17 +76,17 @@ public class RecipeProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
         SelectionBuilder builder = new SelectionBuilder();
         int uriMatch = sUriMatcher.match(uri);
         switch (uriMatch) {
             case ROUTE_RECIPES_ID:
                 // Return a single entry, by ID.
                 String id = uri.getLastPathSegment();
-                builder.where(RecipeProviderContract.Recipe._ID + "=?", id);
+                builder.where(RecipeContract.Recipe._ID + "=?", id);
             case ROUTE_RECIPES:
                 // Return all known entries.
-                builder.table(RecipeProviderContract.Recipe.TABLE_NAME)
+                builder.table(RecipeContract.Recipe.TABLE_NAME)
                        .where(selection, selectionArgs);
                 Cursor c = builder.query(db, projection, sortOrder);
                 // Note: Notification URI must be manually set here for loaders to correctly
@@ -104,14 +105,14 @@ public class RecipeProvider extends ContentProvider {
      */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
         assert db != null;
         final int match = sUriMatcher.match(uri);
         Uri result;
         switch (match) {
             case ROUTE_RECIPES:
-                long id = db.insertOrThrow(RecipeProviderContract.Recipe.TABLE_NAME, null, values);
-                result = Uri.parse(RecipeProviderContract.Recipe.CONTENT_URI + "/" + id);
+                long id = db.insertOrThrow(RecipeContract.Recipe.TABLE_NAME, null, values);
+                result = Uri.parse(RecipeContract.Recipe.CONTENT_URI + "/" + id);
                 break;
             case ROUTE_RECIPES_ID:
                 throw new UnsupportedOperationException("Insert not supported on URI: " + uri);
@@ -131,19 +132,19 @@ public class RecipeProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         SelectionBuilder builder = new SelectionBuilder();
-        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int count;
         switch (match) {
             case ROUTE_RECIPES:
-                count = builder.table(RecipeProviderContract.Recipe.TABLE_NAME)
+                count = builder.table(RecipeContract.Recipe.TABLE_NAME)
                         .where(selection, selectionArgs)
                         .delete(db);
                 break;
             case ROUTE_RECIPES_ID:
                 String id = uri.getLastPathSegment();
-                count = builder.table(RecipeProviderContract.Recipe.TABLE_NAME)
-                       .where(RecipeProviderContract.Recipe._ID + "=?", id)
+                count = builder.table(RecipeContract.Recipe.TABLE_NAME)
+                       .where(RecipeContract.Recipe._ID + "=?", id)
                        .where(selection, selectionArgs)
                        .delete(db);
                 break;
@@ -163,19 +164,19 @@ public class RecipeProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         SelectionBuilder builder = new SelectionBuilder();
-        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int count;
         switch (match) {
             case ROUTE_RECIPES:
-                count = builder.table(RecipeProviderContract.Recipe.TABLE_NAME)
+                count = builder.table(RecipeContract.Recipe.TABLE_NAME)
                         .where(selection, selectionArgs)
                         .update(db, values);
                 break;
             case ROUTE_RECIPES_ID:
                 String id = uri.getLastPathSegment();
-                count = builder.table(RecipeProviderContract.Recipe.TABLE_NAME)
-                        .where(RecipeProviderContract.Recipe._ID + "=?", id)
+                count = builder.table(RecipeContract.Recipe.TABLE_NAME)
+                        .where(RecipeContract.Recipe._ID + "=?", id)
                         .where(selection, selectionArgs)
                         .update(db, values);
                 break;
@@ -201,22 +202,27 @@ public class RecipeProvider extends ContentProvider {
         /** Filename for SQLite file. */
         public static final String DATABASE_NAME = "recipes.db";
 
+    	private static final String TYPE_VARCHAR = " VARCHAR";
         private static final String TYPE_TEXT = " TEXT";
         private static final String TYPE_INTEGER = " INTEGER";
         private static final String COMMA_SEP = ",";
         
         /** SQL statement to create "entry" table. */
         private static final String SQL_CREATE_ENTRIES =
-                "CREATE TABLE " + RecipeProviderContract.Recipe.TABLE_NAME + " (" +
-                		RecipeProviderContract.Recipe._ID + " INTEGER PRIMARY KEY," +
-                		RecipeProviderContract.Recipe.COLUMN_NAME_RECIPE_ID + TYPE_TEXT + COMMA_SEP +
-                        RecipeProviderContract.Recipe.COLUMN_NAME_NAME    + TYPE_TEXT + COMMA_SEP +
-                        RecipeProviderContract.Recipe.COLUMN_NAME_LINK + TYPE_TEXT + COMMA_SEP +
-                        RecipeProviderContract.Recipe.COLUMN_NAME_CREATED + TYPE_INTEGER + ")";
+                "CREATE TABLE " + RecipeContract.Recipe.TABLE_NAME + " (" +
+                		RecipeContract.Recipe._ID + " INTEGER PRIMARY KEY," +
+                		RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID + TYPE_VARCHAR + COMMA_SEP +
+                        RecipeContract.Recipe.COLUMN_NAME_NAME    + TYPE_VARCHAR + COMMA_SEP +
+                        RecipeContract.Recipe.COLUMN_NAME_IMAGES  + TYPE_TEXT + COMMA_SEP +
+                        RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS  + TYPE_TEXT + COMMA_SEP +
+                        RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS + TYPE_TEXT + COMMA_SEP +
+                        RecipeContract.Recipe.COLUMN_NAME_TAGS  + TYPE_TEXT + COMMA_SEP +
+                        RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + TYPE_INTEGER + 
+                        RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT + TYPE_INTEGER + ")";
 
         /** SQL statement to drop "entry" table. */
         private static final String SQL_DELETE_ENTRIES =
-                "DROP TABLE IF EXISTS " + RecipeProviderContract.Recipe.TABLE_NAME;
+                "DROP TABLE IF EXISTS " + RecipeContract.Recipe.TABLE_NAME;
 
         public RecipeDatabase(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);

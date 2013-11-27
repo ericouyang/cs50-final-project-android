@@ -30,7 +30,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
-import net.cs50.recipes.provider.RecipeProviderContract;
+import net.cs50.recipes.provider.RecipeContract;
 //import com.example.android.network.sync.basicsyncadapter.provider.FeedContract;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -83,19 +83,18 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     /**
      * Project used when querying content provider. Returns all known fields.
      */
-    private static final String[] PROJECTION = new String[] {
-    	RecipeProviderContract.Recipe._ID,
-    	RecipeProviderContract.Recipe.COLUMN_NAME_RECIPE_ID,
-    	RecipeProviderContract.Recipe.COLUMN_NAME_NAME,
-    	RecipeProviderContract.Recipe.COLUMN_NAME_LINK,
-    	RecipeProviderContract.Recipe.COLUMN_NAME_CREATED};
+    private static final String[] PROJECTION = RecipeContract.Recipe.PROJECTION_ALL_FIELDS;
 
     // Constants representing column positions from PROJECTION.
     public static final int COLUMN_ID = 0;
     public static final int COLUMN_RECIPE_ID = 1;
     public static final int COLUMN_NAME = 2;
-    public static final int COLUMN_LINK = 3;
-    public static final int COLUMN_CREATED = 4;
+    public static final int COLUMN_IMAGES = 3;
+    public static final int COLUMN_INSTRUCTIONS = 4;
+    public static final int COLUMN_INGREDIENTS = 5;
+    public static final int COLUMN_TAGS = 6;
+    public static final int COLUMN_CREATED_AT = 7;
+    public static final int COLUMN_MODIFIED_AT = 8;
 
     /**
      * Constructor. Obtains handle to content resolver for later use.
@@ -216,7 +215,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Get list of all items
         Log.i(TAG, "Fetching local entries for merge");
-        Uri uri = RecipeProviderContract.Recipe.CONTENT_URI; // Get all entries
+        Uri uri = RecipeContract.Recipe.CONTENT_URI; // Get all entries
         Cursor c = contentResolver.query(uri, PROJECTION, null, null, null);
         assert c != null;
         Log.i(TAG, "Found " + c.getCount() + " local entries. Computing merge solution...");
@@ -225,31 +224,29 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         int id;
         String recipeId;
         String name;
-        String link;
-        long created;
+        long createdAt;
+        long modifiedAt;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
             id = c.getInt(COLUMN_ID);
             recipeId = c.getString(COLUMN_RECIPE_ID);
             name = c.getString(COLUMN_NAME);
-            link = c.getString(COLUMN_LINK);
-            created = c.getLong(COLUMN_CREATED);
+            createdAt = c.getLong(COLUMN_CREATED_AT);
+            modifiedAt = c.getLong(COLUMN_MODIFIED_AT);
             Recipe match = recipeMap.get(recipeId);
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
             	recipeMap.remove(recipeId);
                 // Check to see if the entry needs to be updated
-                Uri existingUri = RecipeProviderContract.Recipe.CONTENT_URI.buildUpon()
+                Uri existingUri = RecipeContract.Recipe.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
-                if ((match.title != null && !match.title.equals(name)) ||
-                        (match.link != null && !match.link.equals(link)) ||
-                        (match.created != created)) {
+                if (match.modifiedAt != modifiedAt) {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
-                            .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_NAME, name)
-                            .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_LINK, link)
-                            .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_CREATED, created)
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, name)
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, createdAt)
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, modifiedAt)
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
@@ -257,7 +254,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             } else {
                 // Entry doesn't exist. Remove it from the database.
-                Uri deleteUri = RecipeProviderContract.Recipe.CONTENT_URI.buildUpon()
+                Uri deleteUri = RecipeContract.Recipe.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
                 Log.i(TAG, "Scheduling delete: " + deleteUri);
                 batch.add(ContentProviderOperation.newDelete(deleteUri).build());
@@ -269,18 +266,18 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Add new items
         for (Recipe r : recipeMap.values()) {
             Log.i(TAG, "Scheduling insert: entry_id=" + r.id);
-            batch.add(ContentProviderOperation.newInsert(RecipeProviderContract.Recipe.CONTENT_URI)
-                    .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_RECIPE_ID, r.id)
-                    .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_NAME, r.name)
-                    .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_LINK, r.link)
-                    .withValue(RecipeProviderContract.Recipe.COLUMN_NAME_CREATED, r.created)
+            batch.add(ContentProviderOperation.newInsert(RecipeContract.Recipe.CONTENT_URI)
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.id)
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, name)
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, createdAt)
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, modifiedAt)
                     .build());
             syncResult.stats.numInserts++;
         }
         Log.i(TAG, "Merge solution ready. Applying batch update");
-        mContentResolver.applyBatch(RecipeProviderContract.CONTENT_AUTHORITY, batch);
+        mContentResolver.applyBatch(RecipeContract.CONTENT_AUTHORITY, batch);
         mContentResolver.notifyChange(
-        		RecipeProviderContract.Recipe.CONTENT_URI, // URI where data was modified
+        		RecipeContract.Recipe.CONTENT_URI, // URI where data was modified
                 null,                           // No local observer
                 false);                         // IMPORTANT: Do not sync to network
         // This sample doesn't support uploads, but if *your* code does, make sure you set

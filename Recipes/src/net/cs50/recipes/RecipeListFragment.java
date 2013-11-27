@@ -39,7 +39,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import net.cs50.recipes.accounts.AccountService;
-import net.cs50.recipes.provider.RecipeProviderContract;
+import net.cs50.recipes.provider.RecipeContract;
 
 /**
  * List fragment containing a list of Atom entry objects (articles) stored in the local database.
@@ -87,30 +87,26 @@ public class RecipeListFragment extends ListFragment
     /**
      * Projection for querying the content provider.
      */
-    private static final String[] PROJECTION = new String[]{
-            RecipeProviderContract.Recipe._ID,
-            RecipeProviderContract.Recipe.COLUMN_NAME_NAME,
-            RecipeProviderContract.Recipe.COLUMN_NAME_LINK,
-            RecipeProviderContract.Recipe.COLUMN_NAME_CREATED
-    };
+    private static final String[] PROJECTION = RecipeContract.Recipe.PROJECTION_ALL_FIELDS;
 
     // Column indexes. The index of a column in the Cursor is the same as its relative position in
     // the projection.
-    /** Column index for _ID */
     private static final int COLUMN_ID = 0;
-    /** Column index for title */
-    private static final int COLUMN_NAME = 1;
-    /** Column index for link */
-    private static final int COLUMN_URL_STRING = 2;
-    /** Column index for published */
-    private static final int COLUMN_CREATED = 3;
+    private static final int COLUMN_RECIPE_ID = 1;
+    private static final int COLUMN_NAME = 2;
+    private static final int COLUMN_IMAGES = 3;
+    private static final int COLUMN_INSTRUCTIONS = 4;
+    private static final int COLUMN_INGREDIENTS = 5;
+    private static final int COLUMN_TAGS = 6;
+    private static final int COLUMN_CREATED_AT = 7;
+    private static final int COLUMN_MODIFIED_AT = 8;
 
     /**
      * List of Cursor columns to read from when preparing an adapter to populate the ListView.
      */
     private static final String[] FROM_COLUMNS = new String[]{
-    	RecipeProviderContract.Recipe.COLUMN_NAME_NAME,
-    	RecipeProviderContract.Recipe.COLUMN_NAME_CREATED
+    	RecipeContract.Recipe.COLUMN_NAME_NAME,
+    	RecipeContract.Recipe.COLUMN_NAME_CREATED_AT
     };
 
     /**
@@ -161,7 +157,7 @@ public class RecipeListFragment extends ListFragment
         mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
             @Override
             public boolean setViewValue(View view, Cursor cursor, int i) {
-                if (i == COLUMN_CREATED) {
+                if (i == COLUMN_CREATED_AT) {
                     // Convert timestamp to human-readable date
                     Time t = new Time();
                     t.set(cursor.getLong(i));
@@ -211,11 +207,11 @@ public class RecipeListFragment extends ListFragment
         // We only have one loader, so we can ignore the value of i.
         // (It'll be '0', as set in onCreate().)
         return new CursorLoader(getActivity(),  // Context
-        		RecipeProviderContract.Recipe.CONTENT_URI, // URI
+        		RecipeContract.Recipe.CONTENT_URI, // URI
                 PROJECTION,                // Projection
                 null,                           // Selection
                 null,                           // Selection args
-                RecipeProviderContract.Recipe.COLUMN_NAME_CREATED + " desc"); // Sort
+                RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc"); // Sort
     }
 
     /**
@@ -341,9 +337,9 @@ public class RecipeListFragment extends ListFragment
                     // Test the ContentResolver to see if the sync adapter is active or pending.
                     // Set the state of the refresh button accordingly.
                     boolean syncActive = ContentResolver.isSyncActive(
-                            account, RecipeProviderContract.CONTENT_AUTHORITY);
+                            account, RecipeContract.CONTENT_AUTHORITY);
                     boolean syncPending = ContentResolver.isSyncPending(
-                            account, RecipeProviderContract.CONTENT_AUTHORITY);
+                            account, RecipeContract.CONTENT_AUTHORITY);
                     setRefreshActionButtonState(syncActive || syncPending);
                 }
             });
