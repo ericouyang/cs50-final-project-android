@@ -86,5 +86,16 @@ public class RecipeContract {
         	COLUMN_NAME_CREATED_AT,
         	COLUMN_NAME_MODIFIED_AT
     	};
+        
+        // Constants representing column positions from PROJECTION_ALL_FIELDS
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_ID = 0;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID = 1;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_NAME = 2;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_IMAGES = 3;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_INSTRUCTIONS = 4;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS = 5;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_TAGS = 6;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT = 7;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_MODIFIED_AT = 8;
     }
 }

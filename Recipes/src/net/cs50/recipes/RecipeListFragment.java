@@ -89,18 +89,6 @@ public class RecipeListFragment extends ListFragment
      */
     private static final String[] PROJECTION = RecipeContract.Recipe.PROJECTION_ALL_FIELDS;
 
-    // Column indexes. The index of a column in the Cursor is the same as its relative position in
-    // the projection.
-    private static final int COLUMN_ID = 0;
-    private static final int COLUMN_RECIPE_ID = 1;
-    private static final int COLUMN_NAME = 2;
-    private static final int COLUMN_IMAGES = 3;
-    private static final int COLUMN_INSTRUCTIONS = 4;
-    private static final int COLUMN_INGREDIENTS = 5;
-    private static final int COLUMN_TAGS = 6;
-    private static final int COLUMN_CREATED_AT = 7;
-    private static final int COLUMN_MODIFIED_AT = 8;
-
     /**
      * List of Cursor columns to read from when preparing an adapter to populate the ListView.
      */
@@ -157,7 +145,7 @@ public class RecipeListFragment extends ListFragment
         mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
             @Override
             public boolean setViewValue(View view, Cursor cursor, int i) {
-                if (i == COLUMN_CREATED_AT) {
+                if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT) {
                     // Convert timestamp to human-readable date
                     Time t = new Time();
                     t.set(cursor.getLong(i));

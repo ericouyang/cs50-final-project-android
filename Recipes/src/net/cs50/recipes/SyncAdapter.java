@@ -85,17 +85,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     private static final String[] PROJECTION = RecipeContract.Recipe.PROJECTION_ALL_FIELDS;
 
-    // Constants representing column positions from PROJECTION.
-    public static final int COLUMN_ID = 0;
-    public static final int COLUMN_RECIPE_ID = 1;
-    public static final int COLUMN_NAME = 2;
-    public static final int COLUMN_IMAGES = 3;
-    public static final int COLUMN_INSTRUCTIONS = 4;
-    public static final int COLUMN_INGREDIENTS = 5;
-    public static final int COLUMN_TAGS = 6;
-    public static final int COLUMN_CREATED_AT = 7;
-    public static final int COLUMN_MODIFIED_AT = 8;
-
     /**
      * Constructor. Obtains handle to content resolver for later use.
      */
@@ -229,10 +218,10 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
             id = c.getInt(COLUMN_ID);
-            recipeId = c.getString(COLUMN_RECIPE_ID);
-            name = c.getString(COLUMN_NAME);
-            createdAt = c.getLong(COLUMN_CREATED_AT);
-            modifiedAt = c.getLong(COLUMN_MODIFIED_AT);
+            recipeId = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
+            name = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
+            createdAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
+            modifiedAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_MODIFIED_AT);
             Recipe match = recipeMap.get(recipeId);
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
