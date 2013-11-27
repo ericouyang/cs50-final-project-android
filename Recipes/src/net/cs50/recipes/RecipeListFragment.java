@@ -259,6 +259,8 @@ public class RecipeListFragment extends ListFragment
 
         // Get the item at the selected position, in the form of a Cursor.
         Cursor c = (Cursor) mAdapter.getItem(position);
+        
+        /*
         // Get the link to the article represented by the item.
         String articleUrlString = c.getString(COLUMN_URL_STRING);
         if (articleUrlString == null) {
@@ -271,6 +273,8 @@ public class RecipeListFragment extends ListFragment
         Uri articleURL = Uri.parse(articleUrlString);
         Intent i = new Intent(Intent.ACTION_VIEW, articleURL);
         startActivity(i);
+        
+        */
     }
 
     /**

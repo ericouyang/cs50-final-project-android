@@ -17,12 +17,14 @@
         <activity
             android:name="net.cs50.recipes.Home"
             android:label="@string/app_name" >
-            <intent-filter>
+        </activity>
+        <activity android:name="MainActivity" android:label="@string/app_name"><intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            </intent-filter></activity>
+        <provider android:name=".provider.RecipeProvider" android:authorities="net.cs50.recipes"></provider>
+        <service android:name=".accounts.AccountService"></service>
     </application>
 
 </manifest>

@@ -217,7 +217,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         long modifiedAt;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
-            id = c.getInt(COLUMN_ID);
+            id = c.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
             recipeId = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
             name = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
             createdAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
