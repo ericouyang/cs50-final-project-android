@@ -11,6 +11,9 @@
     <string-array name="drawer_items">
         <item >Home</item>
         <item >My Profile</item>
+        <item >My Recipes</item>
+        <item >Settings</item>
     </string-array>
+    <string name="description_search">Search</string>
     
 </resources>

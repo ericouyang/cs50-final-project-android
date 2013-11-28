@@ -31,6 +31,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import net.cs50.recipes.provider.RecipeContract;
+import net.cs50.recipes.types.Recipe;
+import net.cs50.recipes.util.RecipeParser;
 //import com.example.android.network.sync.basicsyncadapter.provider.FeedContract;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -257,9 +259,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             Log.i(TAG, "Scheduling insert: entry_id=" + r.id);
             batch.add(ContentProviderOperation.newInsert(RecipeContract.Recipe.CONTENT_URI)
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.id)
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, name)
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, createdAt)
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, modifiedAt)
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.name)
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.createdAt)
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, r.modifiedAt)
                     .build());
             syncResult.stats.numInserts++;
         }
