@@ -22,7 +22,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.cs50.recipes.provider.RecipeContract;
 import net.cs50.recipes.types.Recipe;
@@ -44,7 +46,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
-import android.util.SparseArray;
 
 /**
  * Define a sync adapter for the app.
@@ -193,9 +194,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         // Build hash table of incoming entries
-        SparseArray<Recipe> recipeMap = new SparseArray<Recipe>();
+        Map<String, Recipe> recipeMap = new HashMap<String, Recipe>();
         for (Recipe r : recipes) {
-            recipeMap.append(r.getId(), r);
+        	recipeMap.put(r.getRecipeId(), r);
         }
 
         // Get list of all items
@@ -207,19 +208,19 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Find stale data
         int id;
+        String recipeId;
         String name;
         long createdAt;
         long updatedAt;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
             id = c.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
+            recipeId = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
             name = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
             createdAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
             updatedAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT);
-            Recipe match = recipeMap.get(id);
+            Recipe match = recipeMap.get(recipeId);
             if (match != null) {
-                // Entry exists. Remove from entry map to prevent insert later.
-                recipeMap.delete(id);
                 // Check to see if the entry needs to be updated
                 Uri existingUri = RecipeContract.Recipe.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
@@ -227,14 +228,15 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, name)
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, createdAt)
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, updatedAt)
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, match.getName())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, match.getUpdatedAt())
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
                     Log.i(TAG, "No action: " + existingUri);
                 }
+                // Remove from recipe map to prevent insert later.
+                recipeMap.remove(recipeId);
             } else {
                 // Entry doesn't exist. Remove it from the database.
                 Uri deleteUri = RecipeContract.Recipe.CONTENT_URI.buildUpon()
@@ -247,9 +249,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         c.close();
 
         // Add new items
-        for (int i = 0, size = recipeMap.size(); i < size; i++) {
-            Recipe r = recipeMap.valueAt(i);
-            Log.i(TAG, "Scheduling insert: entry_id=" + r.getId());
+        for (Recipe r : recipeMap.values()) {
+            Log.i(TAG, "Scheduling insert: recipeId=" + r.getRecipeId());
             batch.add(ContentProviderOperation.newInsert(RecipeContract.Recipe.CONTENT_URI)
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getRecipeId())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName())
