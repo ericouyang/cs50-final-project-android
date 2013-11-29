@@ -101,8 +101,8 @@ public class RecipeListFragment extends ListFragment
      * List of Views which will be populated by Cursor data.
      */
     private static final int[] TO_FIELDS = new int[]{
-            android.R.id.text1,
-            android.R.id.text2
+            R.id.recipe_list_item_name,
+            R.id.recipe_list_item_created_at
     };
 
     /**
@@ -141,7 +141,7 @@ public class RecipeListFragment extends ListFragment
 
         mAdapter = new SimpleCursorAdapter(
                 getActivity(),       // Current context
-                android.R.layout.simple_list_item_activated_2,  // Layout for individual rows
+                R.layout.recipe_list_item,  // Layout for individual rows
                 null,                // Cursor
                 FROM_COLUMNS,        // Cursor columns to use
                 TO_FIELDS,           // Layout fields to use

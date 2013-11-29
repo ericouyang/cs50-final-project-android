@@ -1,0 +1,16 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ListItem" >
+
+    <FrameLayout
+        android:id="@+id/recipe_list_item_picture"
+        style="@style/ListItemElement" >
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/recipe_list_item_name"
+        style="@style/RecipeListItem.Name" />
+	<TextView
+        android:id="@+id/recipe_list_item_created_at"
+        style="@style/RecipeListItem.CreatedAt" />
+	
+</LinearLayout>

@@ -17,4 +17,28 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+   	<style name="ListItem">
+   	    <item name="android:layout_width">match_parent</item>
+   	    <item name="android:layout_height">match_parent</item>
+   	    <item name="android:padding">12dp</item>
+   	    <item name="android:orientation">vertical</item>
+   	</style>
+   	
+   	<style name="RecipeListItem" parent="ListItem">
+   	     
+   	</style>
+   	
+   	<style name="ListItemElement">
+   	    <item name="android:layout_width">match_parent</item>
+   	    <item name="android:layout_height">wrap_content</item>
+   	</style>
+   	
+   	<style name="RecipeListItem.Name" parent="ListItemElement">
+   	     <item name="android:textSize">18sp</item>
+   	     <item name="android:textStyle">bold</item>
+   	</style>
+   	
+   	<style name="RecipeListItem.CreatedAt" parent="ListItemElement">
+   	     
+   	</style>
 </resources>
