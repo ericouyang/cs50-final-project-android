@@ -8,6 +8,9 @@
         android:minSdkVersion="15"
         android:targetSdkVersion="18" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
 
     <application
         android:allowBackup="true"
@@ -24,7 +27,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter></activity>
         <provider android:name=".provider.RecipeProvider" android:authorities="net.cs50.recipes"></provider>
-        <service android:name=".accounts.AccountService"></service>
+        <service android:name=".accounts.AccountService">
+            <!-- Required filter used by the system to launch our account service. -->
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <!-- This points to an XMLf ile which describes our account service. -->
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                       android:resource="@xml/authenticator" />
+        </service>
     </application>
 
 </manifest>

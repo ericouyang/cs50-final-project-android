@@ -68,9 +68,9 @@ public class RecipeContract {
         
         public static final String COLUMN_NAME_INGREDIENTS = "ingredients";
         
-        public static final String COLUMN_NAME_CREATED_AT = "createdAt";
+        public static final String COLUMN_NAME_CREATED_AT = "created_at";
         
-        public static final String COLUMN_NAME_MODIFIED_AT = "modifiedAt";
+        public static final String COLUMN_NAME_MODIFIED_AT = "modified_at";
         
         /**
          * Projections

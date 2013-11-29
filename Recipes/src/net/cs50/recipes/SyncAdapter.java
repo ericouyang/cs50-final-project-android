@@ -33,7 +33,6 @@ import android.util.Log;
 import net.cs50.recipes.provider.RecipeContract;
 import net.cs50.recipes.types.Recipe;
 import net.cs50.recipes.util.RecipeParser;
-//import com.example.android.network.sync.basicsyncadapter.provider.FeedContract;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -201,7 +200,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Build hash table of incoming entries
         HashMap<String, Recipe> recipeMap = new HashMap<String, Recipe>();
         for (Recipe r : recipes) {
-        	recipeMap.put(r.id, r);
+        	recipeMap.put(Integer.toString(r.getId()), r);
         }
 
         // Get list of all items
@@ -231,7 +230,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Check to see if the entry needs to be updated
                 Uri existingUri = RecipeContract.Recipe.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
-                if (match.modifiedAt != modifiedAt) {
+                if (match.getModifiedAt() != modifiedAt) {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
@@ -256,12 +255,12 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Add new items
         for (Recipe r : recipeMap.values()) {
-            Log.i(TAG, "Scheduling insert: entry_id=" + r.id);
+            Log.i(TAG, "Scheduling insert: entry_id=" + r.getId());
             batch.add(ContentProviderOperation.newInsert(RecipeContract.Recipe.CONTENT_URI)
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.id)
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.name)
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.createdAt)
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, r.modifiedAt)
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getId())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, r.getModifiedAt())
                     .build());
             syncResult.stats.numInserts++;
         }

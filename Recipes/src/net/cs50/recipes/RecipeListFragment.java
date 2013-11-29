@@ -102,7 +102,8 @@ public class RecipeListFragment extends ListFragment
      */
     private static final int[] TO_FIELDS = new int[]{
             android.R.id.text1,
-            android.R.id.text2};
+            android.R.id.text2
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -126,13 +127,17 @@ public class RecipeListFragment extends ListFragment
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
+    	Log.i(TAG, "attaching fragment");
+    	
         // Create account, if needed
-        //SyncUtils.CreateSyncAccount(activity);
+        SyncUtils.CreateSyncAccount(activity);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        Log.i(TAG, "view created");
 
         mAdapter = new SimpleCursorAdapter(
                 getActivity(),       // Current context
@@ -192,6 +197,8 @@ public class RecipeListFragment extends ListFragment
      */
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+    	
+    	Log.i(TAG, "loader created");
         // We only have one loader, so we can ignore the value of i.
         // (It'll be '0', as set in onCreate().)
         return new CursorLoader(getActivity(),  // Context
@@ -229,7 +236,7 @@ public class RecipeListFragment extends ListFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         mOptionsMenu = menu;
-        inflater.inflate(R.menu.main, menu);
+        //inflater.inflate(R.menu.main, menu);
     }
 
     /**
