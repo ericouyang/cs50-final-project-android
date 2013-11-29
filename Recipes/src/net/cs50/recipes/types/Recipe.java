@@ -6,26 +6,36 @@ public class Recipe {
 	private final String mName;
 	private final User mUser;
 	private final long mCreatedAt;
-	private long mModifiedAt;
+	private long mUpdatedAt;
     
-	public Recipe(int id, String name, long createdAt, long modifiedAt)
+	public Recipe(int id, String name, long createdAt, long updatedAt)
 	{
 		mId = id;
 		mRecipeId = "";
 		mName = name;
 		mUser = new User();
 		mCreatedAt = createdAt;
-		mModifiedAt = modifiedAt;
+		mUpdatedAt = updatedAt;
 	}
 	
-	public Recipe(int id, String recipeId, String name, User user, long createdAt, long modifiedAt)
+	public Recipe(String recipeId, String name, long createdAt, long updatedAt)
+	{
+		mId = 0;
+		mRecipeId = recipeId;
+		mName = name;
+		mUser = new User();
+		mCreatedAt = createdAt;
+		mUpdatedAt = updatedAt;
+	}
+	
+	public Recipe(int id, String recipeId, String name, User user, long createdAt, long updatedAt)
 	{
 		mId = id;
 		mRecipeId = recipeId;
 		mName = name;
 		mUser = user;
 		mCreatedAt = createdAt;
-		mModifiedAt = modifiedAt;
+		mUpdatedAt = updatedAt;
 	}
 
 	public int getId() {
@@ -44,7 +54,7 @@ public class Recipe {
 		return mCreatedAt;
 	}
 
-	public long getModifiedAt() {
-		return mModifiedAt;
+	public long getUpdatedAt() {
+		return mUpdatedAt;
 	}
 }

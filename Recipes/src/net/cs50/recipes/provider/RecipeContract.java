@@ -64,7 +64,7 @@ public class RecipeContract {
         
         public static final String COLUMN_NAME_CREATED_AT = "createdAt";
 
-        public static final String COLUMN_NAME_MODIFIED_AT = "modifiedAt";
+        public static final String COLUMN_NAME_UPDATED_AT = "updatedAt";
 
         /**
          * Projections
@@ -79,7 +79,7 @@ public class RecipeContract {
             COLUMN_NAME_TAGS,
             COLUMN_NAME_USER_ID,
             COLUMN_NAME_CREATED_AT,
-            COLUMN_NAME_MODIFIED_AT
+            COLUMN_NAME_UPDATED_AT
         };
 
         // Constants representing column positions from PROJECTION_ALL_FIELDS
@@ -92,6 +92,6 @@ public class RecipeContract {
         public static final int PROJECTION_ALL_FIELDS_COLUMN_TAGS = 6;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_USER_ID = 7;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT = 8;
-        public static final int PROJECTION_ALL_FIELDS_COLUMN_MODIFIED_AT = 9;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT = 9;
     }
 }

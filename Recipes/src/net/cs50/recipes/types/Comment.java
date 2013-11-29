@@ -6,16 +6,16 @@ public class Comment {
 	private final Recipe mRecipe;
 	private final User mUser;
 	private final long mCreatedAt;
-	private long mModifiedAt;
+	private long mUpdatedAt;
 	
-	public Comment(int id, String content, Recipe recipe, User user, long createdAt, long modifiedAt)
+	public Comment(int id, String content, Recipe recipe, User user, long createdAt, long updatedAt)
 	{
 		mId = id;
 		mContent = content;
 		mRecipe = recipe;
 		mUser = user;
 		mCreatedAt = createdAt;
-		mModifiedAt = modifiedAt;
+		mUpdatedAt = updatedAt;
 	}
 
 	public String getContent() {
@@ -26,8 +26,8 @@ public class Comment {
 		mContent = content;
 	}
 
-	public long getModifiedAt() {
-		return mModifiedAt;
+	public long getUpdatedAt() {
+		return mUpdatedAt;
 	}
 
 	public int getId() {

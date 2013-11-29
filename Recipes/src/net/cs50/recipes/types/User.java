@@ -6,7 +6,7 @@ public class User {
 	private String mFirstName;
 	private String mLastName;
 	private final long mCreatedAt;
-	private long mModifiedAt;
+	private long mUpdatedAt;
 	
 	public User()
 	{
@@ -15,17 +15,17 @@ public class User {
 		mFirstName = "";
 		mLastName = "";
 		mCreatedAt = 0;
-		mModifiedAt = 0;
+		mUpdatedAt = 0;
 	}
 	
-	public User(int id, String userId, String firstName, String lastName, long createdAt, long modifiedAt)
+	public User(int id, String userId, String firstName, String lastName, long createdAt, long updatedAt)
 	{
 		mId = id;
 		mUserId = userId;
 		mFirstName = firstName;
 		mLastName = lastName;
 		mCreatedAt = createdAt;
-		mModifiedAt = modifiedAt;
+		mUpdatedAt = mUpdatedAt;
 	}
 
 	public int getId() {
@@ -56,8 +56,8 @@ public class User {
 		return mCreatedAt;
 	}
 
-	public long getModifiedAt() {
-		return mModifiedAt;
+	public long getUpdatedAt() {
+		return mUpdatedAt;
 	}
 
 }

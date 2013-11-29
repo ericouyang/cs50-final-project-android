@@ -218,7 +218,7 @@ public class RecipeProvider extends ContentProvider {
                         RecipeContract.Recipe.COLUMN_NAME_TAGS + TYPE_TEXT + COMMA_SEP +
                         RecipeContract.Recipe.COLUMN_NAME_USER_ID + TYPE_TEXT + COMMA_SEP +
                         RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + TYPE_INTEGER + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT + TYPE_INTEGER +
+                        RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT + TYPE_INTEGER +
                 ")";
 
         /** SQL statement to drop "entry" table. */

@@ -186,7 +186,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             throws IOException, JSONException, RemoteException, OperationApplicationException {
         final ContentResolver contentResolver = getContext().getContentResolver();
 
-        Log.i(TAG, "Parsing stream as Atom feed");
+        Log.i(TAG, "Parsing stream as JSON");
         final List<Recipe> recipes = RecipeParser.parse(stream);
         Log.i(TAG, "Parsing complete. Found " + recipes.size() + " entries");
 
@@ -209,13 +209,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         int id;
         String name;
         long createdAt;
-        long modifiedAt;
+        long updatedAt;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
             id = c.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
             name = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
             createdAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
-            modifiedAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_MODIFIED_AT);
+            updatedAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT);
             Recipe match = recipeMap.get(id);
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
@@ -223,13 +223,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Check to see if the entry needs to be updated
                 Uri existingUri = RecipeContract.Recipe.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
-                if (match.getModifiedAt() != modifiedAt) {
+                if (match.getUpdatedAt() != updatedAt) {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, name)
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, createdAt)
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, modifiedAt)
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, updatedAt)
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
@@ -254,7 +254,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getRecipeId())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt())
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, r.getModifiedAt())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, r.getUpdatedAt())
                     .build());
             syncResult.stats.numInserts++;
         }

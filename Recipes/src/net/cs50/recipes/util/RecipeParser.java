@@ -24,11 +24,11 @@ public class RecipeParser {
         JSONArray recipes = (JSONArray) new JSONTokener(getString(in)).nextValue();
         for (int i = 0, len = recipes.length(); i < len; i++) {
             JSONObject recipe = recipes.getJSONObject(i);
-            int id = recipe.getInt("id");
+            String recipeId = recipe.getString("id");
             String name = recipe.getString("name");
             long createdAt = recipe.getLong("createdAt");
-            long modifiedAt = recipe.getLong("modifiedAt");
-            Recipe r = new Recipe(id, name, createdAt, modifiedAt);
+            long updatedAt = recipe.getLong("updatedAt");
+            Recipe r = new Recipe(recipeId, name, createdAt, updatedAt);
             list.add(r);
         }
         return list;
