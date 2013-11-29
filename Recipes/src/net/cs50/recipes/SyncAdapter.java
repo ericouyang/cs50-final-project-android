@@ -16,6 +16,21 @@
 
 package net.cs50.recipes;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.cs50.recipes.provider.RecipeContract;
+import net.cs50.recipes.types.Recipe;
+import net.cs50.recipes.util.RecipeParser;
+//import com.example.android.network.sync.basicsyncadapter.provider.FeedContract;
+
+import org.json.JSONException;
+
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
@@ -29,22 +44,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
-
-import net.cs50.recipes.provider.RecipeContract;
-import net.cs50.recipes.types.Recipe;
-import net.cs50.recipes.util.RecipeParser;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import android.util.SparseArray;
 
 /**
  * Define a sync adapter for the app.
@@ -119,7 +119,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
-                              ContentProviderClient provider, SyncResult syncResult) {
+            ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Beginning network synchronization");
         try {
             final URL location = new URL(FEED_URL);
@@ -144,12 +144,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e(TAG, "Error reading from network: " + e.toString());
             syncResult.stats.numIoExceptions++;
             return;
-        } catch (XmlPullParserException e) {
-            Log.e(TAG, "Error parsing feed: " + e.toString());
-            syncResult.stats.numParseExceptions++;
-            return;
-        } catch (ParseException e) {
-            Log.e(TAG, "Error parsing feed: " + e.toString());
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON: " + e.toString());
             syncResult.stats.numParseExceptions++;
             return;
         } catch (RemoteException e) {
@@ -183,24 +179,23 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
      *    b. NO: Schedule DELETE from database.<br/>
      * (At this point, incoming database only contains missing items.)<br/>
      * 3. For any items remaining in incoming list, ADD to database.
+     * @throws OperationApplicationException
+     * @throws RemoteException
      */
     public void updateLocalData(final InputStream stream, final SyncResult syncResult)
-            throws IOException, XmlPullParserException, RemoteException,
-            OperationApplicationException, ParseException {
-        final RecipeParser recipeParser = new RecipeParser();
+            throws IOException, JSONException, RemoteException, OperationApplicationException {
         final ContentResolver contentResolver = getContext().getContentResolver();
 
         Log.i(TAG, "Parsing stream as Atom feed");
-        final List<Recipe> recipes = recipeParser.parse(stream);
+        final List<Recipe> recipes = RecipeParser.parse(stream);
         Log.i(TAG, "Parsing complete. Found " + recipes.size() + " entries");
-
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         // Build hash table of incoming entries
-        HashMap<String, Recipe> recipeMap = new HashMap<String, Recipe>();
+        SparseArray<Recipe> recipeMap = new SparseArray<Recipe>();
         for (Recipe r : recipes) {
-        	recipeMap.put(Integer.toString(r.getId()), r);
+            recipeMap.append(r.getId(), r);
         }
 
         // Get list of all items
@@ -212,21 +207,19 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Find stale data
         int id;
-        String recipeId;
         String name;
         long createdAt;
         long modifiedAt;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
             id = c.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
-            recipeId = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
             name = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
             createdAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
             modifiedAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_MODIFIED_AT);
-            Recipe match = recipeMap.get(recipeId);
+            Recipe match = recipeMap.get(id);
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
-            	recipeMap.remove(recipeId);
+                recipeMap.delete(id);
                 // Check to see if the entry needs to be updated
                 Uri existingUri = RecipeContract.Recipe.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
@@ -254,20 +247,22 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         c.close();
 
         // Add new items
-        for (Recipe r : recipeMap.values()) {
+        for (int i = 0, size = recipeMap.size(); i < size; i++) {
+            Recipe r = recipeMap.valueAt(i);
             Log.i(TAG, "Scheduling insert: entry_id=" + r.getId());
             batch.add(ContentProviderOperation.newInsert(RecipeContract.Recipe.CONTENT_URI)
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getId())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getRecipeId())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_MODIFIED_AT, r.getModifiedAt())
                     .build());
             syncResult.stats.numInserts++;
         }
+
         Log.i(TAG, "Merge solution ready. Applying batch update");
         mContentResolver.applyBatch(RecipeContract.CONTENT_AUTHORITY, batch);
         mContentResolver.notifyChange(
-        		RecipeContract.Recipe.CONTENT_URI, // URI where data was modified
+                RecipeContract.Recipe.CONTENT_URI, // URI where data was modified
                 null,                           // No local observer
                 false);                         // IMPORTANT: Do not sync to network
         // This sample doesn't support uploads, but if *your* code does, make sure you set

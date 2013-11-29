@@ -23,11 +23,6 @@ public class RecipeContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     /**
-     * Path component for "recipe"-type resources..
-     */
-    private static final String PATH_RECIPES = "recipes";
-
-    /**
      * Columns supported by "recipes" records.
      */
     public static class Recipe implements BaseColumns {
@@ -43,50 +38,50 @@ public class RecipeContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.cs50.recipe";
 
         /**
-         * Fully qualified URI for "recipe" resources.
-         */
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_RECIPES).build();
-
-        /**
          * Table name where records are stored for "recipe" resources.
          */
         public static final String TABLE_NAME = "recipes";
-        
+
         /**
-         * External ID. (Note: Not to be confused with the database primary key, which is _ID.
+         * Fully qualified URI for "recipe" resources.
          */
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(TABLE_NAME).build();
+
         public static final String COLUMN_NAME_RECIPE_ID = "recipe_id";
-        
+
         public static final String COLUMN_NAME_NAME = "name";
-        
+
         public static final String COLUMN_NAME_IMAGES = "images";
-        
+
         public static final String COLUMN_NAME_TAGS = "tags";
-        
+
         public static final String COLUMN_NAME_INSTRUCTIONS = "instrutions";
-        
+
         public static final String COLUMN_NAME_INGREDIENTS = "ingredients";
+
+        public static final String COLUMN_NAME_USER_ID = "user_id";
         
-        public static final String COLUMN_NAME_CREATED_AT = "created_at";
-        
-        public static final String COLUMN_NAME_MODIFIED_AT = "modified_at";
-        
+        public static final String COLUMN_NAME_CREATED_AT = "createdAt";
+
+        public static final String COLUMN_NAME_MODIFIED_AT = "modifiedAt";
+
         /**
          * Projections
          */
         public static final String[] PROJECTION_ALL_FIELDS = {
         	_ID,
-        	COLUMN_NAME_RECIPE_ID,
-        	COLUMN_NAME_NAME,
-        	COLUMN_NAME_IMAGES,
-        	COLUMN_NAME_INSTRUCTIONS,
-        	COLUMN_NAME_INGREDIENTS,
-        	COLUMN_NAME_TAGS,
-        	COLUMN_NAME_CREATED_AT,
-        	COLUMN_NAME_MODIFIED_AT
-    	};
-        
+            COLUMN_NAME_RECIPE_ID,
+            COLUMN_NAME_NAME,
+            COLUMN_NAME_IMAGES,
+            COLUMN_NAME_INSTRUCTIONS,
+            COLUMN_NAME_INGREDIENTS,
+            COLUMN_NAME_TAGS,
+            COLUMN_NAME_USER_ID,
+            COLUMN_NAME_CREATED_AT,
+            COLUMN_NAME_MODIFIED_AT
+        };
+
         // Constants representing column positions from PROJECTION_ALL_FIELDS
         public static final int PROJECTION_ALL_FIELDS_COLUMN_ID = 0;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID = 1;
@@ -95,7 +90,8 @@ public class RecipeContract {
         public static final int PROJECTION_ALL_FIELDS_COLUMN_INSTRUCTIONS = 4;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS = 5;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_TAGS = 6;
-        public static final int PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT = 7;
-        public static final int PROJECTION_ALL_FIELDS_COLUMN_MODIFIED_AT = 8;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_USER_ID = 7;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT = 8;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_MODIFIED_AT = 9;
     }
 }

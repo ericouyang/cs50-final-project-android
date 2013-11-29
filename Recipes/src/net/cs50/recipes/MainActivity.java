@@ -87,6 +87,7 @@ public class MainActivity extends FragmentActivity {
             selectItem(0);
         }
         
+        /*
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
@@ -145,7 +146,7 @@ public class MainActivity extends FragmentActivity {
     		    .setText(mSectionsPagerAdapter.getPageTitle(i))
     		    .setTabListener(tabListener));
     	}
-    	
+    	*/
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         
         Fragment fragment = new RecipeListFragment();

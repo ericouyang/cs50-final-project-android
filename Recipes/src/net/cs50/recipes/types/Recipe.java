@@ -8,6 +8,16 @@ public class Recipe {
 	private final long mCreatedAt;
 	private long mModifiedAt;
     
+	public Recipe(int id, String name, long createdAt, long modifiedAt)
+	{
+		mId = id;
+		mRecipeId = "";
+		mName = name;
+		mUser = new User();
+		mCreatedAt = createdAt;
+		mModifiedAt = modifiedAt;
+	}
+	
 	public Recipe(int id, String recipeId, String name, User user, long createdAt, long modifiedAt)
 	{
 		mId = id;

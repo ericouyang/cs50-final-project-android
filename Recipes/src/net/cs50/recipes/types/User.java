@@ -8,6 +8,16 @@ public class User {
 	private final long mCreatedAt;
 	private long mModifiedAt;
 	
+	public User()
+	{
+		mId = 0;
+		mUserId = "";
+		mFirstName = "";
+		mLastName = "";
+		mCreatedAt = 0;
+		mModifiedAt = 0;
+	}
+	
 	public User(int id, String userId, String firstName, String lastName, long createdAt, long modifiedAt)
 	{
 		mId = id;
