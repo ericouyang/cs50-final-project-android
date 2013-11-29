@@ -26,18 +26,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter></activity>
-        <provider android:name=".provider.RecipeProvider" android:authorities="net.cs50.recipes"></provider>
-        <service android:name=".accounts.AccountService"
-                 android:exported="true">
-            <!-- This intent filter is required. It allows the system to launch our sync service
-            as needed. -->
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <!-- This points to a required XML file which describes our SyncAdapter. -->
-            <meta-data android:name="android.content.SyncAdapter"
-                       android:resource="@xml/syncadapter" />
-        </service>
+        <provider android:name=".provider.RecipeProvider" android:authorities="net.cs50.recipes" android:exported="false" android:syncable="true"></provider>
         <service android:name=".accounts.AccountService">
             <!-- Required filter used by the system to launch our account service. -->
             <intent-filter>
@@ -46,6 +35,12 @@
             <!-- This points to an XMLf ile which describes our account service. -->
             <meta-data android:name="android.accounts.AccountAuthenticator"
                        android:resource="@xml/authenticator" />
+        </service>
+        <service android:name=".SyncService" android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data android:resource="@xml/syncadapter" android:name="android.content.SyncAdapter"/>
         </service>
     </application>
 

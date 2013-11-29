@@ -19,7 +19,7 @@ limitations under the License.
               android:contentAuthority="net.cs50.recipes"
               android:accountType="net.cs50.recipes"
               android:userVisible="false"
-              android:supportsUploading="false"
+              android:supportsUploading="true"
               android:allowParallelSyncs="false"
-              android:isAlwaysSyncable="true"
+              android:isAlwaysSyncable="false"
         />
