@@ -1,10 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ListItem" >
 
-    <FrameLayout
-        android:id="@+id/recipe_list_item_picture"
-        style="@style/ListItemElement" >
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/recipe_list_item_image"
+        android:contentDescription="@string/description_recipe_list_item_image"
+        style="@style/RecipeListItem.Image" />
 
     <TextView
         android:id="@+id/recipe_list_item_name"

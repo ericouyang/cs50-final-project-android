@@ -15,5 +15,6 @@
         <item >Settings</item>
     </string-array>
     <string name="description_search">Search</string>
+    <string name="description_recipe_list_item_image">Recipe Image</string>
     
 </resources>

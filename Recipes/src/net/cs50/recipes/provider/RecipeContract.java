@@ -59,6 +59,8 @@ public class RecipeContract {
         public static final String COLUMN_NAME_INSTRUCTIONS = "instrutions";
 
         public static final String COLUMN_NAME_INGREDIENTS = "ingredients";
+        
+        public static final String COLUMN_NAME_PRIMARY_IMAGE_URL = "primary_image_url";
 
         public static final String COLUMN_NAME_USER_ID = "user_id";
         
@@ -77,6 +79,7 @@ public class RecipeContract {
             COLUMN_NAME_INSTRUCTIONS,
             COLUMN_NAME_INGREDIENTS,
             COLUMN_NAME_TAGS,
+            COLUMN_NAME_PRIMARY_IMAGE_URL,
             COLUMN_NAME_USER_ID,
             COLUMN_NAME_CREATED_AT,
             COLUMN_NAME_UPDATED_AT
@@ -90,8 +93,9 @@ public class RecipeContract {
         public static final int PROJECTION_ALL_FIELDS_COLUMN_INSTRUCTIONS = 4;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS = 5;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_TAGS = 6;
-        public static final int PROJECTION_ALL_FIELDS_COLUMN_USER_ID = 7;
-        public static final int PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT = 8;
-        public static final int PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT = 9;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL = 7;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_USER_ID = 8;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT = 9;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT = 10;
     }
 }

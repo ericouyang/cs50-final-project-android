@@ -209,15 +209,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Find stale data
         int id;
         String recipeId;
-        String name;
-        long createdAt;
         long updatedAt;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
             id = c.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
             recipeId = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
-            name = c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
-            createdAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
             updatedAt = c.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT);
             Recipe match = recipeMap.get(recipeId);
             if (match != null) {
@@ -229,6 +225,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, match.getName())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, match.getImage(0))
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, match.getUpdatedAt())
                             .build());
                     syncResult.stats.numUpdates++;
@@ -254,6 +251,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             batch.add(ContentProviderOperation.newInsert(RecipeContract.Recipe.CONTENT_URI)
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getRecipeId())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, r.getImage(0))
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, r.getUpdatedAt())
                     .build());

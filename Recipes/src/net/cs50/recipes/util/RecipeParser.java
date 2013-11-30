@@ -29,6 +29,16 @@ public class RecipeParser {
             long createdAt = recipe.getLong("createdAt");
             long updatedAt = recipe.getLong("updatedAt");
             Recipe r = new Recipe(recipeId, name, createdAt, updatedAt);
+            
+            JSONArray images = recipe.optJSONArray("images");
+            if (images != null)
+            {
+            	for (int j = 0, imagesLen = images.length(); j < imagesLen; j++)
+            	{
+            		JSONObject image = images.getJSONObject(j);
+    				r.addImage(image.getString("filename"));
+            	}
+            }
             list.add(r);
         }
         return list;

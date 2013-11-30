@@ -22,12 +22,14 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.util.LruCache;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.format.Time;
 import android.util.Log;
@@ -35,11 +37,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import net.cs50.recipes.accounts.AccountService;
 import net.cs50.recipes.provider.RecipeContract;
+import net.cs50.recipes.util.ImageHelper;
 
 /**
  * List fragment containing a list of Atom entry objects (articles) stored in the local database.
@@ -93,6 +97,7 @@ public class RecipeListFragment extends ListFragment
      * List of Cursor columns to read from when preparing an adapter to populate the ListView.
      */
     private static final String[] FROM_COLUMNS = new String[]{
+    	RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL,
     	RecipeContract.Recipe.COLUMN_NAME_NAME,
     	RecipeContract.Recipe.COLUMN_NAME_CREATED_AT
     };
@@ -101,10 +106,13 @@ public class RecipeListFragment extends ListFragment
      * List of Views which will be populated by Cursor data.
      */
     private static final int[] TO_FIELDS = new int[]{
+    		R.id.recipe_list_item_image,
             R.id.recipe_list_item_name,
             R.id.recipe_list_item_created_at
     };
 
+    ImageHelper mImageHelper;
+    
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -115,6 +123,8 @@ public class RecipeListFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        
+        mImageHelper = new ImageHelper();
     }
 
     /**
@@ -156,6 +166,14 @@ public class RecipeListFragment extends ListFragment
                     t.set(cursor.getLong(i));
                     ((TextView) view).setText(t.format("%Y-%m-%d %H:%M"));
                     return true;
+                } 
+                else if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL) {
+                	String url = cursor.getString(i);
+                	if (url != null && !url.isEmpty())
+                	{
+                		mImageHelper.loadBitmap(url, (ImageView) view);
+                	}
+                	return true;
                 } else {
                     // Let SimpleCursorAdapter handle other fields automatically
                     return false;
@@ -344,5 +362,4 @@ public class RecipeListFragment extends ListFragment
             });
         }
     };
-
 }
