@@ -8,11 +8,12 @@
         android:id="@+id/view_recipe_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-         />
+        style="@style/ViewRecipeItem.Image" />
     
     <TextView
         android:id="@+id/view_recipe_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" 
+        style="@style/ViewRecipeItem.Name" />
 
 </LinearLayout>

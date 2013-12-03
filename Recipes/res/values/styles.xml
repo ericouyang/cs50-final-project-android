@@ -47,4 +47,33 @@
    	<style name="RecipeListItem.CreatedAt" parent="ListItemElement">
    	    <item name="android:textSize">14sp</item>
    	</style>
+   	
+   	<style name="ViewRecipeItem" parent="ListItem"> 
+   	</style>
+   	
+   	
+   	<style name="ViewRecipeItem.Image" parent="ListItemElement">
+   	    <item name="android:paddingTop">10dp</item>
+   	    <item name="android:paddingBottom">10dp</item>
+   	    <item name="android:layout_width">match_parent</item>
+    	<item name="android:layout_height">wrap_content</item>
+   	</style>
+   	
+   	<style name="ViewRecipeItem.Name" parent="ListItemElement">
+   	     <item name="android:textSize">20sp</item>
+   	</style>
+   	
+   	<style name="ViewRecipeItem.Instructions" parent="ListItemElement">
+   	     <item name="android:textSize">20sp</item>
+   	</style>
+   	
+   	<style name="ViewRecipeItem.Ingredients" parent="ListItemElement">
+   	     <item name="android:textSize">20sp</item>
+   	</style>
+   	
+   	<style name="ViewRecipeItem.CreatedAt" parent="ListItemElement">
+   	    <item name="android:textSize">14sp</item>
+   	</style>
+   	
+   	
 </resources>
