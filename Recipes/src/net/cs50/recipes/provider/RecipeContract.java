@@ -22,6 +22,7 @@ public class RecipeContract {
      */
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
+    public static final String RECIPES_URI = "recipe";
     /**
      * Columns supported by "recipes" records.
      */
