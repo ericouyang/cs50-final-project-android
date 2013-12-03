@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -97,18 +98,19 @@ public class RecipeListFragment extends ListFragment
      * List of Cursor columns to read from when preparing an adapter to populate the ListView.
      */
     private static final String[] FROM_COLUMNS = new String[]{
+    	RecipeContract.Recipe.COLUMN_NAME_CREATED_AT,
     	RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL,
-    	RecipeContract.Recipe.COLUMN_NAME_NAME,
-    	RecipeContract.Recipe.COLUMN_NAME_CREATED_AT
+    	RecipeContract.Recipe.COLUMN_NAME_NAME
     };
 
     /**
      * List of Views which will be populated by Cursor data.
      */
     private static final int[] TO_FIELDS = new int[]{
-    		R.id.recipe_list_item_image,
-            R.id.recipe_list_item_name,
-            R.id.recipe_list_item_created_at
+    	R.id.recipe_list_item_created_at,
+    	R.id.recipe_list_item_image,
+        R.id.recipe_list_item_name
+        
     };
 
     ImageHelper mImageHelper;
@@ -119,10 +121,22 @@ public class RecipeListFragment extends ListFragment
      */
     public RecipeListFragment() {}
 
+    public static RecipeListFragment findOrCreateFragment(FragmentManager fm, int containerId) {
+    	Log.i(TAG, "attempting to reload old fragment");
+    	RecipeListFragment fragment = (RecipeListFragment) fm.findFragmentByTag(TAG);
+        if (fragment == null) {
+        	Log.i(TAG, "no old fragment, creating a new one");
+            fragment = new RecipeListFragment();
+            fm.beginTransaction().add(containerId, fragment, TAG).commit();
+        }
+        return fragment;
+    }
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
         
         mImageHelper = new ImageHelper();
     }

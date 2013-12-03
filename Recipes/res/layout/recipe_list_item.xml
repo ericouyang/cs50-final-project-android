@@ -1,16 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ListItem" >
-
+    
+    <TextView
+        android:id="@+id/recipe_list_item_created_at"
+        style="@style/RecipeListItem.CreatedAt" />
+    
     <ImageView
         android:id="@+id/recipe_list_item_image"
         android:contentDescription="@string/description_recipe_list_item_image"
         style="@style/RecipeListItem.Image" />
 
-    <TextView
+   	<TextView
         android:id="@+id/recipe_list_item_name"
         style="@style/RecipeListItem.Name" />
-	<TextView
-        android:id="@+id/recipe_list_item_created_at"
-        style="@style/RecipeListItem.CreatedAt" />
 	
 </LinearLayout>

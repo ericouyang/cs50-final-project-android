@@ -20,7 +20,6 @@
    	<style name="ListItem">
    	    <item name="android:layout_width">match_parent</item>
    	    <item name="android:layout_height">match_parent</item>
-   	    <item name="android:padding">20dp</item>
    	    <item name="android:orientation">vertical</item>
    	</style>
    	
@@ -31,10 +30,14 @@
    	<style name="ListItemElement">
    	    <item name="android:layout_width">match_parent</item>
    	    <item name="android:layout_height">wrap_content</item>
+   	    <item name="android:padding">20dp</item>
    	</style>
    	
    	<style name="RecipeListItem.Image" parent="ListItemElement">
+   	    <item name="android:paddingTop">10dp</item>
    	    <item name="android:paddingBottom">10dp</item>
+   	    <item name="android:layout_width">match_parent</item>
+    	<item name="android:layout_height">wrap_content</item>
    	</style>
    	
    	<style name="RecipeListItem.Name" parent="ListItemElement">
@@ -42,5 +45,6 @@
    	</style>
    	
    	<style name="RecipeListItem.CreatedAt" parent="ListItemElement">
+   	    <item name="android:textSize">14sp</item>
    	</style>
 </resources>

@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +29,8 @@ import android.widget.TextView;
 
 
 public class MainActivity extends FragmentActivity {
+	
+	private static String TAG = "MainActivity";
 	
 	private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -147,11 +150,15 @@ public class MainActivity extends FragmentActivity {
     		    .setTabListener(tabListener));
     	}
     	*/
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         
-        Fragment fragment = new RecipeListFragment();
-        fragmentTransaction.add(R.id.content_frame, fragment);
-        fragmentTransaction.commit();
+        RecipeListFragment fragment =
+        		RecipeListFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame);
+        
+        //FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        
+        //Fragment fragment = new RecipeListFragment();
+        //fragmentTransaction.add(R.id.content_frame, fragment);
+        //fragmentTransaction.commit();
 	}
 
     @Override
