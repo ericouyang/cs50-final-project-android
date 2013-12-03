@@ -10,7 +10,6 @@
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
-<<<<<<< HEAD
         -->
     </style>
 
@@ -77,51 +76,10 @@
    	    <item name="android:textSize">14sp</item>
    	</style>
    	
-   	
-</resources>
-=======
-        -->
-    </style>
-
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-    </style>
-
-    <style name="ListItem">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="RecipeListItem" parent="ListItem"></style>
-
-    <style name="ListItemElement">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">20dp</item>
-    </style>
-
-    <style name="RecipeListItem.Image" parent="ListItemElement">
-        <item name="android:paddingTop">10dp</item>
-        <item name="android:paddingBottom">10dp</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="RecipeListItem.Name" parent="ListItemElement">
-        <item name="android:textSize">20sp</item>
-    </style>
-
-    <style name="RecipeListItem.CreatedAt" parent="ListItemElement">
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="LoginFormContainer">
+   	<style name="LoginFormContainer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">16dp</item>
     </style>
-
+   	
 </resources>
->>>>>>> 2bd37a6b0dfa17577335a06be570dff40003805c

@@ -25,6 +25,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import net.cs50.recipes.accounts.AccountService;
 import net.cs50.recipes.provider.RecipeContract;
@@ -70,10 +71,21 @@ public class SyncUtils {
             public void run(AccountManagerFuture<Bundle> future) {
                 try {
                     Bundle bnd = future.getResult();
+                    /*
+                    // Inform the system that this account supports sync
+                    ContentResolver.setIsSyncable(account, CONTENT_AUTHORITY, 1);
+                    // Inform the system that this account is eligible for auto sync when the network is up
+                    ContentResolver.setSyncAutomatically(account, CONTENT_AUTHORITY, true);
+                    // Recommend a schedule for automatic synchronization. The system may modify this based
+                    // on other scheduled syncs and network utilization.
+                    ContentResolver.addPeriodicSync(
+                            account, CONTENT_AUTHORITY, new Bundle(),SYNC_FREQUENCY);
+                    newAccount = true;
+                    */
                     TriggerRefresh();
                     
                     //showMessage("Account was created");
-                    //Log.d("udinic", "AddNewAccount Bundle is " + bnd);
+                    Log.d("SyncUtils", "AddNewAccount Bundle is " + bnd);
 
                 } catch (Exception e) {
                     e.printStackTrace();

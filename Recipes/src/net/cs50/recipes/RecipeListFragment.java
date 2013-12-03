@@ -17,8 +17,10 @@
 package net.cs50.recipes;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.database.Cursor;
@@ -154,7 +156,12 @@ public class RecipeListFragment extends ListFragment
     	Log.i(TAG, "attaching fragment");
     	
         // Create account, if needed
-        SyncUtils.CreateSyncAccount(activity);
+    	AccountManager accountManager = (AccountManager) activity.getSystemService(Context.ACCOUNT_SERVICE);
+    	Account[] accounts = accountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);
+    	if (accounts.length == 0)
+    	{
+    		SyncUtils.CreateSyncAccount(activity);
+    	}
     }
 
     @Override
