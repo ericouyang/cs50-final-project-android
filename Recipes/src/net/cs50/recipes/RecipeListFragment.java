@@ -298,6 +298,15 @@ public class RecipeListFragment extends ListFragment
 
         // Get the item at the selected position, in the form of a Cursor.
         Cursor c = (Cursor) mAdapter.getItem(position);
+        Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
+        		.appendPath(RecipeContract.Recipe.TABLE_NAME)
+        		.appendPath(c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID))
+        		.build();
+        
+        Intent i = new Intent(getActivity(), ViewRecipeActivity.class);
+        i.setData(recipeUrl);
+        startActivity(i);
+        
         
         /*
         // Get the link to the article represented by the item.
