@@ -1,11 +1,12 @@
 package net.cs50.recipes.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.cs50.recipes.provider.RecipeContract;
 import net.cs50.recipes.types.Recipe;
 
 import org.json.JSONArray;
@@ -13,8 +14,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.util.Log;
+
 public class RecipeHelper {
 
+	private static String TAG = "RecipeHelper";
+	
+	public enum Category {
+		TOP, LATEST, MY_RECIPES
+	}
+	
     private RecipeHelper() {
     }
 
@@ -72,5 +84,103 @@ public class RecipeHelper {
             list.add(r);
         }
         return list;
+    }
+    
+    public static List<Recipe> query(Category c, Context context) {
+    	switch (c) {
+    	case TOP:
+    	case LATEST:
+    	case MY_RECIPES:
+    	}
+    	
+    	Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
+                .appendPath(RecipeContract.Recipe.TABLE_NAME)
+                .build();
+    	
+    	Cursor cursor = context.getContentResolver().query(
+    			recipeUrl,
+                RecipeContract.Recipe.PROJECTION_ALL_FIELDS,
+                null,
+                null,
+                null);// The sort order for the returned rows
+
+        List<Recipe> recipes = new ArrayList<Recipe>();
+        
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+            	Recipe r = createRecipeFromCursor(cursor);
+            	if (r != null)
+            		recipes.add(r);
+            }
+        } else {
+
+            // Insert code here to report an error if the cursor is null or the provider threw an exception.
+        }
+        
+        return recipes;
+    }
+    
+    public static Recipe getRecipe(Uri recipeUrl, Context context)
+    {
+    	
+    	Cursor cursor = context.getContentResolver().query(
+    			recipeUrl,
+                RecipeContract.Recipe.PROJECTION_ALL_FIELDS,
+                null,
+                null,
+                null);
+    	
+    	cursor.moveToFirst();
+    	
+    	return createRecipeFromCursor(cursor);
+    }
+    
+    public static Recipe createRecipeFromCursor(Cursor cursor)
+    {
+    	if (cursor == null)
+    	{
+    		return null;
+    	}
+    	int id = cursor.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
+    	String recipeId = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
+    	String name = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
+    	String primaryImageURL = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL);
+    	String ingredientsJSONString = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
+    	String instructionsJSONString = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
+    	long createdAt = cursor.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
+    	long updatedAt = cursor.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT);
+    	
+    	Recipe r = new Recipe(id, recipeId, name, createdAt, updatedAt);
+    	if (!primaryImageURL.isEmpty())
+    		r.addImage(primaryImageURL);
+    	
+    	JSONArray ingredientsJSONArray = null;
+    	JSONArray instructionsJSONArray = null;
+    	try
+    	{
+    		ingredientsJSONArray = new JSONArray(ingredientsJSONString);
+    		if (ingredientsJSONArray != null)
+        	{
+        		for (int i = 0; i < ingredientsJSONArray.length(); i++)
+            	{
+            		r.addIngredient(ingredientsJSONArray.getString(i));
+            	}
+        	}
+    		
+    		instructionsJSONArray = new JSONArray(instructionsJSONString);
+    		if (instructionsJSONArray != null)
+        	{
+        		for (int i = 0; i < instructionsJSONArray.length(); i++)
+            	{
+            		r.addInstruction(instructionsJSONArray.getString(i));
+            	}
+        	}
+    	}
+    	catch (JSONException e)
+    	{
+    		Log.e(TAG, "Error parsing JSON: " + e.toString());
+    	}
+    	
+    	return r;
     }
 }

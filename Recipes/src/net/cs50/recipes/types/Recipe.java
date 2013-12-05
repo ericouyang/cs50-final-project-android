@@ -19,9 +19,9 @@ public class Recipe {
 	private final long mCreatedAt;
 	private long mUpdatedAt;
 	
-    public Recipe(String recipeId, String name, long createdAt, long updatedAt)
+	public Recipe(int id, String recipeId, String name, long createdAt, long updatedAt)
     {
-    	mId = 0;
+		mId = id;
     	mRecipeId = recipeId;
     	mName = name;
     	mImageURLs = new ArrayList<String>();
@@ -33,6 +33,11 @@ public class Recipe {
     	mCurrentUserLiked = false;
     	mCreatedAt = createdAt;
     	mUpdatedAt = updatedAt;
+    }
+	
+    public Recipe(String recipeId, String name, long createdAt, long updatedAt)
+    {
+    	this(0, recipeId, name, createdAt, updatedAt);
     }
 
 	public int getId() {
