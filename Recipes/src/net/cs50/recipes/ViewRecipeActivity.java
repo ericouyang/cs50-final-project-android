@@ -24,6 +24,8 @@ public class ViewRecipeActivity extends Activity {
     //private Cursor mCursor;
     private TextView mRecipeNameView;
     private ImageView mRecipeImageView;
+    private TextView mRecipeUserName;
+    
     private Button commentButton;
     
     @Override
@@ -91,11 +93,13 @@ public class ViewRecipeActivity extends Activity {
         
         mRecipeNameView = (TextView) findViewById(R.id.view_recipe_name);
         mRecipeImageView = (ImageView) findViewById(R.id.view_recipe_image);
-
+        mRecipeUserName = (TextView) findViewById(R.id.view_recipe_user_name);
+        
         Recipe recipe = RecipeHelper.getRecipe(resUri, this);
         
         mRecipeNameView.setText(recipe.getName());
-
+        mRecipeUserName.setText("Fred!");
+        
         ImageHelper.loadBitmap(recipe.getImage(0), mRecipeImageView);
     }
 

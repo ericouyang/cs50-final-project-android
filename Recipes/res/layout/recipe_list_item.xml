@@ -1,5 +1,10 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ListItem" >
+    
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/recipe_list_item_user_name" />
     
     <TextView
         android:id="@+id/recipe_list_item_created_at"
@@ -8,10 +13,26 @@
     <ImageView
         android:id="@+id/recipe_list_item_image"
         android:contentDescription="@string/description_recipe_list_item_image"
+        android:layout_below="@id/recipe_list_item_created_at"
         style="@style/RecipeListItem.Image" />
 
    	<TextView
         android:id="@+id/recipe_list_item_name"
-        style="@style/RecipeListItem.Name" />
+        style="@style/RecipeListItem.Name"
+        android:layout_below="@id/recipe_list_item_image" />
+   	
+   	<TextView
+        android:id="@+id/recipe_list_item_noms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipe_list_item_name"
+        android:layout_alignParentLeft="true" />
+   	
+   	<TextView
+        android:id="@+id/recipe_list_item_comments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipe_list_item_name"
+        android:layout_alignParentLeft="true" />
 	
-</LinearLayout>
+</RelativeLayout>

@@ -1,92 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:alignmentMode="alignBounds"
-    android:columnCount="5"
-    android:columnOrderPreserved="false"
-    android:useDefaultMargins="true" >
-    <TextView
-        android:layout_columnSpan="5"
-        android:layout_gravity="center_horizontal"
-        android:text="Title"
-        android:textSize="12dip" />
-
-    <Space
-        android:layout_column="0"
-        android:layout_columnSpan="3"
-        android:layout_gravity="fill"
-        android:layout_row="9" />
-
-    <TextView
-        android:layout_column="0"
-        android:layout_gravity="right|top"
-        android:layout_row="8"
-        android:text="15 Noms" />
-
-    <TextView
-        android:layout_column="4"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_row="8"
-        android:text="5 Comments" />
-
-    <TextView
-        android:layout_column="4"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_row="5"
-        android:text="CreatedAt" />
-
-    <TextView
-        android:layout_column="4"
-        android:layout_gravity="left|center_vertical"
-        android:layout_row="5"
-        android:text="Username" />
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="289dp"
-        android:layout_height="289dp"
-        android:layout_column="4"
-        android:layout_gravity="left|top"
-        android:layout_row="1"
-        android:src="@android:drawable/alert_light_frame" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_column="4"
-        android:layout_gravity="left|top"
-        android:layout_row="10"
-        android:text="Ingredients" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
     
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_column="4"
-        android:layout_gravity="left|top"
-        android:layout_row="11"
-        android:text="Instructions" />
-    
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_column="4"
-        android:layout_gravity="left|top"
-        android:layout_row="12"
-        android:text="Comments" />
-</GridLayout><!--
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
     <TextView
         android:id="@+id/view_recipe_name"
         style="@style/ViewRecipeItem.Name"
         android:layout_width="match_parent"
         android:layout_height="38dp" />
-
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </GridLayout>
 
     <ImageView
         android:id="@+id/view_recipe_image"
@@ -95,13 +18,12 @@
         android:layout_height="297dp" />
 
     <TextView
-        android:id="@+id/user_name"
-        style="@style/User.Name"
+        android:id="@+id/view_recipe_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/view_recipe_createdAt"
+        android:id="@+id/view_recipe_created_at"
         style="@style/ViewRecipeItem.CreatedAt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -130,6 +52,4 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     
-
-</LinearLayout>
--->
+</RelativeLayout>
