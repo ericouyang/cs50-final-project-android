@@ -3,6 +3,7 @@
     <item android:id="@+id/menu_nom" 
         android:showAsAction="always" 
         android:orderInCategory="1" 
+        android:icon="@drawable/ic_action_favorite"
         android:title="@string/description_nom" >
         
     </item>
@@ -10,6 +11,7 @@
     <item android:id="@+id/menu_comment" 
         android:showAsAction="always" 
         android:orderInCategory="2" 
+        android:icon="@drawable/ic_action_chat"
         android:title="@string/description_comment" >
         
     </item>

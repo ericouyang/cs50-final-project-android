@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -103,7 +105,12 @@ public class ViewRecipeActivity extends Activity {
         ImageHelper.loadBitmap(recipe.getImage(0), mRecipeImageView);
     }
 
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_view_recipe, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
 
 }

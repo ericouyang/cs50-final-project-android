@@ -16,7 +16,7 @@
     </string-array>
     <string name="description_search">Search</string>
     <string name="description_recipe_list_item_image">Recipe Image</string>
-    <string name="description_nom">Nom! this recipe</string>
+    <string name="description_nom">Nom!</string>
     <string name="description_comment">Comment on this recipe</string>
     <string name="description_share">Share this recipe</string>
     

@@ -2,9 +2,8 @@
     style="@style/ListItem" >
     
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/recipe_list_item_user_name" />
+        android:id="@+id/recipe_list_item_user_name"
+        style="@style/RecipeListItem.UserName" />
     
     <TextView
         android:id="@+id/recipe_list_item_created_at"
@@ -13,7 +12,6 @@
     <ImageView
         android:id="@+id/recipe_list_item_image"
         android:contentDescription="@string/description_recipe_list_item_image"
-        android:layout_below="@id/recipe_list_item_created_at"
         style="@style/RecipeListItem.Image" />
 
    	<TextView
@@ -23,16 +21,10 @@
    	
    	<TextView
         android:id="@+id/recipe_list_item_noms"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/recipe_list_item_name"
-        android:layout_alignParentLeft="true" />
+		style="@style/RecipeListItem.Noms" />
    	
    	<TextView
         android:id="@+id/recipe_list_item_comments"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/recipe_list_item_name"
-        android:layout_alignParentLeft="true" />
+        style="@style/RecipeListItem.Comments" />
 	
 </RelativeLayout>

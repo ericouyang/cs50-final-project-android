@@ -97,6 +97,7 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
      * List of Cursor columns to read from when preparing an adapter to populate the ListView.
      */
     private static final String[] FROM_COLUMNS = new String[]{
+    	RecipeContract.Recipe.COLUMN_NAME_USER_ID,
         RecipeContract.Recipe.COLUMN_NAME_CREATED_AT,
         RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL,
         RecipeContract.Recipe.COLUMN_NAME_NAME
@@ -106,6 +107,7 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
      * List of Views which will be populated by Cursor data.
      */
     private static final int[] TO_FIELDS = new int[]{
+    	R.id.recipe_list_item_user_name,
         R.id.recipe_list_item_created_at,
         R.id.recipe_list_item_image,
         R.id.recipe_list_item_name
@@ -174,11 +176,15 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
         mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
             @Override
             public boolean setViewValue(View view, Cursor cursor, int i) {
+            	if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_USER_ID) {
+                    ((TextView) view).setText("Fred W");
+                    return true;
+                }
                 if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT) {
                     // Convert timestamp to human-readable date
                     Time t = new Time();
                     t.set(cursor.getLong(i));
-                    ((TextView) view).setText(t.format("%Y-%m-%d %H:%M"));
+                    ((TextView) view).setText(t.format("%b %d"));
                     return true;
                 }
                 else if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL) {
