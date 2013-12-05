@@ -76,6 +76,18 @@
    	    <item name="android:textSize">14sp</item>
    	</style>
    	
+   	<style name="ViewRecipeItem.Noms" parent="ListItemElement">
+   	    <item name="android:textSize">14sp</item>
+   	</style>
+   	
+   	<style name="ViewRecipeItem.Comments" parent="ListItemElement">
+   	    <item name="android:textSize">14sp</item>
+   	</style>
+   	
+   	<style name="User.Name" parent="ListItemElement">
+   	    <item name="android:textSize">14sp</item>
+   	</style>
+   	
    	<style name="LoginFormContainer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
