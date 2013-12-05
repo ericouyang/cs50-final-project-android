@@ -18,10 +18,14 @@ package net.cs50.recipes;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import net.cs50.recipes.accounts.AccountService;
 import net.cs50.recipes.provider.RecipeContract;
@@ -44,6 +48,7 @@ public class SyncUtils {
         boolean setupComplete = PreferenceManager
                 .getDefaultSharedPreferences(context).getBoolean(PREF_SETUP_COMPLETE, false);
 
+        /*
         // Create account, if it's missing. (Either first run, or user has deleted account.)
         Account account = AccountService.GetAccount();
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
@@ -58,7 +63,39 @@ public class SyncUtils {
                     account, CONTENT_AUTHORITY, new Bundle(),SYNC_FREQUENCY);
             newAccount = true;
         }
+		*/
+        AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+        
+        final AccountManagerFuture<Bundle> future = accountManager.addAccount(AccountService.ACCOUNT_TYPE, AccountService.AUTH_TOKEN_TYPE, null, null, (Activity) context, new AccountManagerCallback<Bundle>() {
+            @Override
+            public void run(AccountManagerFuture<Bundle> future) {
+                try {
+                    Bundle bnd = future.getResult();
+                    /*
+                    // Inform the system that this account supports sync
+                    ContentResolver.setIsSyncable(account, CONTENT_AUTHORITY, 1);
+                    // Inform the system that this account is eligible for auto sync when the network is up
+                    ContentResolver.setSyncAutomatically(account, CONTENT_AUTHORITY, true);
+                    // Recommend a schedule for automatic synchronization. The system may modify this based
+                    // on other scheduled syncs and network utilization.
+                    ContentResolver.addPeriodicSync(
+                            account, CONTENT_AUTHORITY, new Bundle(),SYNC_FREQUENCY);
+                    newAccount = true;
+                    */
+                    TriggerRefresh();
+                    
+                    //showMessage("Account was created");
+                    Log.d("SyncUtils", "AddNewAccount Bundle is " + bnd);
 
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ///showMessage(e.getMessage());
+                }
+            }
+        }, null);
+        
+        //PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(PREF_SETUP_COMPLETE, true).commit();
+        /*
         // Schedule an initial sync if we detect problems with either our account or our local
         // data has been deleted. (Note that it's possible to clear app data WITHOUT affecting
         // the account list, so wee need to check both.)
@@ -67,6 +104,7 @@ public class SyncUtils {
             PreferenceManager.getDefaultSharedPreferences(context).edit()
                     .putBoolean(PREF_SETUP_COMPLETE, true).commit();
         }
+        */
     }
 
     /**

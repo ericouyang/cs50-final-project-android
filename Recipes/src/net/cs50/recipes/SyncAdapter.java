@@ -18,9 +18,7 @@ package net.cs50.recipes;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +26,8 @@ import java.util.Map;
 
 import net.cs50.recipes.provider.RecipeContract;
 import net.cs50.recipes.types.Recipe;
-import net.cs50.recipes.util.RecipeParser;
+import net.cs50.recipes.util.HttpHelper;
+import net.cs50.recipes.util.RecipeHelper;
 //import com.example.android.network.sync.basicsyncadapter.provider.FeedContract;
 
 import org.json.JSONException;
@@ -58,24 +57,6 @@ import android.util.Log;
  */
 class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String TAG = "SyncAdapter";
-
-    /**
-     * URL to fetch content from during a sync.
-     *
-     * <p>This points to the Android Developers Blog. (Side note: We highly recommend reading the
-     * Android Developer Blog to stay up to date on the latest Android platform developments!)
-     */
-    private static final String FEED_URL = "http://ericouyang.com:1337/recipe";
-
-    /**
-     * Network connection timeout, in milliseconds.
-     */
-    private static final int NET_CONNECT_TIMEOUT_MILLIS = 15000;  // 15 seconds
-
-    /**
-     * Network read timeout, in milliseconds.
-     */
-    private static final int NET_READ_TIMEOUT_MILLIS = 10000;  // 10 seconds
 
     /**
      * Content resolver, for performing database operations.
@@ -123,12 +104,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Beginning network synchronization");
         try {
-            final URL location = new URL(FEED_URL);
+        	
+        	String uri = RecipeContract.RECIPES_URI;
             InputStream stream = null;
 
             try {
-                Log.i(TAG, "Streaming data from network: " + location);
-                stream = downloadUrl(location);
+                Log.i(TAG, "Streaming data from network: " + uri);
+                stream = HttpHelper.getStream(uri);
                 updateLocalData(stream, syncResult);
                 // Makes sure that the InputStream is closed after the app is
                 // finished using it.
@@ -188,7 +170,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         final ContentResolver contentResolver = getContext().getContentResolver();
 
         Log.i(TAG, "Parsing stream as JSON");
-        final List<Recipe> recipes = RecipeParser.parse(stream);
+        final List<Recipe> recipes = RecipeHelper.parse(stream);
         Log.i(TAG, "Parsing complete. Found " + recipes.size() + " entries");
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
@@ -271,14 +253,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     /**
      * Given a string representation of a URL, sets up a connection and gets an input stream.
      */
+    /*
     private InputStream downloadUrl(final URL url) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(NET_READ_TIMEOUT_MILLIS /* milliseconds */);
-        conn.setConnectTimeout(NET_CONNECT_TIMEOUT_MILLIS /* milliseconds */);
+        conn.setReadTimeout(NET_READ_TIMEOUT_MILLIS);
+        conn.setConnectTimeout(NET_CONNECT_TIMEOUT_MILLIS);
         conn.setRequestMethod("GET");
         conn.setDoInput(true);
         // Starts the query
         conn.connect();
         return conn.getInputStream();
     }
+    */
 }

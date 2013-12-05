@@ -13,15 +13,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class RecipeParser {
+public class RecipeHelper {
 
-    private RecipeParser() {
+    private RecipeHelper() {
     }
 
     public static List<Recipe> parse(InputStream in) throws IOException, JSONException
     {
         List<Recipe> list = new LinkedList<Recipe>();
-        JSONArray recipes = (JSONArray) new JSONTokener(getString(in)).nextValue();
+        JSONArray recipes = (JSONArray) new JSONTokener(HttpHelper.getString(in)).nextValue();
         for (int i = 0, len = recipes.length(); i < len; i++) {
             JSONObject recipe = recipes.getJSONObject(i);
             String recipeId = recipe.getString("id");
@@ -42,15 +42,5 @@ public class RecipeParser {
             list.add(r);
         }
         return list;
-    }
-
-    private static String getString(InputStream in) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buffer = new byte[4096];
-        int read;
-        while ((read = in.read(buffer, 0, 4096)) > 0) {
-            out.write(buffer, 0, read);
-        }
-        return new String(out.toByteArray());
     }
 }

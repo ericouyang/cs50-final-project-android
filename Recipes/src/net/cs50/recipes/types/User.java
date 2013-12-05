@@ -1,5 +1,24 @@
 package net.cs50.recipes.types;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import android.util.Log;
+
 public class User {
 	private final int mId;
 	private final String mUserId;
@@ -59,5 +78,4 @@ public class User {
 	public long getUpdatedAt() {
 		return mUpdatedAt;
 	}
-
 }
