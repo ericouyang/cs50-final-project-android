@@ -206,8 +206,8 @@ public class RecipeProvider extends ContentProvider {
         private static final String TYPE_INTEGER = " INTEGER";
         private static final String COMMA_SEP = ",";
 
-        /** SQL statement to create "entry" table. */
-        private static final String SQL_CREATE_ENTRIES =
+        /** SQL statement to create "recipe" table. */
+        private static final String SQL_CREATE_RECIPES_TABLE =
                 "CREATE TABLE " + RecipeContract.Recipe.TABLE_NAME + " (" +
                 		RecipeContract.Recipe._ID + " INTEGER PRIMARY KEY," + 
                         RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID + TYPE_TEXT + COMMA_SEP +
@@ -221,9 +221,20 @@ public class RecipeProvider extends ContentProvider {
                         RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + TYPE_INTEGER + COMMA_SEP +
                         RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT + TYPE_INTEGER +
                 ")";
+        
+        /** SQL statement to create "comment" table. */
+        private static final String SQL_CREATE_COMMENTS_TABLE =
+                "CREATE TABLE " + CommentContract.Comment.TABLE_NAME + " (" +
+                		CommentContract.Comment._ID + " INTEGER PRIMARY KEY," + 
+                		CommentContract.Comment.COLUMN_NAME_RECIPE_ID + TYPE_TEXT + COMMA_SEP +
+                        CommentContract.Comment.COLUMN_NAME_CONTENT + TYPE_TEXT + COMMA_SEP +
+                        CommentContract.Comment.COLUMN_NAME_USER_ID + TYPE_TEXT + COMMA_SEP +
+                        CommentContract.Comment.COLUMN_NAME_CREATED_AT + TYPE_INTEGER + COMMA_SEP +
+                        CommentContract.Comment.COLUMN_NAME_UPDATED_AT + TYPE_INTEGER +
+                ")";
 
         /** SQL statement to drop "entry" table. */
-        private static final String SQL_DELETE_ENTRIES =
+        private static final String SQL_DELETE_RECIPES_TABLE =
                 "DROP TABLE IF EXISTS " + RecipeContract.Recipe.TABLE_NAME;
 
         public RecipeDatabase(Context context) {
@@ -232,14 +243,15 @@ public class RecipeProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL(SQL_CREATE_ENTRIES);
+            db.execSQL(SQL_CREATE_RECIPES_TABLE);
+            db.execSQL(SQL_CREATE_COMMENTS_TABLE);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             // This database is only a cache for online data, so its upgrade policy is
             // to simply to discard the data and start over
-            db.execSQL(SQL_DELETE_ENTRIES);
+            db.execSQL(SQL_DELETE_RECIPES_TABLE);
             onCreate(db);
         }
     }

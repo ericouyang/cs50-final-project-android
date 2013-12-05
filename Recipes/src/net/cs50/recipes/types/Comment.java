@@ -1,19 +1,42 @@
 package net.cs50.recipes.types;
 
 public class Comment {
-	private final int mId;
+	private int mId;
 	private String mContent;
-	private final Recipe mRecipe;
 	private final User mUser;
+	private final String mUserId;
 	private final long mCreatedAt;
 	private long mUpdatedAt;
 	
-	public Comment(int id, String content, Recipe recipe, User user, long createdAt, long updatedAt)
+	public Comment(String content)
+	{
+		this(0, content, null, 0, 0);
+	}
+	
+	public Comment(String content, User user, long createdAt, long updatedAt)
+	{
+		this(0, content, user, createdAt, updatedAt);
+	}
+	
+	public Comment(String content, String userId, long createdAt)
+	{
+		mId = 0;
+		mContent = content;
+		mUser = null;
+		mUserId = userId;
+		mCreatedAt = createdAt;
+		mUpdatedAt = 0;
+	}
+	
+	public Comment(int id, String content, User user, long createdAt, long updatedAt)
 	{
 		mId = id;
 		mContent = content;
-		mRecipe = recipe;
 		mUser = user;
+		if (user != null)
+			mUserId = user.getUserId();
+		else
+			mUserId = "";
 		mCreatedAt = createdAt;
 		mUpdatedAt = updatedAt;
 	}
@@ -32,10 +55,6 @@ public class Comment {
 
 	public int getId() {
 		return mId;
-	}
-
-	public Recipe getRecipe() {
-		return mRecipe;
 	}
 
 	public User getUser() {

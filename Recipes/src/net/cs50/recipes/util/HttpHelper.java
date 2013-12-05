@@ -55,7 +55,7 @@ public class HttpHelper {
 			InputStream stream = getStream(CREATE_USER_URI, "POST", params);
             
             JSONObject user = (JSONObject) new JSONTokener(getString(stream)).nextValue();
-            authToken = user.getString("token");
+            authToken = user.getString("access_token");
             
         } catch (ClientProtocolException e) {
         	e.printStackTrace();

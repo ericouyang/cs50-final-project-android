@@ -28,6 +28,7 @@ public class RecipeHelper {
             String name = recipe.getString("name");
             long createdAt = recipe.getLong("createdAt");
             long updatedAt = recipe.getLong("updatedAt");
+            
             Recipe r = new Recipe(recipeId, name, createdAt, updatedAt);
             
             JSONArray images = recipe.optJSONArray("images");
@@ -37,6 +38,35 @@ public class RecipeHelper {
             	{
             		JSONObject image = images.getJSONObject(j);
     				r.addImage(image.getString("filename"));
+            	}
+            }
+            
+            
+            JSONArray comments = recipe.optJSONArray("comments");
+            if (comments != null)
+            {
+            	for (int j = 0, commentsLen = comments.length(); j < commentsLen; j++)
+            	{
+            		JSONObject comment = comments.getJSONObject(j);
+    				r.addComment(comment.getString("content"), comment.getString("userId"), comment.getLong("createdAt"));
+            	}
+            }
+            
+            JSONArray ingredients = recipe.optJSONArray("ingredients");
+            if (ingredients != null)
+            {
+            	for (int j = 0, ingredientsLen = ingredients.length(); j < ingredientsLen; j++)
+            	{
+        			r.addIngredient(ingredients.getString(j));
+            	}
+            }
+            
+            JSONArray instructions = recipe.optJSONArray("instructions");
+            if (instructions != null)
+            {
+            	for (int j = 0, instructionsLen = instructions.length(); j < instructionsLen; j++)
+            	{
+            		r.addInstruction(instructions.getString(j));
             	}
             }
             list.add(r);

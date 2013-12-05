@@ -207,6 +207,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, match.getName())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, match.getIngredientsJSONString())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, match.getInstructionsJSONString())
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, match.getImage(0))
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, match.getUpdatedAt())
                             .build());
@@ -233,6 +235,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             batch.add(ContentProviderOperation.newInsert(RecipeContract.Recipe.CONTENT_URI)
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getRecipeId())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, r.getIngredientsJSONString())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, r.getInstructionsJSONString())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, r.getImage(0))
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, r.getUpdatedAt())
