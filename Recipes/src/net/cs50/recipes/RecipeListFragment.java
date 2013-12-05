@@ -16,13 +16,15 @@
 
 package net.cs50.recipes;
 
+import net.cs50.recipes.accounts.AccountService;
+import net.cs50.recipes.provider.RecipeContract;
+import net.cs50.recipes.util.ImageHelper;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -30,7 +32,6 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.util.LruCache;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.format.Time;
 import android.util.Log;
@@ -41,10 +42,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import net.cs50.recipes.accounts.AccountService;
-import net.cs50.recipes.provider.RecipeContract;
-import net.cs50.recipes.util.ImageHelper;
 
 /**
  * List fragment containing a list of Atom entry objects (articles) stored in the local database.
@@ -66,7 +63,7 @@ import net.cs50.recipes.util.ImageHelper;
  * occurring.
  */
 public class RecipeListFragment extends ListFragment
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "RecipeListFragment";
 
@@ -98,23 +95,21 @@ public class RecipeListFragment extends ListFragment
      * List of Cursor columns to read from when preparing an adapter to populate the ListView.
      */
     private static final String[] FROM_COLUMNS = new String[]{
-    	RecipeContract.Recipe.COLUMN_NAME_CREATED_AT,
-    	RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL,
-    	RecipeContract.Recipe.COLUMN_NAME_NAME
+        RecipeContract.Recipe.COLUMN_NAME_CREATED_AT,
+        RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL,
+        RecipeContract.Recipe.COLUMN_NAME_NAME
     };
 
     /**
      * List of Views which will be populated by Cursor data.
      */
     private static final int[] TO_FIELDS = new int[]{
-    	R.id.recipe_list_item_created_at,
-    	R.id.recipe_list_item_image,
+        R.id.recipe_list_item_created_at,
+        R.id.recipe_list_item_image,
         R.id.recipe_list_item_name
-        
+
     };
 
-    ImageHelper mImageHelper;
-    
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -122,23 +117,21 @@ public class RecipeListFragment extends ListFragment
     public RecipeListFragment() {}
 
     public static RecipeListFragment findOrCreateFragment(FragmentManager fm, int containerId) {
-    	Log.i(TAG, "attempting to reload old fragment");
-    	RecipeListFragment fragment = (RecipeListFragment) fm.findFragmentByTag(TAG);
+        Log.i(TAG, "attempting to reload old fragment");
+        RecipeListFragment fragment = (RecipeListFragment) fm.findFragmentByTag(TAG);
         if (fragment == null) {
-        	Log.i(TAG, "no old fragment, creating a new one");
+            Log.i(TAG, "no old fragment, creating a new one");
             fragment = new RecipeListFragment();
             fm.beginTransaction().add(containerId, fragment, TAG).commit();
         }
         return fragment;
     }
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
-        
-        mImageHelper = new ImageHelper();
     }
 
     /**
@@ -151,8 +144,8 @@ public class RecipeListFragment extends ListFragment
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-    	Log.i(TAG, "attaching fragment");
-    	
+        Log.i(TAG, "attaching fragment");
+
         // Create account, if needed
         SyncUtils.CreateSyncAccount(activity);
     }
@@ -160,7 +153,7 @@ public class RecipeListFragment extends ListFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         Log.i(TAG, "view created");
 
         mAdapter = new SimpleCursorAdapter(
@@ -170,7 +163,7 @@ public class RecipeListFragment extends ListFragment
                 FROM_COLUMNS,        // Cursor columns to use
                 TO_FIELDS,           // Layout fields to use
                 0                    // No flags
-        );
+                );
         mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
             @Override
             public boolean setViewValue(View view, Cursor cursor, int i) {
@@ -180,14 +173,14 @@ public class RecipeListFragment extends ListFragment
                     t.set(cursor.getLong(i));
                     ((TextView) view).setText(t.format("%Y-%m-%d %H:%M"));
                     return true;
-                } 
+                }
                 else if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL) {
-                	String url = cursor.getString(i);
-                	if (url != null && !url.isEmpty())
-                	{
-                		mImageHelper.loadBitmap(url, (ImageView) view);
-                	}
-                	return true;
+                    String url = cursor.getString(i);
+                    if (url != null && !url.isEmpty())
+                    {
+                        ImageHelper.loadBitmap(url, (ImageView) view);
+                    }
+                    return true;
                 } else {
                     // Let SimpleCursorAdapter handle other fields automatically
                     return false;
@@ -229,12 +222,12 @@ public class RecipeListFragment extends ListFragment
      */
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-    	
-    	Log.i(TAG, "loader created");
+
+        Log.i(TAG, "loader created");
         // We only have one loader, so we can ignore the value of i.
         // (It'll be '0', as set in onCreate().)
         return new CursorLoader(getActivity(),  // Context
-        		RecipeContract.Recipe.CONTENT_URI, // URI
+                RecipeContract.Recipe.CONTENT_URI, // URI
                 PROJECTION,                // Projection
                 null,                           // Selection
                 null,                           // Selection args
@@ -277,10 +270,10 @@ public class RecipeListFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // If the user clicks the "Refresh" button.
-            case R.id.menu_refresh:
-                SyncUtils.TriggerRefresh();
-                return true;
+        // If the user clicks the "Refresh" button.
+        case R.id.menu_refresh:
+            SyncUtils.TriggerRefresh();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -299,15 +292,15 @@ public class RecipeListFragment extends ListFragment
         // Get the item at the selected position, in the form of a Cursor.
         Cursor c = (Cursor) mAdapter.getItem(position);
         Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
-        		.appendPath(RecipeContract.Recipe.TABLE_NAME)
-        		.appendPath(c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID))
-        		.build();
-        
+                .appendPath(RecipeContract.Recipe.TABLE_NAME)
+                .appendPath(c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID))
+                .build();
+
         Intent i = new Intent(getActivity(), ViewRecipeActivity.class);
         i.setData(recipeUrl);
         startActivity(i);
-        
-        
+
+
         /*
         // Get the link to the article represented by the item.
         String articleUrlString = c.getString(COLUMN_URL_STRING);
@@ -321,8 +314,8 @@ public class RecipeListFragment extends ListFragment
         Uri articleURL = Uri.parse(articleUrlString);
         Intent i = new Intent(Intent.ACTION_VIEW, articleURL);
         startActivity(i);
-        
-        */
+
+         */
     }
 
     /**
