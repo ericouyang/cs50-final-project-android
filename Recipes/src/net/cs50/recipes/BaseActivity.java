@@ -5,18 +5,11 @@ import android.support.v4.app.FragmentActivity;
 
 public abstract class BaseActivity extends FragmentActivity {
 	
-	private CharSequence mTitle;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-		mTitle = getTitle();
+	    getActionBar().setDisplayShowTitleEnabled(false);
 	}
 	
-	@Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getActionBar().setTitle(mTitle);
-    }
-    
 }

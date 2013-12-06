@@ -20,7 +20,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme" android:logo="@drawable/ic_logo">
         
         <activity
             android:name=".Home"
@@ -36,7 +36,12 @@
         </activity>
         <activity
             android:name=".ViewRecipeActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:parentActivityName=".MainActivity" >
+	        <!-- Parent activity meta-data to support API level 7+ -->
+	        <meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value=".MainActivity" />
         </activity>
         <provider android:name=".provider.RecipeProvider" android:authorities="net.cs50.recipes" android:exported="false" android:syncable="true"></provider>
         

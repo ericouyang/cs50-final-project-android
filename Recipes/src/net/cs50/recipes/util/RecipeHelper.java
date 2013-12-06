@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.cs50.recipes.R;
 import net.cs50.recipes.provider.RecipeContract;
 import net.cs50.recipes.types.Recipe;
 
@@ -18,6 +19,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class RecipeHelper {
 
@@ -182,5 +189,44 @@ public class RecipeHelper {
     	}
     	
     	return r;
+    }
+    
+    public static class RecipeAdapter extends ArrayAdapter<Recipe>
+    {
+    	public RecipeAdapter(Context context, int resource, List<Recipe> recipes)
+    	{
+    		super(context, resource, recipes);
+    	}
+    	
+    	@Override
+    	  public View getView(int position, View convertView, ViewGroup parent) {
+    		Recipe recipe = getItem(position);
+    		
+    	    LayoutInflater inflater = (LayoutInflater) getContext()
+    	        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    	    View rowView = inflater.inflate(R.layout.recipe_list_item, parent, false);
+    	    
+    	    TextView userNameView = (TextView) rowView.findViewById(R.id.recipe_list_item_user_name);
+    	    TextView createdAtView = (TextView) rowView.findViewById(R.id.recipe_list_item_created_at);
+    	    ImageView imageView = (ImageView) rowView.findViewById(R.id.recipe_list_item_image);
+    	    TextView nameView = (TextView) rowView.findViewById(R.id.recipe_list_item_name);
+    	    TextView numNomsView = (TextView) rowView.findViewById(R.id.recipe_list_item_noms);
+    	    TextView numCommentsView = (TextView) rowView.findViewById(R.id.recipe_list_item_comments);
+    	    
+    	    String primaryImageURL = recipe.getImage(0);
+    	    
+    	    userNameView.setText(recipe.getUserName());
+    	    createdAtView.setText(recipe.getCreatedAtTime().format("%b %d"));
+    	    if (primaryImageURL != null)
+    	    {
+    	    	ImageHelper.loadBitmap(primaryImageURL, imageView);
+    	    }
+    	    
+    	    nameView.setText(recipe.getName());
+    	    numNomsView.setText(recipe.getNumLikes() + " noms");
+    	    numCommentsView.setText(recipe.getNumComments() + " comments");
+
+    	    return rowView;
+    	  }
     }
 }
