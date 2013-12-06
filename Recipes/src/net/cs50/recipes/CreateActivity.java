@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,6 +27,8 @@ import android.widget.TextView;
 
 public final class CreateActivity extends BaseActivity {
 
+    private static final int POPUP_HEIGHT = 122;
+
     private static final int GROUP_INGREDIENTS = 0;
     private static final int GROUP_INSTRUCTIONS = 1;
 
@@ -38,7 +41,7 @@ public final class CreateActivity extends BaseActivity {
             int group = (Integer) v.getTag(R.id.TAG_GROUP);
 
             PopupEditor popup = new PopupEditor(group);
-            popup.showAsDropDown(v);
+            popup.show(v);
         }
     };
     private final OnClickListener onEdit = new OnClickListener() {
@@ -48,7 +51,7 @@ public final class CreateActivity extends BaseActivity {
             int index = (Integer) v.getTag(R.id.TAG_INDEX);
 
             PopupEditor popup = new PopupEditor(group, index);
-            popup.showAsDropDown(v);
+            popup.show(v);
         }
     };
     private final OnClickListener onDelete = new OnClickListener() {
@@ -75,8 +78,7 @@ public final class CreateActivity extends BaseActivity {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             if (!hasFocus) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                hideKeyboard(v);
             }
         }
     };
@@ -118,6 +120,11 @@ public final class CreateActivity extends BaseActivity {
         detailsListView = (ExpandableListView) findViewById(R.id.list_create_details);
         listAdapter = new ExpandableListAdapter();
         detailsListView.setAdapter(listAdapter);
+    }
+
+    public void hideKeyboard(View v) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     private class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -247,6 +254,7 @@ public final class CreateActivity extends BaseActivity {
             setFocusable(true);
             setTouchable(true);
             setOutsideTouchable(true);
+            setHeight(LayoutParams.WRAP_CONTENT);
             setBackgroundDrawable(new BitmapDrawable((Resources) null, (Bitmap) null));
 
             text = (EditText) view.findViewById(R.id.text_popup);
@@ -319,6 +327,13 @@ public final class CreateActivity extends BaseActivity {
 
             listAdapter.notifyDataSetChanged();
             dismiss();
+        }
+
+        public void show(View v) {
+            Resources r = getResources();
+            int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, POPUP_HEIGHT,
+                    r.getDisplayMetrics());
+            showAsDropDown(v, 0, -(px + v.getHeight()));
         }
     }
 
