@@ -126,14 +126,6 @@ public class RecipeListFragment extends ListFragment
         super.onAttach(activity);
 
         Log.i(TAG, "attaching fragment");
-
-        // Create account, if needed
-    	AccountManager accountManager = (AccountManager) activity.getSystemService(Context.ACCOUNT_SERVICE);
-    	Account[] accounts = accountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);
-    	if (accounts.length == 0)
-    	{
-    		SyncUtils.CreateSyncAccount(activity);
-    	}
     }
 
     @Override
@@ -319,6 +311,7 @@ public class RecipeListFragment extends ListFragment
                  */
                 @Override
                 public void run() {
+                	/*
                     // Create a handle to the account that was created by
                     // SyncService.CreateSyncAccount(). This will be used to query the system to
                     // see how the sync status has changed.
@@ -329,13 +322,14 @@ public class RecipeListFragment extends ListFragment
                         setRefreshActionButtonState(false);
                         return;
                     }
-
+					*/
+                	
                     // Test the ContentResolver to see if the sync adapter is active or pending.
                     // Set the state of the refresh button accordingly.
                     boolean syncActive = ContentResolver.isSyncActive(
-                            account, RecipeContract.CONTENT_AUTHORITY);
+                            ((BaseActivity)getActivity()).getCurrentAccount(), RecipeContract.CONTENT_AUTHORITY);
                     boolean syncPending = ContentResolver.isSyncPending(
-                            account, RecipeContract.CONTENT_AUTHORITY);
+                    		((BaseActivity)getActivity()).getCurrentAccount(), RecipeContract.CONTENT_AUTHORITY);
                     setRefreshActionButtonState(syncActive || syncPending);
                 }
             });

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+	android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="5dp"
+    android:clickable="true"
+    android:focusable="true"
+	android:focusableInTouchMode="true" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:dividerPadding="5dp"
+    	android:layout_marginBottom="5dp" >
+
+        <ImageView
+            android:id="@+id/image_create_recipe"
+            android:contentDescription="@string/description_recipe_list_item_image"
+            android:layout_width="100dp"
+            android:layout_height="80dp" />
+
+        <EditText
+            android:id="@+id/text_create_title"
+            android:layout_width="0dip"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:hint="@string/recipe_title"
+            android:gravity="top|left"
+            android:scrollbars="vertical" >
+        </EditText>
+
+    </LinearLayout>
+
+    <ExpandableListView
+        android:id="@+id/list_create_details"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    </ExpandableListView>
+
+    <Button
+        android:id="@+id/btn_create"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/create" />
+	
+</LinearLayout>

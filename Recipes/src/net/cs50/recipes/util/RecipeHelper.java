@@ -28,17 +28,16 @@ import android.widget.TextView;
 
 public class RecipeHelper {
 
-	private static String TAG = "RecipeHelper";
-	
-	public enum Category {
-		TOP, LATEST, MY_RECIPES
-	}
-	
+    private static String TAG = "RecipeHelper";
+
+    public enum Category {
+        TOP, LATEST, MY_RECIPES
+    }
+
     private RecipeHelper() {
     }
 
-    public static List<Recipe> parse(InputStream in) throws IOException, JSONException
-    {
+    public static List<Recipe> parse(InputStream in) throws IOException, JSONException {
         List<Recipe> list = new LinkedList<Recipe>();
         JSONArray recipes = (JSONArray) new JSONTokener(HttpHelper.getString(in)).nextValue();
         for (int i = 0, len = recipes.length(); i < len; i++) {
@@ -47,186 +46,172 @@ public class RecipeHelper {
             String name = recipe.getString("name");
             long createdAt = recipe.getLong("createdAt");
             long updatedAt = recipe.getLong("updatedAt");
-            
+
             Recipe r = new Recipe(recipeId, name, createdAt, updatedAt);
-            
+
             JSONArray images = recipe.optJSONArray("images");
-            if (images != null)
-            {
-            	for (int j = 0, imagesLen = images.length(); j < imagesLen; j++)
-            	{
-            		JSONObject image = images.getJSONObject(j);
-    				r.addImage(image.getString("filename"));
-            	}
+            if (images != null) {
+                for (int j = 0, imagesLen = images.length(); j < imagesLen; j++) {
+                    JSONObject image = images.getJSONObject(j);
+                    r.addImage(image.getString("filename"));
+                }
             }
-            
-            
+
             JSONArray comments = recipe.optJSONArray("comments");
-            if (comments != null)
-            {
-            	for (int j = 0, commentsLen = comments.length(); j < commentsLen; j++)
-            	{
-            		JSONObject comment = comments.getJSONObject(j);
-    				r.addComment(comment.getString("content"), comment.getString("userId"), comment.getLong("createdAt"));
-            	}
+            if (comments != null) {
+                for (int j = 0, commentsLen = comments.length(); j < commentsLen; j++) {
+                    JSONObject comment = comments.getJSONObject(j);
+                    r.addComment(comment.getString("content"), comment.getString("userId"),
+                            comment.getLong("createdAt"));
+                }
             }
-            
+
             JSONArray ingredients = recipe.optJSONArray("ingredients");
-            if (ingredients != null)
-            {
-            	for (int j = 0, ingredientsLen = ingredients.length(); j < ingredientsLen; j++)
-            	{
-        			r.addIngredient(ingredients.getString(j));
-            	}
+            if (ingredients != null) {
+                for (int j = 0, ingredientsLen = ingredients.length(); j < ingredientsLen; j++) {
+                    r.addIngredient(ingredients.getString(j));
+                }
             }
-            
+
             JSONArray instructions = recipe.optJSONArray("instructions");
-            if (instructions != null)
-            {
-            	for (int j = 0, instructionsLen = instructions.length(); j < instructionsLen; j++)
-            	{
-            		r.addInstruction(instructions.getString(j));
-            	}
+            if (instructions != null) {
+                for (int j = 0, instructionsLen = instructions.length(); j < instructionsLen; j++) {
+                    r.addInstruction(instructions.getString(j));
+                }
             }
             list.add(r);
         }
         return list;
     }
-    
+
     public static List<Recipe> query(Category c, Context context) {
-    	switch (c) {
-    	case TOP:
-    	case LATEST:
-    	case MY_RECIPES:
-    	}
-    	
-    	Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
-                .appendPath(RecipeContract.Recipe.TABLE_NAME)
-                .build();
-    	
-    	Cursor cursor = context.getContentResolver().query(
-    			recipeUrl,
-                RecipeContract.Recipe.PROJECTION_ALL_FIELDS,
-                null,
-                null,
-                null);// The sort order for the returned rows
+        switch (c) {
+        case TOP:
+        case LATEST:
+        case MY_RECIPES:
+        }
+
+        Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
+                .appendPath(RecipeContract.Recipe.TABLE_NAME).build();
+
+        Cursor cursor = context.getContentResolver().query(recipeUrl,
+                RecipeContract.Recipe.PROJECTION_ALL_FIELDS, null, null, null);// The sort order for
+        // the returned rows
 
         List<Recipe> recipes = new ArrayList<Recipe>();
-        
+
         if (cursor != null) {
             while (cursor.moveToNext()) {
-            	Recipe r = createRecipeFromCursor(cursor);
-            	if (r != null)
-            		recipes.add(r);
+                Recipe r = createRecipeFromCursor(cursor);
+                if (r != null) {
+                    recipes.add(r);
+                }
             }
         } else {
 
-            // Insert code here to report an error if the cursor is null or the provider threw an exception.
+            // Insert code here to report an error if the cursor is null or the provider threw an
+            // exception.
         }
-        
+
         return recipes;
     }
-    
-    public static Recipe getRecipe(Uri recipeUrl, Context context)
-    {
-    	
-    	Cursor cursor = context.getContentResolver().query(
-    			recipeUrl,
-                RecipeContract.Recipe.PROJECTION_ALL_FIELDS,
-                null,
-                null,
-                null);
-    	
-    	cursor.moveToFirst();
-    	
-    	return createRecipeFromCursor(cursor);
-    }
-    
-    public static Recipe createRecipeFromCursor(Cursor cursor)
-    {
-    	if (cursor == null)
-    	{
-    		return null;
-    	}
-    	int id = cursor.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
-    	String recipeId = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
-    	String name = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
-    	String primaryImageURL = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL);
-    	String ingredientsJSONString = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
-    	String instructionsJSONString = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
-    	long createdAt = cursor.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
-    	long updatedAt = cursor.getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT);
-    	
-    	Recipe r = new Recipe(id, recipeId, name, createdAt, updatedAt);
-    	if (!primaryImageURL.isEmpty())
-    		r.addImage(primaryImageURL);
-    	
-    	JSONArray ingredientsJSONArray = null;
-    	JSONArray instructionsJSONArray = null;
-    	try
-    	{
-    		ingredientsJSONArray = new JSONArray(ingredientsJSONString);
-    		if (ingredientsJSONArray != null)
-        	{
-        		for (int i = 0; i < ingredientsJSONArray.length(); i++)
-            	{
-            		r.addIngredient(ingredientsJSONArray.getString(i));
-            	}
-        	}
-    		
-    		instructionsJSONArray = new JSONArray(instructionsJSONString);
-    		if (instructionsJSONArray != null)
-        	{
-        		for (int i = 0; i < instructionsJSONArray.length(); i++)
-            	{
-            		r.addInstruction(instructionsJSONArray.getString(i));
-            	}
-        	}
-    	}
-    	catch (JSONException e)
-    	{
-    		Log.e(TAG, "Error parsing JSON: " + e.toString());
-    	}
-    	
-    	return r;
-    }
-    
-    public static class RecipeAdapter extends ArrayAdapter<Recipe>
-    {
-    	public RecipeAdapter(Context context, int resource, List<Recipe> recipes)
-    	{
-    		super(context, resource, recipes);
-    	}
-    	
-    	@Override
-    	  public View getView(int position, View convertView, ViewGroup parent) {
-    		Recipe recipe = getItem(position);
-    		
-    	    LayoutInflater inflater = (LayoutInflater) getContext()
-    	        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    	    View rowView = inflater.inflate(R.layout.recipe_list_item, parent, false);
-    	    
-    	    TextView userNameView = (TextView) rowView.findViewById(R.id.recipe_list_item_user_name);
-    	    TextView createdAtView = (TextView) rowView.findViewById(R.id.recipe_list_item_created_at);
-    	    ImageView imageView = (ImageView) rowView.findViewById(R.id.recipe_list_item_image);
-    	    TextView nameView = (TextView) rowView.findViewById(R.id.recipe_list_item_name);
-    	    TextView numNomsView = (TextView) rowView.findViewById(R.id.recipe_list_item_noms);
-    	    TextView numCommentsView = (TextView) rowView.findViewById(R.id.recipe_list_item_comments);
-    	    
-    	    String primaryImageURL = recipe.getImage(0);
-    	    
-    	    userNameView.setText(recipe.getUserName());
-    	    createdAtView.setText(recipe.getCreatedAtTime().format("%b %d"));
-    	    if (primaryImageURL != null)
-    	    {
-    	    	ImageHelper.loadBitmap(primaryImageURL, imageView);
-    	    }
-    	    
-    	    nameView.setText(recipe.getName());
-    	    numNomsView.setText(recipe.getNumLikes() + " noms");
-    	    numCommentsView.setText(recipe.getNumComments() + " comments");
 
-    	    return rowView;
-    	  }
+    public static Recipe getRecipe(Uri recipeUrl, Context context) {
+
+        Cursor cursor = context.getContentResolver().query(recipeUrl,
+                RecipeContract.Recipe.PROJECTION_ALL_FIELDS, null, null, null);
+
+        cursor.moveToFirst();
+
+        return createRecipeFromCursor(cursor);
+    }
+
+    public static Recipe createRecipeFromCursor(Cursor cursor) {
+        if (cursor == null) {
+            return null;
+        }
+        int id = cursor.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
+        String recipeId = cursor
+                .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
+        String name = cursor.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_NAME);
+        String primaryImageURL = cursor
+                .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL);
+        String ingredientsJSONString = cursor
+                .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
+        String instructionsJSONString = cursor
+                .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
+        long createdAt = cursor
+                .getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
+        long updatedAt = cursor
+                .getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT);
+
+        Recipe r = new Recipe(id, recipeId, name, createdAt, updatedAt);
+        if (primaryImageURL != null && !primaryImageURL.isEmpty()) {
+            r.addImage(primaryImageURL);
+        }
+
+        JSONArray ingredientsJSONArray = null;
+        JSONArray instructionsJSONArray = null;
+        try {
+            if (ingredientsJSONString != null) {
+                ingredientsJSONArray = new JSONArray(ingredientsJSONString);
+                if (ingredientsJSONArray != null) {
+                    for (int i = 0; i < ingredientsJSONArray.length(); i++) {
+                        r.addIngredient(ingredientsJSONArray.getString(i));
+                    }
+                }
+            }
+            if (instructionsJSONString != null) {
+                instructionsJSONArray = new JSONArray(instructionsJSONString);
+                if (instructionsJSONArray != null) {
+                    for (int i = 0; i < instructionsJSONArray.length(); i++) {
+                        r.addInstruction(instructionsJSONArray.getString(i));
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON: " + e.toString());
+        }
+
+        return r;
+    }
+
+    public static class RecipeAdapter extends ArrayAdapter<Recipe> {
+        public RecipeAdapter(Context context, int resource, List<Recipe> recipes) {
+            super(context, resource, recipes);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Recipe recipe = getItem(position);
+
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE);
+            View rowView = inflater.inflate(R.layout.recipe_list_item, parent, false);
+
+            TextView userNameView = (TextView) rowView
+                    .findViewById(R.id.recipe_list_item_user_name);
+            TextView createdAtView = (TextView) rowView
+                    .findViewById(R.id.recipe_list_item_created_at);
+            ImageView imageView = (ImageView) rowView.findViewById(R.id.recipe_list_item_image);
+            TextView nameView = (TextView) rowView.findViewById(R.id.recipe_list_item_name);
+            TextView numNomsView = (TextView) rowView.findViewById(R.id.recipe_list_item_noms);
+            TextView numCommentsView = (TextView) rowView
+                    .findViewById(R.id.recipe_list_item_comments);
+
+            String primaryImageURL = recipe.getImage(0);
+
+            userNameView.setText(recipe.getUserName());
+            createdAtView.setText(recipe.getCreatedAtTime().format("%b %d"));
+            if (primaryImageURL != null) {
+                ImageHelper.loadBitmap(primaryImageURL, imageView);
+            }
+
+            nameView.setText(recipe.getName());
+            numNomsView.setText(recipe.getNumLikes() + " noms");
+            numCommentsView.setText(recipe.getNumComments() + " comments");
+
+            return rowView;
+        }
     }
 }
