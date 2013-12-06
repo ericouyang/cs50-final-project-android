@@ -1,26 +1,20 @@
 package net.cs50.recipes;
 
-import net.cs50.recipes.provider.RecipeContract;
 import net.cs50.recipes.types.Recipe;
 import net.cs50.recipes.util.ImageHelper;
 import net.cs50.recipes.util.RecipeHelper;
+import android.app.ActionBar;
 import android.app.Activity;
-import android.database.Cursor;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.app.AlertDialog;
 
-public class ViewRecipeActivity extends Activity {
+public class ViewRecipeActivity extends BaseActivity {
 	
 	final Context context = this;
     //private Cursor mCursor;
@@ -34,6 +28,9 @@ public class ViewRecipeActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_recipe);
+        
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         
         /*
         commentButton = (Button) findViewById(R.id.buttonAlert);
