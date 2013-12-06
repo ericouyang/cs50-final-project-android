@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.json.JSONArray;
 
+import android.text.format.Time;
+
 public class Recipe {
 	private int mId;
 	private final String mRecipeId;
@@ -52,10 +54,20 @@ public class Recipe {
 		return mName;
 	}
 
+	public String getUserName() {
+		return "Fred W";
+	}
+
 	public long getCreatedAt() {
 		return mCreatedAt;
 	}
 
+	public Time getCreatedAtTime() {
+		Time createdAt = new Time();
+		createdAt.set(mCreatedAt);
+        
+        return createdAt;
+	}
 	public long getUpdatedAt() {
 		return mUpdatedAt;
 	}
@@ -71,7 +83,7 @@ public class Recipe {
 		{
 			return mImageURLs.get(i);
 		}
-		return "";
+		return null;
 	}
 	
 	public boolean addIngredient(String ingredient)
@@ -118,6 +130,21 @@ public class Recipe {
 		if (mComments.add(comment))
 			return comment;
 		return null;
+	}
+	
+	public int getNumLikes()
+	{
+		return mLikes;
+	}
+	
+	public List<Comment> getComments()
+	{
+		return mComments;
+	}
+	
+	public int getNumComments()
+	{
+		return mComments.size();
 	}
 	
 	public boolean toggleLike()

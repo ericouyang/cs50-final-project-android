@@ -22,6 +22,8 @@
    	    <item name="android:layout_width">match_parent</item>
    	    <item name="android:layout_height">match_parent</item>
    	    <item name="android:orientation">vertical</item>
+   	    <item name="android:paddingTop">20dp</item>
+   	    <item name="android:paddingBottom">20dp</item>
    	</style>
    	
    	<style name="RecipeListItem" parent="ListItem">
@@ -29,24 +31,48 @@
    	</style>
    	
    	<style name="ListItemElement">
-   	    <item name="android:layout_width">match_parent</item>
+   	    <item name="android:layout_width">wrap_content</item>
    	    <item name="android:layout_height">wrap_content</item>
-   	    <item name="android:padding">20dp</item>
+   	</style>
+   	
+   	<style name="RecipeListItem.UserName" parent="ListItemElement">
+   	    <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:textSize">14sp</item>
+   	     <item name="android:layout_alignParentLeft">true</item>
+   	</style>
+   	
+   	<style name="RecipeListItem.CreatedAt" parent="ListItemElement">
+   	    <item name="android:paddingRight">20dp</item>
+   	    <item name="android:textSize">14sp</item>
+   	    <item name="android:layout_alignParentRight">true</item>
    	</style>
    	
    	<style name="RecipeListItem.Image" parent="ListItemElement">
-   	    <item name="android:paddingTop">10dp</item>
-   	    <item name="android:paddingBottom">10dp</item>
+   	    <item name="android:paddingTop">20dp</item>
+   	    <item name="android:paddingBottom">20dp</item>
    	    <item name="android:layout_width">match_parent</item>
     	<item name="android:layout_height">wrap_content</item>
+    	<item name="android:layout_below">@id/recipe_list_item_created_at</item>
    	</style>
    	
    	<style name="RecipeListItem.Name" parent="ListItemElement">
    	     <item name="android:textSize">20sp</item>
+   	     <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:paddingBottom">10dp</item>
    	</style>
    	
-   	<style name="RecipeListItem.CreatedAt" parent="ListItemElement">
-   	    <item name="android:textSize">14sp</item>
+   	<style name="RecipeListItem.Noms" parent="ListItemElement">
+   	     <item name="android:textSize">14sp</item>
+   	     <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:layout_below">@id/recipe_list_item_name</item>
+   	     <item name="android:layout_alignParentLeft">true</item>
+   	</style>
+   	
+    <style name="RecipeListItem.Comments" parent="ListItemElement">
+   	     <item name="android:textSize">14sp</item>
+   	     <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:layout_below">@id/recipe_list_item_name</item>
+   	     <item name="android:layout_toRightOf">@id/recipe_list_item_noms</item>
    	</style>
    	
    	<style name="ViewRecipeItem" parent="ListItem"> 
@@ -58,8 +84,9 @@
    	    <item name="android:paddingBottom">10dp</item>
    	    <item name="android:layout_width">match_parent</item>
     	<item name="android:layout_height">wrap_content</item>
+    	<item name="android:layout_below">@id/recipe_list_item_created_at</item>
    	</style>
-   	
+
    	<style name="ViewRecipeItem.Name" parent="ListItemElement">
    	     <item name="android:textSize">20sp</item>
    	</style>
