@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.app.ListActivity;
 import android.view.View;
@@ -38,7 +39,7 @@ public class ViewRecipeActivity extends BaseActivity{
     private ListView mRecipeInstructions;
     private Recipe recipe;
     private ArrayAdapter<Comment> commentsAdapter;
-    
+    private ShareActionProvider mShareActionProvider;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,8 +93,25 @@ public class ViewRecipeActivity extends BaseActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_view_recipe, menu);
+     // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_share);
+
+     // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) item.getActionProvider();
+        mShareActionProvider.setShareIntent(getDefaultShareIntent());
         return super.onCreateOptionsMenu(menu);
     }
+    
+    private Intent getDefaultShareIntent() {
+    	Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND); 
+        sharingIntent.setType("text/plain");
+        String shareBody = recipe.getName();
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, recipe.getName());
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        
+        return sharingIntent;
+    }
+
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -143,7 +161,7 @@ public class ViewRecipeActivity extends BaseActivity{
     				// show it
     				alertDialog.show();
     				return true;
-    		
+        	
         default:
             return super.onOptionsItemSelected(item);
         }

@@ -20,7 +20,9 @@
         android:showAsAction="always" 
         android:orderInCategory="3" 
         android:title="@string/description_share" 
-        android:icon="@drawable/ic_action_share">
+        android:icon="@drawable/ic_action_share"
+        android:actionProviderClass=
+                "android.widget.ShareActionProvider" >
         
     </item>
     
