@@ -16,9 +16,13 @@
 
 package net.cs50.recipes;
 
+import java.util.List;
+
 import net.cs50.recipes.accounts.AccountService;
 import net.cs50.recipes.provider.RecipeContract;
-import net.cs50.recipes.util.ImageHelper;
+import net.cs50.recipes.types.Recipe;
+import net.cs50.recipes.util.RecipeHelper;
+import net.cs50.recipes.util.RecipeHelper.RecipeAdapter;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -34,16 +38,12 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 /**
  * List fragment containing a list of Atom entry objects (articles) stored in the local database.
@@ -65,15 +65,15 @@ import android.widget.TextView;
  * occurring.
  */
 public class RecipeListFragment extends ListFragment
-implements LoaderManager.LoaderCallbacks<Cursor> {
+//implements LoaderManager.LoaderCallbacks<Cursor> 
+{
 
     private static final String TAG = "RecipeListFragment";
 
-    /**
-     * Cursor adapter for controlling ListView results.
-     */
-    private SimpleCursorAdapter mAdapter;
+    private RecipeAdapter mAdapter;
 
+    private List<Recipe> mRecipes;
+    
     /**
      * Handle to a SyncObserver. The ProgressBar element is visible until the SyncObserver reports
      * that the sync is complete.
@@ -87,32 +87,6 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
      * Options menu used to populate ActionBar.
      */
     private Menu mOptionsMenu;
-
-    /**
-     * Projection for querying the content provider.
-     */
-    private static final String[] PROJECTION = RecipeContract.Recipe.PROJECTION_ALL_FIELDS;
-
-    /**
-     * List of Cursor columns to read from when preparing an adapter to populate the ListView.
-     */
-    private static final String[] FROM_COLUMNS = new String[]{
-    	RecipeContract.Recipe.COLUMN_NAME_USER_ID,
-        RecipeContract.Recipe.COLUMN_NAME_CREATED_AT,
-        RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL,
-        RecipeContract.Recipe.COLUMN_NAME_NAME
-    };
-
-    /**
-     * List of Views which will be populated by Cursor data.
-     */
-    private static final int[] TO_FIELDS = new int[]{
-    	R.id.recipe_list_item_user_name,
-        R.id.recipe_list_item_created_at,
-        R.id.recipe_list_item_image,
-        R.id.recipe_list_item_name
-
-    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -134,6 +108,9 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mRecipes = RecipeHelper.query(RecipeHelper.Category.LATEST, getActivity());
+        
         setHasOptionsMenu(true);
         setRetainInstance(true);
     }
@@ -165,44 +142,11 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
 
         Log.i(TAG, "view created");
 
-        mAdapter = new SimpleCursorAdapter(
-                getActivity(),       // Current context
-                R.layout.recipe_list_item,  // Layout for individual rows
-                null,                // Cursor
-                FROM_COLUMNS,        // Cursor columns to use
-                TO_FIELDS,           // Layout fields to use
-                0                    // No flags
-                );
-        mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int i) {
-            	if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_USER_ID) {
-                    ((TextView) view).setText("Fred W");
-                    return true;
-                }
-                if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT) {
-                    // Convert timestamp to human-readable date
-                    Time t = new Time();
-                    t.set(cursor.getLong(i));
-                    ((TextView) view).setText(t.format("%b %d"));
-                    return true;
-                }
-                else if (i == RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL) {
-                    String url = cursor.getString(i);
-                    if (url != null && !url.isEmpty())
-                    {
-                        ImageHelper.loadBitmap(url, (ImageView) view);
-                    }
-                    return true;
-                } else {
-                    // Let SimpleCursorAdapter handle other fields automatically
-                    return false;
-                }
-            }
-        });
+        mAdapter = new RecipeHelper.RecipeAdapter(getActivity(), R.layout.recipe_list_item, mRecipes);
         setListAdapter(mAdapter);
         setEmptyText(getText(R.string.loading));
-        getLoaderManager().initLoader(0, null, this);
+
+        // getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -233,6 +177,7 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
      * content provider, the ContentObserver responds by resetting the loader and then reloading
      * it.
      */
+    /*
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 
@@ -246,27 +191,31 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
                 null,                           // Selection args
                 RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc"); // Sort
     }
-
+	*/
+    
     /**
      * Move the Cursor returned by the query into the ListView adapter. This refreshes the existing
      * UI with the data in the Cursor.
      */
+    /*
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         mAdapter.changeCursor(cursor);
     }
-
+	*/
     /**
      * Called when the ContentObserver defined for the content provider detects that data has
      * changed. The ContentObserver resets the loader, and then re-runs the loader. In the adapter,
      * set the Cursor value to null. This removes the reference to the Cursor, allowing it to be
      * garbage-collected.
      */
+    /*
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mAdapter.changeCursor(null);
     }
-
+    */
+    
     /**
      * Create the ActionBar.
      */
@@ -303,10 +252,10 @@ implements LoaderManager.LoaderCallbacks<Cursor> {
         // be a browser.
 
         // Get the item at the selected position, in the form of a Cursor.
-        Cursor c = (Cursor) mAdapter.getItem(position);
+        Recipe recipe = mAdapter.getItem(position);
         Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
                 .appendPath(RecipeContract.Recipe.TABLE_NAME)
-                .appendPath(c.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID))
+                .appendPath(Integer.toString(recipe.getId()))
                 .build();
 
         Intent i = new Intent(getActivity(), ViewRecipeActivity.class);
