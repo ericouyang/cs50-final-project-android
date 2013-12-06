@@ -71,6 +71,7 @@
         <activity
             android:name=".accounts.AuthenticatorActivity"
             android:label="@string/title_activity_login"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
     </application>

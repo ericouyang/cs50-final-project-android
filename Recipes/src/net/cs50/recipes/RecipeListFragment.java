@@ -235,6 +235,7 @@ public class RecipeListFragment extends ListFragment
         // If the user clicks the "Refresh" button.
         case R.id.menu_refresh:
             SyncUtils.TriggerRefresh();
+            mAdapter.notifyDataSetChanged();
             return true;
         }
         return super.onOptionsItemSelected(item);

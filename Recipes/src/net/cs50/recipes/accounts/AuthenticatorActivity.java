@@ -50,7 +50,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
-
+			
 			setContentView(R.layout.activity_login);
 			
 			mAccountManager = AccountManager.get(getBaseContext());
@@ -93,13 +93,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
 							attemptLogin();
 						}
 					});
-		}
-		
-		@Override
-		public boolean onCreateOptionsMenu(Menu menu) {
-			super.onCreateOptionsMenu(menu);
-			getMenuInflater().inflate(R.menu.login, menu);
-			return true;
 		}
 		
 		/**
