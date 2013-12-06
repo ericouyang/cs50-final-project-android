@@ -91,24 +91,39 @@
    	     <item name="android:textSize">20sp</item>
    	</style>
    	
-   	<style name="ViewRecipeItem.Instructions" parent="ListItemElement">
+   	<style name="ViewRecipeItem.UserName" parent="ListItemElement">
    	     <item name="android:textSize">20sp</item>
+   	     <item name="android:layout_toRightOf">@id/view_recipe_name</item>
+   	</style>
+   	
+   	<style name="ViewRecipeItem.Instructions" parent="ListItemElement">
+   	     <item name="android:textSize">14sp</item>
+   	     <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:layout_below">@id/view_recipe_noms</item>
    	</style>
    	
    	<style name="ViewRecipeItem.Ingredients" parent="ListItemElement">
    	     <item name="android:textSize">20sp</item>
+   	     <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:layout_below">@id/view_recipe_ingredients</item>
    	</style>
    	
    	<style name="ViewRecipeItem.CreatedAt" parent="ListItemElement">
    	    <item name="android:textSize">14sp</item>
+   	    <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:layout_below">@id/view_recipe_image</item>
    	</style>
    	
    	<style name="ViewRecipeItem.Noms" parent="ListItemElement">
    	    <item name="android:textSize">14sp</item>
+   	    <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:layout_below">@id/view_recipe_created_at</item>
    	</style>
    	
    	<style name="ViewRecipeItem.Comments" parent="ListItemElement">
    	    <item name="android:textSize">14sp</item>
+   	     <item name="android:paddingLeft">20dp</item>
+   	     <item name="android:layout_below">@id/view_recipe_instructions</item>
    	</style>
    	
    	<style name="User.Name" parent="ListItemElement">

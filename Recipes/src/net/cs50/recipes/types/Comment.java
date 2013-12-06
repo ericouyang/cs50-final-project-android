@@ -64,4 +64,9 @@ public class Comment {
 	public long getCreatedAt() {
 		return mCreatedAt;
 	}
+	
+	public String toString() {
+		return mContent;
+	}
+	
 }

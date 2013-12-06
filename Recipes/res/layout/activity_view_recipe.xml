@@ -19,8 +19,9 @@
 
     <TextView
         android:id="@+id/view_recipe_user_name"
+        style="@style/ViewRecipeItem.UserName"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"  />
 
     <TextView
         android:id="@+id/view_recipe_created_at"
@@ -34,19 +35,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     
-    <TextView
+    <ListView
         android:id="@+id/view_recipe_comments"
         style="@style/ViewRecipeItem.Comments"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     
-    <TextView
+    <ListView
         android:id="@+id/view_recipe_ingredients"
         style="@style/ViewRecipeItem.Ingredients"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     
-    <TextView
+    <ListView
         android:id="@+id/view_recipe_instructions"
         style="@style/ViewRecipeItem.Instructions"
         android:layout_width="match_parent"
