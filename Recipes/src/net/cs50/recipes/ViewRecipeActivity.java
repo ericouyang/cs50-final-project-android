@@ -1,24 +1,31 @@
 package net.cs50.recipes;
 
+import java.util.List;
+
+import net.cs50.recipes.types.Comment;
 import net.cs50.recipes.types.Recipe;
 import net.cs50.recipes.util.ImageHelper;
 import net.cs50.recipes.util.RecipeHelper;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.app.ListActivity;
+import android.view.View;
 
-public class ViewRecipeActivity extends BaseActivity {
+public class ViewRecipeActivity extends BaseActivity{
 	
 	final Context context = this;
     private TextView mRecipeNameView;
@@ -30,8 +37,7 @@ public class ViewRecipeActivity extends BaseActivity {
     private ListView mRecipeIngredients;
     private ListView mRecipeInstructions;
     private Recipe recipe;
-    private Button commentButton;
-    
+    private ArrayAdapter<Comment> commentsAdapter;
     
     
     @Override
@@ -42,50 +48,6 @@ public class ViewRecipeActivity extends BaseActivity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         
-        /*
-        commentButton = (Button) findViewById(R.id.buttonAlert);
-        
-		// add button listener
-		commentButton.setOnClickListener(new OnClickListener() {
- 
-		@Override
-		public void onClick(View arg0) {
- 
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-				context);
- 
-			// set title
-			alertDialogBuilder.setTitle("Your Title");
- 
-			// set dialog message
-			alertDialogBuilder
-				.setMessage("Click yes to exit!")
-				.setCancelable(false)
-				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-						// if this button is clicked, close
-						// current activity
-						ViewRecipeActivity.this.finish();
-					}
-				  })
-				.setNegativeButton("No",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-						// if this button is clicked, just close
-						// the dialog box and do nothing
-						dialog.cancel();
-					}
-				});
- 
-				// create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
- 
-				// show it
-				alertDialog.show();
-			}
-
-		
-		});
-        */
 
         Uri resUri = getIntent().getData();
         
@@ -101,20 +63,29 @@ public class ViewRecipeActivity extends BaseActivity {
         recipe = RecipeHelper.getRecipe(resUri, this);
         
         mRecipeNameView.setText(recipe.getName());
-        mRecipeUserName.setText("Fred!"); /*
+        mRecipeUserName.setText("Fred!"); 
         mRecipeNoms.setText(recipe.getName());
-        mRecipeComments.setText(recipe.getComments());
         
-        long createdAt = recipe.getCreatedAt();
-        mRecipeCreatedAt.setText(String.valueOf(createdAt));
+        List<Comment> comments = recipe.getComments();
+        
+        commentsAdapter = new ArrayAdapter<Comment>(this, android.R.layout.simple_list_item_1, comments);
+        mRecipeComments.setAdapter(commentsAdapter);
+        
+        
+    
+        mRecipeCreatedAt.setText(recipe.getCreatedAtTime().format("%b %d"));
         
         List<String> ingredients = recipe.getIngredients();
-        mRecipeIngredients.setText(recipe.getIngredients());
+        ArrayAdapter<String> ingredientsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, ingredients);
+        mRecipeIngredients.setAdapter(ingredientsAdapter);
         
         List<String> instructions = recipe.getInstructions();
-        mRecipeInstructions.setText(recipe.getInstructions()); */
+        ArrayAdapter<String> instructionsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, instructions);
+        mRecipeInstructions.setAdapter(instructionsAdapter);
         
-        ImageHelper.loadBitmap(recipe.getImage(0), mRecipeImageView);
+        String primaryImageURL = recipe.getImage(0);
+	    if (primaryImageURL != null)
+	    	ImageHelper.loadBitmap(primaryImageURL, mRecipeImageView);
     }
 
     @Override
@@ -140,6 +111,7 @@ public class ViewRecipeActivity extends BaseActivity {
     			// Use an EditText view to get user input.
     	         final EditText input = new EditText(this);
     	         input.setId(0);
+    	         final String inputString = input.getText().toString();
     	         alertDialogBuilder.setView(input);
     	         
     	         
@@ -151,7 +123,9 @@ public class ViewRecipeActivity extends BaseActivity {
     					public void onClick(DialogInterface dialog,int id) {
     						// if this button is clicked, close
     						// current activity
-    						recipe.addComment("test comment");
+    						
+    						recipe.addComment(inputString);
+    						commentsAdapter.notifyDataSetChanged();
     						ViewRecipeActivity.this.finish();
     					}
     				  })
