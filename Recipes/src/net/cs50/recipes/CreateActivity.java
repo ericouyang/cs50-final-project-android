@@ -3,17 +3,20 @@ package net.cs50.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +25,9 @@ import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-public final class CreateActivity extends FragmentActivity {
+public final class CreateActivity extends BaseActivity {
+
+    private static final int POPUP_HEIGHT = 122;
 
     private static final int GROUP_INGREDIENTS = 0;
     private static final int GROUP_INSTRUCTIONS = 1;
@@ -33,24 +38,54 @@ public final class CreateActivity extends FragmentActivity {
     private final OnClickListener onAdd = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            onAdd(v);
+            int group = (Integer) v.getTag(R.id.TAG_GROUP);
+
+            PopupEditor popup = new PopupEditor(group);
+            popup.show(v);
         }
     };
     private final OnClickListener onEdit = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            onEdit(v);
+            int group = (Integer) v.getTag(R.id.TAG_GROUP);
+            int index = (Integer) v.getTag(R.id.TAG_INDEX);
+
+            PopupEditor popup = new PopupEditor(group, index);
+            popup.show(v);
         }
     };
     private final OnClickListener onDelete = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            onDelete(v);
+            int group = (Integer) v.getTag(R.id.TAG_GROUP);
+            int index = (Integer) v.getTag(R.id.TAG_INDEX);
+
+            switch (group) {
+            case GROUP_INGREDIENTS:
+                ingredients.remove(index);
+                break;
+            case GROUP_INSTRUCTIONS:
+                instructions.remove(index);
+                break;
+            default:
+                throw new IllegalArgumentException();
+            }
+
+            listAdapter.notifyDataSetChanged();
+        }
+    };
+    private final OnFocusChangeListener onUnfocusHideKeyboard = new OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (!hasFocus) {
+                hideKeyboard(v);
+            }
         }
     };
 
     LayoutInflater inflater;
 
+    EditText titleText;
     ExpandableListView detailsListView;
     ExpandableListAdapter listAdapter;
 
@@ -72,46 +107,24 @@ public final class CreateActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         setContentView(R.layout.activity_create);
+
+        titleText = (EditText) findViewById(R.id.text_create_title);
+        titleText.setOnFocusChangeListener(onUnfocusHideKeyboard);
 
         detailsListView = (ExpandableListView) findViewById(R.id.list_create_details);
         listAdapter = new ExpandableListAdapter();
         detailsListView.setAdapter(listAdapter);
     }
 
-    private void onAdd(View v) {
-        int group = (Integer) v.getTag(R.id.TAG_GROUP);
-
-        PopupEditor popup = new PopupEditor(group);
-        popup.showAsDropDown(v);
-    }
-
-    private void onEdit(View v) {
-        int group = (Integer) v.getTag(R.id.TAG_GROUP);
-        int index = (Integer) v.getTag(R.id.TAG_INDEX);
-
-        PopupEditor popup = new PopupEditor(group, index);
-        popup.showAsDropDown(v);
-    }
-
-    private void onDelete(View v) {
-        int group = (Integer) v.getTag(R.id.TAG_GROUP);
-        int index = (Integer) v.getTag(R.id.TAG_INDEX);
-
-        switch (group) {
-        case GROUP_INGREDIENTS:
-            ingredients.remove(index);
-            break;
-        case GROUP_INSTRUCTIONS:
-            instructions.remove(index);
-            break;
-        default:
-            throw new IllegalArgumentException();
-        }
-
-        listAdapter.notifyDataSetChanged();
+    public void hideKeyboard(View v) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     private class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -241,9 +254,11 @@ public final class CreateActivity extends FragmentActivity {
             setFocusable(true);
             setTouchable(true);
             setOutsideTouchable(true);
+            setHeight(LayoutParams.WRAP_CONTENT);
             setBackgroundDrawable(new BitmapDrawable((Resources) null, (Bitmap) null));
 
             text = (EditText) view.findViewById(R.id.text_popup);
+            text.setOnFocusChangeListener(onUnfocusHideKeyboard);
 
             Button doneButton = (Button) view.findViewById(R.id.btn_popup_done);
             doneButton.setText(buttonAction);
@@ -312,6 +327,13 @@ public final class CreateActivity extends FragmentActivity {
 
             listAdapter.notifyDataSetChanged();
             dismiss();
+        }
+
+        public void show(View v) {
+            Resources r = getResources();
+            int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, POPUP_HEIGHT,
+                    r.getDisplayMetrics());
+            showAsDropDown(v, 0, -(px + v.getHeight()));
         }
     }
 
