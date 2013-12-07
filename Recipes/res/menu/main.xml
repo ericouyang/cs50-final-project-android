@@ -7,12 +7,6 @@
         android:showAsAction="always"
         android:title="@string/description_refresh"/>
     <item
-        android:id="@+id/menu_search"
-        android:icon="@drawable/ic_action_search"
-        android:orderInCategory="2"
-        android:showAsAction="always"
-        android:title="@string/description_search"/>
-    <item
         android:id="@+id/menu_add"
         android:icon="@drawable/ic_action_new"
         android:orderInCategory="3"

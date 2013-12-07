@@ -65,7 +65,7 @@ import android.widget.ListView;
  * occurring.
  */
 public class RecipeListFragment extends ListFragment
-//implements LoaderManager.LoaderCallbacks<Cursor> 
+implements LoaderManager.LoaderCallbacks<List<Recipe>> 
 {
 
     private static final String TAG = "RecipeListFragment";
@@ -83,10 +83,6 @@ public class RecipeListFragment extends ListFragment
      */
     private Object mSyncObserverHandle;
 
-    /**
-     * Options menu used to populate ActionBar.
-     */
-    private Menu mOptionsMenu;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -138,18 +134,19 @@ public class RecipeListFragment extends ListFragment
         setListAdapter(mAdapter);
         setEmptyText(getText(R.string.loading));
 
-        // getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mSyncStatusObserver.onStatusChanged(0);
-
+        
+        mObserver.onStatusChanged(0);
         // Watch for sync state changes
         final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
-        mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
+        mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mObserver);
+        
     }
 
     @Override
@@ -169,69 +166,49 @@ public class RecipeListFragment extends ListFragment
      * content provider, the ContentObserver responds by resetting the loader and then reloading
      * it.
      */
-    /*
+    
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+    public Loader<List<Recipe>> onCreateLoader(int i, Bundle bundle) {
 
         Log.i(TAG, "loader created");
         // We only have one loader, so we can ignore the value of i.
         // (It'll be '0', as set in onCreate().)
+        
+        return new RecipeHelper.RecipeLoader(getActivity(), RecipeHelper.Category.LATEST);
+        /*
         return new CursorLoader(getActivity(),  // Context
                 RecipeContract.Recipe.CONTENT_URI, // URI
                 PROJECTION,                // Projection
                 null,                           // Selection
                 null,                           // Selection args
                 RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc"); // Sort
+        */
     }
-	*/
+	
     
     /**
      * Move the Cursor returned by the query into the ListView adapter. This refreshes the existing
      * UI with the data in the Cursor.
      */
-    /*
+    
     @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        mAdapter.changeCursor(cursor);
+    public void onLoadFinished(Loader<List<Recipe>> recipeLoader, List<Recipe> recipes) {
+    	mAdapter.notifyDataSetChanged();
     }
-	*/
+	
     /**
      * Called when the ContentObserver defined for the content provider detects that data has
      * changed. The ContentObserver resets the loader, and then re-runs the loader. In the adapter,
      * set the Cursor value to null. This removes the reference to the Cursor, allowing it to be
      * garbage-collected.
      */
-    /*
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        mAdapter.changeCursor(null);
-    }
-    */
     
-    /**
-     * Create the ActionBar.
-     */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        mOptionsMenu = menu;
-        //inflater.inflate(R.menu.main, menu);
+    public void onLoaderReset(Loader<List<Recipe>> recipeLoader) {
+        mAdapter.notifyDataSetInvalidated();
     }
 
-    /**
-     * Respond to user gestures on the ActionBar.
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        // If the user clicks the "Refresh" button.
-        case R.id.menu_refresh:
-            SyncUtils.TriggerRefresh();
-            mAdapter.notifyDataSetChanged();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    
 
     /**
      * Load an article in the default browser when selected by the user.
@@ -274,36 +251,16 @@ public class RecipeListFragment extends ListFragment
     }
 
     /**
-     * Set the state of the Refresh button. If a sync is active, turn on the ProgressBar widget.
-     * Otherwise, turn it off.
-     *
-     * @param refreshing True if an active sync is occuring, false otherwise
-     */
-    public void setRefreshActionButtonState(boolean refreshing) {
-        if (mOptionsMenu == null) {
-            return;
-        }
-
-        final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
-        if (refreshItem != null) {
-            if (refreshing) {
-                refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
-            } else {
-                refreshItem.setActionView(null);
-            }
-        }
-    }
-
-    /**
      * Crfate a new anonymous SyncStatusObserver. It's attached to the app's ContentResolver in
      * onResume(), and removed in onPause(). If status changes, it sets the state of the Refresh
      * button. If a sync is active or pending, the Refresh button is replaced by an indeterminate
      * ProgressBar; otherwise, the button itself is displayed.
      */
-    private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
+    private SyncStatusObserver mObserver = new SyncStatusObserver() {
         /** Callback invoked with the sync adapter status changes. */
         @Override
         public void onStatusChanged(int which) {
+
             getActivity().runOnUiThread(new Runnable() {
                 /**
                  * The SyncAdapter runs on a background thread. To update the UI, onStatusChanged()
@@ -311,26 +268,18 @@ public class RecipeListFragment extends ListFragment
                  */
                 @Override
                 public void run() {
-                	/*
                     // Create a handle to the account that was created by
                     // SyncService.CreateSyncAccount(). This will be used to query the system to
                     // see how the sync status has changed.
-                    Account account = AccountService.GetAccount();
-                    if (account == null) {
+                    //Account account = AccountService.GetAccount();
+                    //if (account == null) {
                         // GetAccount() returned an invalid value. This shouldn't happen, but
                         // we'll set the status to "not refreshing".
-                        setRefreshActionButtonState(false);
-                        return;
-                    }
-					*/
+                    //    setRefreshActionButtonState(false);
+                    //    return;
+                    //}
                 	
-                    // Test the ContentResolver to see if the sync adapter is active or pending.
-                    // Set the state of the refresh button accordingly.
-                    boolean syncActive = ContentResolver.isSyncActive(
-                            ((BaseActivity)getActivity()).getCurrentAccount(), RecipeContract.CONTENT_AUTHORITY);
-                    boolean syncPending = ContentResolver.isSyncPending(
-                    		((BaseActivity)getActivity()).getCurrentAccount(), RecipeContract.CONTENT_AUTHORITY);
-                    setRefreshActionButtonState(syncActive || syncPending);
+                    
                 }
             });
         }

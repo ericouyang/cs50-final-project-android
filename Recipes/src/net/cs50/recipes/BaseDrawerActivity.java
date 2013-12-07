@@ -72,22 +72,6 @@ public abstract class BaseDrawerActivity extends BaseActivity {
             selectItem(0);
         }
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        if (item.getTitle().equals("Add")) {
-            Intent i = new Intent(this, CreateActivity.class);
-            startActivity(i);
-            return true;
-        }
-        return super.onMenuItemSelected(featureId, item);
-    }
 
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
