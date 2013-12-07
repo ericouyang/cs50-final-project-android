@@ -52,7 +52,7 @@ public class RecipeProvider extends ContentProvider {
     }
 
     /**
-     * Determine the mime type for entries returned by a given URI.
+     * Determine the mime type for recipes returned by a given URI.
      */
     @Override
     public String getType(Uri uri) {
@@ -69,9 +69,6 @@ public class RecipeProvider extends ContentProvider {
 
     /**
      * Perform a database query by URI.
-     *
-     * <p>Currently supports returning all entries (/entries) and individual entries by ID
-     * (/entries/{ID}).
      */
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
@@ -101,7 +98,7 @@ public class RecipeProvider extends ContentProvider {
     }
 
     /**
-     * Insert a new entry into the database.
+     * Insert a new recipe into the database.
      */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
@@ -127,7 +124,7 @@ public class RecipeProvider extends ContentProvider {
     }
 
     /**
-     * Delete an entry by database by URI.
+     * Delete an recipe by database by URI.
      */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -159,7 +156,7 @@ public class RecipeProvider extends ContentProvider {
     }
 
     /**
-     * Update an etry in the database by URI.
+     * Update an recipe in the database by URI.
      */
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
