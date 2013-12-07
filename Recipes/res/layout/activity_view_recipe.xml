@@ -1,56 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:orientation="vertical"
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
-    
+
     <TextView
         android:id="@+id/view_recipe_name"
         style="@style/ViewRecipeItem.Name"
-        android:layout_width="match_parent"
-        android:layout_height="38dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chicken Parmesan" />
 
     <ImageView
         android:id="@+id/view_recipe_image"
         style="@style/ViewRecipeItem.Image"
         android:layout_width="match_parent"
-        android:layout_height="297dp" />
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+    	android:paddingBottom="10dp" />
 
-    <TextView
-        android:id="@+id/view_recipe_user_name"
-        style="@style/ViewRecipeItem.UserName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"  />
-
-    <TextView
-        android:id="@+id/view_recipe_created_at"
-        style="@style/ViewRecipeItem.CreatedAt"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/view_recipe_user_name"
+            style="@style/ViewRecipeItem.UserName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Michael H" />
+
+        <TextView
+            android:id="@+id/view_recipe_created_at"
+            style="@style/ViewRecipeItem.CreatedAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Jan 1" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/view_recipe_noms"
         style="@style/ViewRecipeItem.Noms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="0 noms" />
+
+    <ExpandableListView
+        android:id="@+id/view_list_details"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    
-    <ListView
-        android:id="@+id/view_recipe_comments"
-        style="@style/ViewRecipeItem.Comments"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    
+        android:layout_height="wrap_content" >
+    </ExpandableListView>
+
+    <!--
     <ListView
         android:id="@+id/view_recipe_ingredients"
         style="@style/ViewRecipeItem.Ingredients"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     
     <ListView
         android:id="@+id/view_recipe_instructions"
         style="@style/ViewRecipeItem.Instructions"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    
-</RelativeLayout>
+
+    <ListView
+        android:id="@+id/view_recipe_comments"
+        style="@style/ViewRecipeItem.Comments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    -->
+
+</LinearLayout>

@@ -127,7 +127,7 @@ public final class CreateActivity extends BaseActivity {
         inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
-    private class ExpandableListAdapter extends BaseExpandableListAdapter {
+    public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         @Override
         public Object getChild(int groupPosition, int childPosition) {
