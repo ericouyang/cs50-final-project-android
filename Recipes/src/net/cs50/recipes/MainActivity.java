@@ -2,6 +2,8 @@ package net.cs50.recipes;
 
 import net.cs50.recipes.provider.RecipeContract;
 import android.accounts.Account;
+import android.app.ActionBar;
+import android.app.ActionBar.OnNavigationListener;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +11,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.SpinnerAdapter;
 
 
 public class MainActivity extends BaseDrawerActivity {
 	
 	private static String TAG = "MainActivity";
+	private OnNavigationListener mOnNavigationListener;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -22,10 +27,37 @@ public class MainActivity extends BaseDrawerActivity {
 
 	    Log.i(TAG, "Main activity created");
 	    
+	    mOnNavigationListener = new OnNavigationListener() {
+			  // Get the same strings provided for the drop-down's ArrayAdapter
+			  // String[] strings = getResources().getStringArray(R.array.home_filters_list);
+
+			  @Override
+			  public boolean onNavigationItemSelected(int position, long itemId) {
+				 /*
+			    // Create new fragment from our own Fragment class
+			    ListContentFragment newFragment = new ListContentFragment();
+			    FragmentTransaction ft = openFragmentTransaction();
+			    // Replace whatever is in the fragment container with this fragment
+			    //  and give the fragment a tag name equal to the string at the position selected
+			    ft.replace(R.id.fragment_container, newFragment, strings[position]);
+			    // Apply changes
+			    ft.commit();
+			    */
+			    return true;
+			  }
+			};
+			
+	    SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.home_filters_list,
+	            android.R.layout.simple_spinner_dropdown_item);
+	    
+	    getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+	    
+	    getActionBar().setListNavigationCallbacks(mSpinnerAdapter, mOnNavigationListener);
+	    
         RecipeListFragment fragment =
         		RecipeListFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame);
 	}
-    
+	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

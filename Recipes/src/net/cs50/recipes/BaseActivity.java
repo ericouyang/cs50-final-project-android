@@ -28,6 +28,11 @@ public abstract class BaseActivity extends FragmentActivity {
     	}
 	}
 	
+	public AccountManager getAccountManager()
+	{
+		return mAccountManager;
+	}
+	
 	public Account getCurrentAccount()
 	{
 		Account[] accounts = mAccountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);

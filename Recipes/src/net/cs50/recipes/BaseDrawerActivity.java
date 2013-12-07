@@ -1,5 +1,8 @@
 package net.cs50.recipes;
 
+import net.cs50.recipes.accounts.AuthenticatorActivity;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -118,6 +121,24 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     }
 
     private void selectItem(int position) {
+    	String item = mDrawerItems[position];
+    	
+    	if (item == "Logout")
+    	{
+    		getAccountManager().removeAccount(getCurrentAccount(), new AccountManagerCallback<Boolean>() {
+
+				@Override
+				public void run(AccountManagerFuture<Boolean> arg0) {
+					// TODO Auto-generated method stub
+					if(getCurrentAccount() == null)
+					{
+						Intent k = new Intent(getBaseContext(), AuthenticatorActivity.class);
+					    startActivity(k);
+					}
+				}
+    			
+    		}, null);
+    	}
         /*
         // update the main content by replacing fragments
         Fragment fragment = new PlanetFragment();
