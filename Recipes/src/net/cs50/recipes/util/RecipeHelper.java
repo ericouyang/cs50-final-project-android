@@ -145,7 +145,7 @@ public class RecipeHelper {
         String ingredientsJSONString = cursor
                 .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
         String instructionsJSONString = cursor
-                .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
+                .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INSTRUCTIONS);
         long createdAt = cursor
                 .getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
         long updatedAt = cursor

@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewRecipeActivity extends BaseActivity{
+	final String TAG = "ViewRecipeActivity";
 	
 	final Context context = this;
     private TextView mRecipeNameView;
@@ -118,6 +119,7 @@ public class ViewRecipeActivity extends BaseActivity{
         detailsListView = (ExpandableListView) findViewById(R.id.view_list_details);
         listAdapter = new ExpandableListAdapter();
         detailsListView.setAdapter(listAdapter);
+        //listAdapter.notifyDataSetChanged();
     }
 
     @Override
