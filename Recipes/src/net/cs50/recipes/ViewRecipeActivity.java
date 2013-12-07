@@ -153,19 +153,13 @@ public class ViewRecipeActivity extends BaseActivity{
         switch(item.getItemId()) {
         
         case R.id.menu_nom: 
-        	Context nomContext = getApplicationContext();
-        	CharSequence text;
+        	String text;
         	if (recipe.toggleLike() == true)
         		text = "You have nom'ed this recipe!";
         	else
         		text = "You have un-nom'ed this recipe.";
         	
-        	int duration = Toast.LENGTH_SHORT;
-        	
-        		Toast toast = Toast.makeText(nomContext, text, duration);
-        	toast.show();
-        	
-        	recipe.toggleLike();
+        	Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
         	
         	return true;
         	
@@ -196,19 +190,9 @@ public class ViewRecipeActivity extends BaseActivity{
     						Log.i(TAG, inputString);
     						listAdapter.notifyDataSetChanged();
     						
-    						Context commentContext = getApplicationContext();
-    			        	CharSequence text;
-    			        
-    			        	text = "You have commented on this recipe!";
-
+    			        	String text = "You have commented on this recipe!";
     			        	
-    			        	int duration = Toast.LENGTH_SHORT;
-    			        	
-    			        		Toast toast = Toast.makeText(commentContext, text, duration);
-    			        	toast.show();
-    			        	
-    						//commentsAdapter.notifyDataSetChanged();
-    						//ViewRecipeActivity.this.finish();
+    			        	Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     					}
     				  })
     				.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
@@ -275,7 +259,6 @@ public class ViewRecipeActivity extends BaseActivity{
                 commentItem.setText(comment.getContent());
                 break;
         	}
-
 
             return convertView;
         }
