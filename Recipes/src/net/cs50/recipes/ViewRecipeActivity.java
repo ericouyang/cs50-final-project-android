@@ -138,7 +138,7 @@ public class ViewRecipeActivity extends BaseActivity{
     private Intent getDefaultShareIntent() {
     	Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND); 
         sharingIntent.setType("text/plain");
-        String shareBody = recipe.getName();
+        String shareBody = "Check out the " + recipe.getName() + " recipe on the nom! app!";
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, recipe.getName());
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
         
@@ -254,9 +254,9 @@ public class ViewRecipeActivity extends BaseActivity{
                     convertView = inflater.inflate(R.layout.view_list_item, null);
                 }
                 final Comment comment = (Comment) getChild(groupPosition, childPosition);
-                Log.i("View Recipe", comment.getContent());
+                //Log.i("View Recipe", comment.getContent());
                 TextView commentItem = (TextView) convertView.findViewById(R.id.text_list_item);
-                commentItem.setText(comment.getContent());
+                commentItem.setText(comment.getContent() + " by " + comment.getUser().getFirstName() + " on " + comment.getCreatedAt());
                 break;
         	}
 

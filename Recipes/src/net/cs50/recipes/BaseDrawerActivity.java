@@ -107,6 +107,10 @@ public abstract class BaseDrawerActivity extends BaseActivity {
 
     private void selectItem(int position) {
     	String item = mDrawerItems[position];
+    	if (item.equals("About"))
+    	{
+    		
+    	}
     	
     	if (item.equals("Logout"))
     	{
