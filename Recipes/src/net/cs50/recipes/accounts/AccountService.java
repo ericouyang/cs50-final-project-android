@@ -16,7 +16,6 @@
 
 package net.cs50.recipes.accounts;
 
-import net.cs50.recipes.types.User;
 import net.cs50.recipes.util.HttpHelper;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;

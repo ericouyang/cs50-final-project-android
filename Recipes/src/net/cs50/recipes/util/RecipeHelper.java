@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.cs50.recipes.BaseActivity;
 import net.cs50.recipes.R;
 import net.cs50.recipes.provider.RecipeContract;
 import net.cs50.recipes.types.Recipe;
@@ -16,13 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SyncStatusObserver;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Handler;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -91,9 +86,15 @@ public class RecipeHelper {
     }
 
     public static List<Recipe> query(Category c, Context context) {
+    	String sortOrder = null;
+    	
         switch (c) {
         case TOP:
+        	sortOrder = RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc";
+        	break;
         case LATEST:
+        	sortOrder = RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc";
+        	break;
         case MY_RECIPES:
         }
 
@@ -101,8 +102,7 @@ public class RecipeHelper {
                 .appendPath(RecipeContract.Recipe.TABLE_NAME).build();
 
         Cursor cursor = context.getContentResolver().query(recipeUrl,
-                RecipeContract.Recipe.PROJECTION_ALL_FIELDS, null, null, null);// The sort order for
-        // the returned rows
+                RecipeContract.Recipe.PROJECTION_ALL_FIELDS, null, null, sortOrder);
 
         List<Recipe> recipes = new ArrayList<Recipe>();
 
@@ -187,6 +187,13 @@ public class RecipeHelper {
             super(context, resource, recipes);
         }
 
+        public void setData(List<Recipe> data) {
+            clear();
+            if (data != null) {
+                addAll(data);
+            }
+        }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Recipe recipe = getItem(position);
@@ -238,6 +245,11 @@ public class RecipeHelper {
     	    mCategory = category;
     	  }
     	 
+    	  public void setCategory(Category category)
+    	  {
+    		  mCategory = category;
+    		  onContentChanged();
+    	  }
     	  /****************************************************/
     	  /** (1) A task that performs the asynchronous load **/
     	  /****************************************************/
@@ -269,6 +281,7 @@ public class RecipeHelper {
     	    if (isStarted()) {
     	      // If the Loader is in a started state, deliver the results to the
     	      // client. The superclass method does this for us.
+    	    	
     	      super.deliverResult(data);
     	    }
     	 
@@ -289,6 +302,14 @@ public class RecipeHelper {
     	      deliverResult(mData);
     	    }
     	 
+    	    // Begin monitoring the underlying data source.
+    	    /*
+    	    if (mObserver == null) {
+    	      mObserver = new SampleObserver();
+    	      // TODO: register the observer
+    	    }
+    	    */
+    	    
     	    if (takeContentChanged() || mData == null) {
     	      // When the observer detects a change, it should call onContentChanged()
     	      // on the Loader, which will cause the next call to takeContentChanged()
@@ -319,8 +340,16 @@ public class RecipeHelper {
     	      releaseResources(mData);
     	      mData = null;
     	    }
+    	    
+    	    // The Loader is being reset, so we should stop monitoring for changes.
+    	    /*
+    	    if (mObserver != null) {
+    	      // TODO: unregister the observer
+    	      mObserver = null;
+    	    }
+    	    */
     	  }
-    	 
+    	  
     	  @Override
     	  public void onCanceled(List<Recipe> data) {
     	    // Attempt to cancel the current asynchronous load.

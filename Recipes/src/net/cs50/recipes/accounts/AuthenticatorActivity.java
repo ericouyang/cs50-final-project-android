@@ -1,7 +1,6 @@
 package net.cs50.recipes.accounts;
 
 import net.cs50.recipes.R;
-import net.cs50.recipes.types.User;
 import net.cs50.recipes.util.HttpHelper;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -15,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;

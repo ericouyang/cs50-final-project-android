@@ -16,6 +16,8 @@
 
 package net.cs50.recipes;
 
+import net.cs50.recipes.accounts.AccountService;
+import net.cs50.recipes.provider.RecipeContract;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -23,21 +25,39 @@ import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SyncStatusObserver;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import net.cs50.recipes.accounts.AccountService;
-import net.cs50.recipes.provider.RecipeContract;
 
 /**
  * Static helper methods for working with the sync framework.
  */
 public class SyncUtils {
+	private static final String TAG = "SyncUtils";
+	
     private static final long SYNC_FREQUENCY = 60 * 60;  // 1 hour (in seconds)
     private static final String CONTENT_AUTHORITY = RecipeContract.CONTENT_AUTHORITY;
-
+    
+    private static AccountManager mAccountManager;
+	
+    public static void attachAccountManager(AccountManager accountManager)
+    {
+    	mAccountManager = accountManager;
+    }
+    
+	public static AccountManager getAccountManager()
+	{
+		return mAccountManager;
+	}
+	
+    public static Account getCurrentAccount()
+	{
+		Account[] accounts = mAccountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);
+		Log.i(TAG, "num accounts " + accounts.length);
+		if (accounts.length > 0)
+			return accounts[0];
+		return null;
+	}
+    
     /**
      * Create an entry for this application in the system account list, if it isn't already there.
      *
