@@ -179,7 +179,6 @@ public class ViewRecipeActivity extends BaseActivity{
     			// Use an EditText view to get user input.
     	         final EditText input = new EditText(this);
     	         input.setId(0);
-    	         final String inputString = input.getText().toString();
     	         alertDialogBuilder.setView(input);
     	         
     	         
@@ -188,12 +187,26 @@ public class ViewRecipeActivity extends BaseActivity{
     				.setMessage("Comment on recipe:")
     				.setCancelable(false)
     				.setPositiveButton("Send",new DialogInterface.OnClickListener() {
-    					public void onClick(DialogInterface dialog,int id) {
+    					public void onClick(DialogInterface dialog, int id) {
     						// if this button is clicked, close
     						// current activity
+    						String inputString = input.getText().toString();
     						
     						recipe.addComment(inputString);
+    						Log.i(TAG, inputString);
     						listAdapter.notifyDataSetChanged();
+    						
+    						Context commentContext = getApplicationContext();
+    			        	CharSequence text;
+    			        
+    			        	text = "You have commented on this recipe!";
+
+    			        	
+    			        	int duration = Toast.LENGTH_SHORT;
+    			        	
+    			        		Toast toast = Toast.makeText(commentContext, text, duration);
+    			        	toast.show();
+    			        	
     						//commentsAdapter.notifyDataSetChanged();
     						//ViewRecipeActivity.this.finish();
     					}
