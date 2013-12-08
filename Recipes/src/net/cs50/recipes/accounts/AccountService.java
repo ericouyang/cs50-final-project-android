@@ -41,7 +41,7 @@ public class AccountService extends Service {
     }
 
     // authenticator class that interfaces with Android system for handling user accounts
-    // based off of 
+    // based off of Android Sync Adapter Examples
     public class Authenticator extends AbstractAccountAuthenticator {
 
         private Context mContext;

@@ -34,6 +34,8 @@ import android.util.Log;
  * Defines a sync adapter for Nom!
  * 
  * Used by SyncService to set up appropriate syncing environment
+ * 
+ * Based off of Android Example for Sync Adapters http://developer.android.com/training/sync-adapters/index.html
  */
 class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String TAG = "SyncAdapter";

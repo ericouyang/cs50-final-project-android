@@ -35,7 +35,9 @@ import android.widget.SpinnerAdapter;
  * List fragment for recipes
  * implemented as a fragment for flexibility reasons
  * 
- * selection of item brings user to the view article acitivity (via an intent)
+ * selection of item brings user to the view article activity (via an intent)
+ * 
+ * based off of Android Example for Sync Adapters with Fragments
  */
 public class RecipeListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<List<Recipe>> {

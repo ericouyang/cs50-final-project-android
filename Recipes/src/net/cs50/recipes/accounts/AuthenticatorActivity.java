@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 // activity to handle user authentication
+// based off of Android Template for Authenticators
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
 	// static strings to faciliate cross class communication
