@@ -80,9 +80,6 @@ public class ViewRecipeActivity extends BaseActivity{
         mRecipeUserName = (TextView) findViewById(R.id.view_recipe_user_name);
         mRecipeNoms = (TextView) findViewById(R.id.view_recipe_noms);
         mRecipeCreatedAt = (TextView) findViewById(R.id.view_recipe_created_at);
-        // mRecipeComments = (ListView) findViewById(R.id.view_recipe_comments);
-        //mRecipeIngredients = (ListView) findViewById(R.id.view_recipe_ingredients);
-        //mRecipeInstructions = (ListView) findViewById(R.id.view_recipe_instructions);
         
         recipe = RecipeHelper.getRecipe(resUri, this);
         
@@ -92,20 +89,11 @@ public class ViewRecipeActivity extends BaseActivity{
         
         comments = recipe.getComments();
         
-        //commentsAdapter = new ArrayAdapter<Comment>(this, android.R.layout.simple_list_item_1, comments);
-        //mRecipeComments.setAdapter(commentsAdapter);
-        
-        
-    
         mRecipeCreatedAt.setText(recipe.getCreatedAtTime().format("%b %d"));
         
         ingredients = recipe.getIngredients();
-        //ArrayAdapter<String> ingredientsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, ingredients);
-        //mRecipeIngredients.setAdapter(ingredientsAdapter);
         
         instructions = recipe.getInstructions();
-        //ArrayAdapter<String> instructionsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, instructions);
-        //mRecipeInstructions.setAdapter(instructionsAdapter);
         
         String primaryImageURL = recipe.getImage(0);
 	    if (primaryImageURL != null)
@@ -119,17 +107,14 @@ public class ViewRecipeActivity extends BaseActivity{
         detailsListView = (ExpandableListView) findViewById(R.id.view_list_details);
         listAdapter = new ExpandableListAdapter();
         detailsListView.setAdapter(listAdapter);
-        //listAdapter.notifyDataSetChanged();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_view_recipe, menu);
-     // Locate MenuItem with ShareActionProvider
         MenuItem item = menu.findItem(R.id.menu_share);
 
-     // Fetch and store ShareActionProvider
         mShareActionProvider = (ShareActionProvider) item.getActionProvider();
         mShareActionProvider.setShareIntent(getDefaultShareIntent());
         return super.onCreateOptionsMenu(menu);
@@ -149,7 +134,6 @@ public class ViewRecipeActivity extends BaseActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
        
-        // Handle action buttons
         switch(item.getItemId()) {
         
         case R.id.menu_nom: 
@@ -167,9 +151,6 @@ public class ViewRecipeActivity extends BaseActivity{
         	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
     				context);
      
-    			// set title
-    			//alertDialogBuilder.setTitle("Comment on Recipe");
-    			
     			// Use an EditText view to get user input.
     	         final EditText input = new EditText(this);
     	         input.setId(0);
@@ -254,7 +235,6 @@ public class ViewRecipeActivity extends BaseActivity{
                     convertView = inflater.inflate(R.layout.view_list_item, null);
                 }
                 final Comment comment = (Comment) getChild(groupPosition, childPosition);
-                //Log.i("View Recipe", comment.getContent());
                 TextView commentItem = (TextView) convertView.findViewById(R.id.text_list_item);
                 commentItem.setText(comment.getContent() + " by " + comment.getUser().getFirstName() + " on " + comment.getCreatedAt());
                 break;

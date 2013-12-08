@@ -3,12 +3,15 @@ package net.cs50.recipes;
 import net.cs50.recipes.accounts.AuthenticatorActivity;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -107,9 +110,11 @@ public abstract class BaseDrawerActivity extends BaseActivity {
 
     private void selectItem(int position) {
     	String item = mDrawerItems[position];
+    	Fragment fragment = null;
+    	
     	if (item.equals("About"))
     	{
-    		
+    		fragment = new AboutFragment();
     	}
     	
     	if (item.equals("Logout"))
@@ -127,6 +132,22 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     			
     		}, null);
     	}
+    	
+    	if (fragment != null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment).commit();
+ 
+            // update selected item and title, then close the drawer
+            mDrawerList.setItemChecked(position, true);
+            mDrawerList.setSelection(position);
+            setTitle(mDrawerItems[position]);
+            mDrawerLayout.closeDrawer(mDrawerList);
+        } 
+    	else {
+            // error in creating fragment
+            Log.e("MainActivity", "Error in creating fragment");
+        }
     	
     	mDrawerList.setItemChecked(position, true);
     	mDrawerLayout.closeDrawer(mDrawerList);
