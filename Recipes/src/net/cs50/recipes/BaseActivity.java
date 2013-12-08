@@ -6,6 +6,8 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 public abstract class BaseActivity extends FragmentActivity {
 
@@ -27,5 +29,10 @@ public abstract class BaseActivity extends FragmentActivity {
     public Account getCurrentAccount() {
         Account[] accounts = mAccountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);
         return accounts[0];
+    }
+
+    public void hideKeyboard(View v) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 }

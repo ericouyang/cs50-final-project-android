@@ -18,17 +18,26 @@
     <string name="description_add">Add</string>
     <string name="description_remove">Remove</string>
     <string name="description_edit">Edit</string>
+    <string name="create_group_ingredients">Ingredients</string>
+    <string name="create_group_instructions">Instructions</string>
+    <string name="dialog_create_title">How do you want to create your recipe?</string>
     <string name="recipe_title">Recipe Title</string>
     <string name="create">Create!</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
     <string-array name="drawer_items">
-        <item >Home</item>
-        <item >My Profile</item>
-        <item >My Recipes</item>
-        <item >Settings</item>
+        <item>Home</item>
+        <item>My Profile</item>
+        <item>My Recipes</item>
+        <item>Settings</item>
         <item>About</item>
         <item>Logout</item>
+    </string-array>
+
+    <string-array name="dialog_create_actions">
+        <item>Take photo</item>
+        <item>Choose an existing photo</item>
     </string-array>
 
     <item name="TAG_GROUP" type="id"/>
