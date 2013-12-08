@@ -240,7 +240,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, r.getIngredientsJSONString())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS, r.getInstructionsJSONString())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_COMMENTS, r.getCommentsJSONString())
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_LIKES, r.getNumLikes())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_LIKES, r.getNumLikes())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, r.getImage(0))
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, r.getUpdatedAt())

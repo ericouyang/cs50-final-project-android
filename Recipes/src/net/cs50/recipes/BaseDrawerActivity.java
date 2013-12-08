@@ -108,8 +108,13 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     private void selectItem(int position) {
         String item = mDrawerItems[position];
         if (item.equals("About")) {
+        	getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             AboutFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame);
         } else if (item.equals("Home")) {
+        	Bundle args = new Bundle();
+    	    args.putString(RecipeListFragment.KEY_CATEGORY, RecipeHelper.Category.LATEST.toString());
+    	    
+        	 RecipeListFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame, args);
             getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         } else if (item.equals("My Recipes")) {
             getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);

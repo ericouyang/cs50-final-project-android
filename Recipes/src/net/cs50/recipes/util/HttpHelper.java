@@ -13,6 +13,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.cs50.recipes.BaseActivity;
+import net.cs50.recipes.SyncUtils;
 import net.cs50.recipes.provider.RecipeContract;
 import net.cs50.recipes.types.Recipe;
 
@@ -178,7 +180,7 @@ public class HttpHelper {
                 if (params == null) {
                     params = new ArrayList<NameValuePair>(1);
                 }
-                params.add(new BasicNameValuePair("access_token", getAuthToken()));
+                params.add(new BasicNameValuePair("access_token", BaseActivity.getAccessToken()));
             }
 
             Log.i(TAG, "Params: " + params.toString());
@@ -224,13 +226,6 @@ public class HttpHelper {
             out.write(buffer, 0, read);
         }
         return new String(out.toByteArray());
-    }
-
-    private static String getAuthToken() {
-        return "577af53fc6c3b4ee55ba597b3830998b77e6dda2";
-        /*
-         * if (mAuthToken != null) { return mAuthToken; } return SyncUtils.getCurrentAuthToken();
-         */
     }
 
     public static boolean uploadRecipe(ContentResolver cr, Bitmap bitmap, String name,
@@ -279,7 +274,7 @@ public class HttpHelper {
 
             HttpURLConnection httpUrlConnection = null;
             URL url = new URL(BASE_URL + RECIPE_URI + "/" + id + "/uploadImages?access_token="
-                    + getAuthToken());
+                    + BaseActivity.getAccessToken());
             httpUrlConnection = (HttpURLConnection) url.openConnection();
             httpUrlConnection.setUseCaches(false);
             httpUrlConnection.setDoOutput(true);

@@ -52,7 +52,6 @@ public class RecipeHelper {
         String recipeId = recipe.getString("id");
         String name = recipe.getString("name");
         int likes = recipe.getInt("votes");
-        Log.i(TAG, "num likes " + likes);
         long createdAt = recipe.getLong("createdAt");
         long updatedAt = recipe.getLong("updatedAt");
 
@@ -67,7 +66,9 @@ public class RecipeHelper {
         }
 
         JSONArray comments = recipe.optJSONArray("comments");
+       
         if (comments != null) {
+        	Log.i(TAG, comments.toString());
             for (int j = 0, commentsLen = comments.length(); j < commentsLen; j++) {
                 JSONObject comment = comments.getJSONObject(j);
                 r.addComment(comment.getString("content"), comment.getString("userId"),
@@ -190,6 +191,7 @@ public class RecipeHelper {
                 }
             }
             if (commentsJSONString != null) {
+            	Log.i(TAG, commentsJSONString);
                 commentsJSONArray = new JSONArray(commentsJSONString);
                 if (commentsJSONArray != null) {
                     for (int i = 0; i < commentsJSONArray.length(); i++) {

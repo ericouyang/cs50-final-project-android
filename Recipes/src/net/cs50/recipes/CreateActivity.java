@@ -99,17 +99,6 @@ public final class CreateActivity extends BaseActivity {
     private final List<String> ingredients = new ArrayList<String>();
     private final List<String> instructions = new ArrayList<String>();
 
-    {
-        ingredients.add("Tomato");
-        ingredients.add("Lettuce");
-        ingredients.add("Eggs");
-
-        instructions.add("Add tomato");
-        instructions.add("Then add lettuce");
-        instructions.add("Then add eggs");
-        instructions.add("And you get a shitty dish!");
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +118,9 @@ public final class CreateActivity extends BaseActivity {
         detailsListView = (ExpandableListView) findViewById(R.id.list_create_details);
         listAdapter = new ExpandableListAdapter();
         detailsListView.setAdapter(listAdapter);
+        
+        detailsListView.expandGroup(0);
+        detailsListView.expandGroup(1);
 
         Button createButton = (Button) findViewById(R.id.btn_create);
         createButton.setOnClickListener(new OnClickListener() {

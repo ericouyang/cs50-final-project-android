@@ -57,7 +57,7 @@ public class RecipeContract {
 
         public static final String COLUMN_NAME_TAGS = "tags";
 
-        public static final String COLUMN_NAME_INSTRUCTIONS = "instrutions";
+        public static final String COLUMN_NAME_INSTRUCTIONS = "instructions";
 
         public static final String COLUMN_NAME_INGREDIENTS = "ingredients";
         

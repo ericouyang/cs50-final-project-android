@@ -19,13 +19,13 @@ package net.cs50.recipes;
 import net.cs50.recipes.accounts.AccountService;
 import net.cs50.recipes.provider.RecipeContract;
 import android.accounts.Account;
-import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -40,7 +40,7 @@ public class SyncUtils {
     
     private static AccountManager mAccountManager;
 	
-    private static String mAuthToken;
+    private static String mAuthToken = null;
     
     public static void attachAccountManager(AccountManager accountManager)
     {
@@ -61,6 +61,7 @@ public class SyncUtils {
 		return null;
 	}
     
+    /*
     public static String getCurrentAuthToken()
     {
     	if (mAuthToken != null)
@@ -77,7 +78,9 @@ public class SyncUtils {
     	{
     		return "";
     	}
+    	
     }
+	*/
     
     /**
      * Create an entry for this application in the system account list, if it isn't already there.

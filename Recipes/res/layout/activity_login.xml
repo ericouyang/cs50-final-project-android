@@ -44,18 +44,13 @@
             android:orientation="vertical" >
 
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/app_name"
                 android:paddingBottom="30dp"
                 android:paddingTop="30dp"
                 android:src="@drawable/nom_md" />
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white" 
-				 >
                 <EditText
                     android:id="@+id/username"
                     android:layout_width="match_parent"
@@ -64,14 +59,9 @@
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true" 
+                    android:padding="10dp"
+    				android:background="@drawable/rounded_rectangle"
                     />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white" 
-                android:layout_marginTop="20dp">
 
                 <EditText
                     android:id="@+id/password"
@@ -82,16 +72,18 @@
                     android:imeActionLabel="@string/action_sign_in"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
+                    android:padding="10dp"
+                    android:layout_marginTop="16dp"
+    				android:background="@drawable/rounded_rectangle"
                     android:maxLines="1"
                     android:singleLine="true" />
-            </FrameLayout>
 
             <Button
                 android:id="@+id/sign_in_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="16dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
                 android:paddingLeft="32dp"
                 android:paddingRight="32dp"
                 android:text="@string/action_sign_in" />

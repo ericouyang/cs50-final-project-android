@@ -69,6 +69,10 @@ public class Comment {
 		return mUser;
 	}
 	
+	public String getUserId() {
+		return mUserId;
+	}
+	
 	public String getUserName() {
 		return mUserName;
 	}

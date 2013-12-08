@@ -1,6 +1,8 @@
 package net.cs50.recipes.accounts;
 
+import net.cs50.recipes.BaseActivity;
 import net.cs50.recipes.R;
+import net.cs50.recipes.SyncUtils;
 import net.cs50.recipes.util.HttpHelper;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -8,8 +10,8 @@ import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -224,7 +226,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
 		{
 		    String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 		    String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
-		    final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+		    final Account account = new Account(accountName, AccountService.ACCOUNT_TYPE);
 		    if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
 		        String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
 		        String authtokenType = mAuthTokenType;
@@ -232,6 +234,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
 		        // (Not setting the auth token will cause another call to the server to authenticate the user)
 		        mAccountManager.addAccountExplicitly(account, accountPassword, null);
 		        mAccountManager.setAuthToken(account, authtokenType, authtoken);
+		        
+		        SharedPreferences settings = getSharedPreferences(BaseActivity.PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("access_token", authtoken);
+                editor.commit();
+                
+                BaseActivity.setAccessToken(authtoken);
 		    } else {
 		        mAccountManager.setPassword(account, accountPassword);
 		    }

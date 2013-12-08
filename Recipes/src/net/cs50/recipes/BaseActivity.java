@@ -4,6 +4,7 @@ import net.cs50.recipes.accounts.AccountService;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -13,6 +14,10 @@ public abstract class BaseActivity extends FragmentActivity {
 
     private final String TAG = "BaseActivity";
 
+    public static final String PREFS_NAME = "prefs";
+    
+    private static String mAccessToken;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,8 +30,20 @@ public abstract class BaseActivity extends FragmentActivity {
         if (accounts.length == 0) {
             SyncUtils.CreateSyncAccount(this);
         }
+        
+        
     }
 
+    public static String getAccessToken()
+    {
+    	return mAccessToken;
+    }
+    
+    public static void setAccessToken(String token)
+    {
+    	mAccessToken = token;
+    }
+    
     public void hideKeyboard(View v) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);

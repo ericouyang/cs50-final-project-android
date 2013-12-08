@@ -28,7 +28,7 @@
 
     <string-array name="drawer_items">
         <item>Home</item>
-        <item>My Recipes</item>
+        <!-- <item>My Recipes</item>  -->
         <item>About</item>
         <item>Logout</item>
     </string-array>

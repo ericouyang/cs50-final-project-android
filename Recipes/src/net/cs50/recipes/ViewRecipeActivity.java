@@ -70,23 +70,25 @@ public class ViewRecipeActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_recipe);
+        
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         recipeUri = getIntent().getData();
 
         mRecipeNameView = (TextView) findViewById(R.id.view_recipe_name);
         mRecipeImageView = (ImageView) findViewById(R.id.view_recipe_image);
         mRecipeUserName = (TextView) findViewById(R.id.view_recipe_user_name);
-        mRecipeNoms = (TextView) findViewById(R.id.view_recipe_noms);
+        //mRecipeNoms = (TextView) findViewById(R.id.view_recipe_noms);
         mRecipeCreatedAt = (TextView) findViewById(R.id.view_recipe_created_at);
 
         recipe = RecipeHelper.getRecipe(recipeUri, this);
 
         mRecipeNameView.setText(recipe.getName());
         mRecipeUserName.setText(recipe.getUserName());
-        mRecipeNoms.setText(recipe.getNumLikes() + " noms");
+        //mRecipeNoms.setText(recipe.getNumLikes() + " noms");
 
         comments = recipe.getComments();
 
@@ -158,7 +160,7 @@ public class ViewRecipeActivity extends BaseActivity {
             alertDialogBuilder.setView(input);
 
             // set dialog message
-            alertDialogBuilder.setMessage("Comment on recipe:").setCancelable(false)
+            alertDialogBuilder.setMessage("Comment on recipe:").setCancelable(true)
                     .setPositiveButton("Send", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {

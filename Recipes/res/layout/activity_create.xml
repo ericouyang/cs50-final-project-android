@@ -26,7 +26,8 @@
 
         <EditText
             android:id="@+id/text_create_title"
-            android:layout_width="0dip"
+            android:layout_width="0dp"
+            android:layout_marginLeft="14dp"
             android:layout_height="80dp"
             android:layout_weight="1"
             android:ems="10"

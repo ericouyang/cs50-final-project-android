@@ -44,12 +44,6 @@
                 android:text="Jan 1" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/view_recipe_noms"
-            style="@style/ViewRecipeItem.Noms"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0 noms" />
 
         <ExpandableListView
             android:id="@+id/view_list_details"

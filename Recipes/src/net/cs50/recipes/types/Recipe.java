@@ -6,6 +6,7 @@ import java.util.List;
 import net.cs50.recipes.util.HttpHelper;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.text.format.Time;
 import android.util.Log;
@@ -108,6 +109,7 @@ public class Recipe {
 	
 	public Comment addComment(String content, String userId, String userName, long createdAt)
 	{
+		Log.i(TAG, "Adding comment " + content);
 		Comment comment = new Comment(content, userId, userName, createdAt);
 		if (mComments.add(comment))
 			return comment;
@@ -154,7 +156,30 @@ public class Recipe {
 	
 	public String getCommentsJSONString()
 	{
-		return new JSONArray(mComments).toString();
+		try
+		{
+			JSONArray array = new JSONArray();
+			for (int i = 0; i < mComments.size(); i++)
+			{
+				Comment comment = mComments.get(i);
+				JSONObject JSONComment = new JSONObject();
+				JSONComment.put("content", comment.getContent());
+				JSONComment.put("userId", comment.getUserId());
+				JSONComment.put("userName", comment.getUserName());
+				JSONComment.put("createdAt", comment.getUpdatedAt());
+				
+				array.put(JSONComment);
+			}
+			
+			Log.i(TAG, "Generated JSON String " + array.toString());
+			
+			return array.toString();
+		}
+		catch (Exception e)
+		{
+			Log.e(TAG, "Error constructing JSON String for comments");
+		}
+		return "";
 	}
 	
 	public int getNumComments()
