@@ -58,7 +58,6 @@ public class ViewRecipeActivity extends BaseActivity {
 
     LayoutInflater inflater;
 
-    EditText titleText;
     ExpandableListView detailsListView;
     ExpandableListAdapter listAdapter;
 
@@ -69,46 +68,44 @@ public class ViewRecipeActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_view_recipe);
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        detailsListView = (ExpandableListView) findViewById(R.id.view_list_details);
+        View header = inflater.inflate(R.layout.view_list_header, null);
+        detailsListView.addHeaderView(header);
+        listAdapter = new ExpandableListAdapter();
+        detailsListView.setAdapter(listAdapter);
+
+        mRecipeNameView = (TextView) header.findViewById(R.id.view_recipe_name);
+        mRecipeImageView = (ImageView) header.findViewById(R.id.view_recipe_image);
+        mRecipeUserName = (TextView) header.findViewById(R.id.view_recipe_user_name);
+        mRecipeNoms = (TextView) header.findViewById(R.id.view_recipe_noms);
+        mRecipeCreatedAt = (TextView) header.findViewById(R.id.view_recipe_created_at);
+
         recipeUri = getIntent().getData();
-
-        mRecipeNameView = (TextView) findViewById(R.id.view_recipe_name);
-        mRecipeImageView = (ImageView) findViewById(R.id.view_recipe_image);
-        mRecipeUserName = (TextView) findViewById(R.id.view_recipe_user_name);
-        mRecipeNoms = (TextView) findViewById(R.id.view_recipe_noms);
-        mRecipeCreatedAt = (TextView) findViewById(R.id.view_recipe_created_at);
-
         recipe = RecipeHelper.getRecipe(recipeUri, this);
 
         mRecipeNameView.setText(recipe.getName());
         mRecipeUserName.setText(recipe.getUserName());
-        mRecipeNoms.setText(recipe.getNumLikes() + " noms");
-
-        comments = recipe.getComments();
-
         mRecipeCreatedAt.setText(recipe.getCreatedAtTime().format("%b %d"));
+        mRecipeNoms.setText(recipe.getNumLikes() + " noms");
 
         ingredients = recipe.getIngredients();
 
         instructions = recipe.getInstructions();
 
+        comments = recipe.getComments();
+
         String primaryImageURL = recipe.getImage(0);
         if (primaryImageURL != null) {
             ImageHelper.loadBitmap(primaryImageURL, mRecipeImageView);
         }
-
-        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        titleText = (EditText) findViewById(R.id.text_create_title);
-
-        detailsListView = (ExpandableListView) findViewById(R.id.view_list_details);
-        detailsListView.setScrollContainer(false);
-        listAdapter = new ExpandableListAdapter();
-        detailsListView.setAdapter(listAdapter);
     }
 
     @Override
@@ -269,7 +266,7 @@ public class ViewRecipeActivity extends BaseActivity {
             case GROUP_INSTRUCTIONS:
                 return TITLE_INSTRUCTIONS;
             case GROUP_COMMENTS:
-                return TITLE_COMMENTS;
+                return TITLE_COMMENTS + "(" + comments.size() + ")";
             default:
                 throw new IllegalArgumentException();
             }
