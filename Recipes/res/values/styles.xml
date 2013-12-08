@@ -48,8 +48,6 @@
    	</style>
    	
    	<style name="RecipeListItem.Image" parent="ListItemElement">
-   	    <item name="android:paddingTop">20dp</item>
-   	    <item name="android:paddingBottom">20dp</item>
    	    <item name="android:layout_width">match_parent</item>
     	<item name="android:layout_height">wrap_content</item>
     	<item name="android:layout_below">@id/recipe_list_item_created_at</item>

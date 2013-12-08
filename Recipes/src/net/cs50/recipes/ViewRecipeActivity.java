@@ -21,12 +21,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,13 +35,8 @@ public class ViewRecipeActivity extends BaseActivity {
     private TextView mRecipeNameView;
     private ImageView mRecipeImageView;
     private TextView mRecipeUserName;
-    private TextView mRecipeNoms;
-    private ListView mRecipeComments;
     private TextView mRecipeCreatedAt;
-    private ListView mRecipeIngredients;
-    private ListView mRecipeInstructions;
     private Recipe recipe;
-    private ArrayAdapter<Comment> commentsAdapter;
     private ShareActionProvider mShareActionProvider;
 
     private Uri recipeUri;
@@ -58,7 +51,6 @@ public class ViewRecipeActivity extends BaseActivity {
 
     LayoutInflater inflater;
 
-    EditText titleText;
     ExpandableListView detailsListView;
     ExpandableListAdapter listAdapter;
 
@@ -69,6 +61,7 @@ public class ViewRecipeActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_view_recipe);
         
 
@@ -76,21 +69,24 @@ public class ViewRecipeActivity extends BaseActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
+        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        detailsListView = (ExpandableListView) findViewById(R.id.view_list_details);
+        View header = inflater.inflate(R.layout.view_list_header, null);
+        detailsListView.addHeaderView(header);
+        listAdapter = new ExpandableListAdapter();
+        detailsListView.setAdapter(listAdapter);
+
+        mRecipeNameView = (TextView) header.findViewById(R.id.view_recipe_name);
+        mRecipeImageView = (ImageView) header.findViewById(R.id.view_recipe_image);
+        mRecipeUserName = (TextView) header.findViewById(R.id.view_recipe_user_name);
+        mRecipeCreatedAt = (TextView) header.findViewById(R.id.view_recipe_created_at);
+
         recipeUri = getIntent().getData();
-
-        mRecipeNameView = (TextView) findViewById(R.id.view_recipe_name);
-        mRecipeImageView = (ImageView) findViewById(R.id.view_recipe_image);
-        mRecipeUserName = (TextView) findViewById(R.id.view_recipe_user_name);
-        //mRecipeNoms = (TextView) findViewById(R.id.view_recipe_noms);
-        mRecipeCreatedAt = (TextView) findViewById(R.id.view_recipe_created_at);
-
         recipe = RecipeHelper.getRecipe(recipeUri, this);
 
         mRecipeNameView.setText(recipe.getName());
         mRecipeUserName.setText(recipe.getUserName());
-        //mRecipeNoms.setText(recipe.getNumLikes() + " noms");
-
-        comments = recipe.getComments();
 
         mRecipeCreatedAt.setText(recipe.getCreatedAtTime().format("%b %d"));
 
@@ -98,19 +94,12 @@ public class ViewRecipeActivity extends BaseActivity {
 
         instructions = recipe.getInstructions();
 
+        comments = recipe.getComments();
+
         String primaryImageURL = recipe.getImage(0);
         if (primaryImageURL != null) {
             ImageHelper.loadBitmap(primaryImageURL, mRecipeImageView);
         }
-
-        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        titleText = (EditText) findViewById(R.id.text_create_title);
-
-        detailsListView = (ExpandableListView) findViewById(R.id.view_list_details);
-        detailsListView.setScrollContainer(false);
-        listAdapter = new ExpandableListAdapter();
-        detailsListView.setAdapter(listAdapter);
     }
 
     @Override
@@ -241,8 +230,7 @@ public class ViewRecipeActivity extends BaseActivity {
                 }
                 final Comment comment = (Comment) getChild(groupPosition, childPosition);
                 TextView commentItem = (TextView) convertView.findViewById(R.id.text_list_item);
-                commentItem.setText("\"" + comment.getContent() + "\"" + " from " + comment.getUserName() + " on "
-                        + comment.getCreatedAt());
+                commentItem.setText("\"" + comment.getContent() + "\" -" + comment.getUserName());
                 break;
             }
 
@@ -271,7 +259,7 @@ public class ViewRecipeActivity extends BaseActivity {
             case GROUP_INSTRUCTIONS:
                 return TITLE_INSTRUCTIONS;
             case GROUP_COMMENTS:
-                return TITLE_COMMENTS;
+                return TITLE_COMMENTS + " (" + comments.size() + ")";
             default:
                 throw new IllegalArgumentException();
             }

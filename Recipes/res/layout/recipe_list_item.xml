@@ -1,30 +1,68 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ListItem" >
-    
-    <TextView
-        android:id="@+id/recipe_list_item_user_name"
-        style="@style/RecipeListItem.UserName" />
-    
-    <TextView
-        android:id="@+id/recipe_list_item_created_at"
-        style="@style/RecipeListItem.CreatedAt" />
-    
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/recipe_list_item_user_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="20dp"
+            android:text="Fred"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/recipe_list_item_created_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="20dp"
+            android:text="Jan 1"
+            android:textSize="14sp" />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/recipe_list_item_image"
-        android:contentDescription="@string/description_recipe_list_item_image"
-        style="@style/RecipeListItem.Image" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:contentDescription="@string/description_recipe_list_item_image" />
 
-   	<TextView
+    <TextView
         android:id="@+id/recipe_list_item_name"
-        style="@style/RecipeListItem.Name"
-        android:layout_below="@id/recipe_list_item_image" />
-   	
-   	<TextView
-        android:id="@+id/recipe_list_item_noms"
-		style="@style/RecipeListItem.Noms" />
-   	
-   	<TextView
-        android:id="@+id/recipe_list_item_comments"
-        style="@style/RecipeListItem.Comments" />
-	
-</RelativeLayout>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:text="Chicken Parmesan"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/recipe_list_item_noms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:text="1 noms"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/recipe_list_item_comments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:text="2 comments"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</LinearLayout>
