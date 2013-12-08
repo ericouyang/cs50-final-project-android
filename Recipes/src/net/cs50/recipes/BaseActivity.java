@@ -11,24 +11,20 @@ import android.view.inputmethod.InputMethodManager;
 
 public abstract class BaseActivity extends FragmentActivity {
 
-    private AccountManager mAccountManager;
+    private final String TAG = "BaseActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setDisplayShowTitleEnabled(false);
 
-        // Create account, if needed
-        mAccountManager = (AccountManager) getSystemService(Context.ACCOUNT_SERVICE);
-        Account[] accounts = mAccountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);
+        SyncUtils.attachAccountManager((AccountManager) getSystemService(Context.ACCOUNT_SERVICE));
+
+        Account[] accounts = SyncUtils.getAccountManager().getAccountsByType(
+                AccountService.ACCOUNT_TYPE);
         if (accounts.length == 0) {
             SyncUtils.CreateSyncAccount(this);
         }
-    }
-
-    public Account getCurrentAccount() {
-        Account[] accounts = mAccountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);
-        return accounts[0];
     }
 
     public void hideKeyboard(View v) {

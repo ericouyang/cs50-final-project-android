@@ -1,15 +1,14 @@
 package net.cs50.recipes;
 
-import android.app.Activity;
+import net.cs50.recipes.accounts.AuthenticatorActivity;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,8 +24,6 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mDrawerItems;
-
-    private CreateDialog dialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,56 +66,12 @@ public abstract class BaseDrawerActivity extends BaseActivity {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
+
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
             selectItem(0);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.menu_add:
-            dialog = new CreateDialog();
-            dialog.show(getSupportFragmentManager(), CreateDialog.TAG);
-            return true;
-        }
-        return super.onMenuItemSelected(featureId, item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            Intent intent = new Intent(this, CreateActivity.class);
-            switch (CreateDialog.Action.values()[requestCode]) {
-            case IMAGE_CAPTURE:
-                intent.setData(Uri.fromFile(dialog.getImageFile()));
-                break;
-            case IMAGE_SELECT:
-                intent.setData(data.getData());
-                break;
-            }
-            startActivity(intent);
-        }
-        dialog = null;
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        // menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -128,19 +81,8 @@ public abstract class BaseDrawerActivity extends BaseActivity {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle action buttons
-        switch (item.getItemId()) {
-        /*
-         * case R.id.action_websearch: // create intent to perform web search for this planet Intent
-         * intent = new Intent(Intent.ACTION_WEB_SEARCH); intent.putExtra(SearchManager.QUERY,
-         * getActionBar().getTitle()); // catch event that there's no activity to handle intent if
-         * (intent.resolveActivity(getPackageManager()) != null) { startActivity(intent); } else {
-         * Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show(); } return
-         * true;
-         */
-        default:
-            return super.onOptionsItemSelected(item);
-        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /* The click listner for ListView in the navigation drawer */
@@ -152,6 +94,28 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     }
 
     private void selectItem(int position) {
+        String item = mDrawerItems[position];
+        if (item.equals("About")) {
+
+        }
+
+        if (item.equals("Logout")) {
+            SyncUtils.getAccountManager().removeAccount(SyncUtils.getCurrentAccount(),
+                    new AccountManagerCallback<Boolean>() {
+
+                        @Override
+                        public void run(AccountManagerFuture<Boolean> arg0) {
+                            if (SyncUtils.getCurrentAccount() == null) {
+                                Intent k = new Intent(getBaseContext(), AuthenticatorActivity.class);
+                                startActivity(k);
+                            }
+                        }
+
+                    }, null);
+        }
+
+        mDrawerList.setItemChecked(position, true);
+        mDrawerLayout.closeDrawer(mDrawerList);
         /*
          * // update the main content by replacing fragments Fragment fragment = new
          * PlanetFragment(); Bundle args = new Bundle();

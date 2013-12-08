@@ -18,6 +18,7 @@ import org.json.JSONTokener;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,9 +86,15 @@ public class RecipeHelper {
     }
 
     public static List<Recipe> query(Category c, Context context) {
+    	String sortOrder = null;
+    	
         switch (c) {
         case TOP:
+        	sortOrder = RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc";
+        	break;
         case LATEST:
+        	sortOrder = RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc";
+        	break;
         case MY_RECIPES:
         }
 
@@ -95,8 +102,7 @@ public class RecipeHelper {
                 .appendPath(RecipeContract.Recipe.TABLE_NAME).build();
 
         Cursor cursor = context.getContentResolver().query(recipeUrl,
-                RecipeContract.Recipe.PROJECTION_ALL_FIELDS, null, null, null);// The sort order for
-        // the returned rows
+                RecipeContract.Recipe.PROJECTION_ALL_FIELDS, null, null, sortOrder);
 
         List<Recipe> recipes = new ArrayList<Recipe>();
 
@@ -139,7 +145,7 @@ public class RecipeHelper {
         String ingredientsJSONString = cursor
                 .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
         String instructionsJSONString = cursor
-                .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
+                .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INSTRUCTIONS);
         long createdAt = cursor
                 .getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
         long updatedAt = cursor
@@ -181,6 +187,13 @@ public class RecipeHelper {
             super(context, resource, recipes);
         }
 
+        public void setData(List<Recipe> data) {
+            clear();
+            if (data != null) {
+                addAll(data);
+            }
+        }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Recipe recipe = getItem(position);
@@ -214,4 +227,160 @@ public class RecipeHelper {
             return rowView;
         }
     }
+    
+    // http://www.androiddesignpatterns.com/2012/08/implementing-loaders.html
+    public static class RecipeLoader extends AsyncTaskLoader<List<Recipe>> {
+    	 
+    	  private List<Recipe> mData;
+    	  private Category mCategory;
+    	 
+    	  public RecipeLoader(Context context, Category category) {
+    	    // Loaders may be used across multiple Activitys (assuming they aren't
+    	    // bound to the LoaderManager), so NEVER hold a reference to the context
+    	    // directly. Doing so will cause you to leak an entire Activity's context.
+    	    // The superclass constructor will store a reference to the Application
+    	    // Context instead, and can be retrieved with a call to getContext().
+    		
+    	    super(context);
+    	    mCategory = category;
+    	  }
+    	 
+    	  public void setCategory(Category category)
+    	  {
+    		  mCategory = category;
+    		  onContentChanged();
+    	  }
+    	  /****************************************************/
+    	  /** (1) A task that performs the asynchronous load **/
+    	  /****************************************************/
+    	 
+    	  @Override
+    	  public List<Recipe> loadInBackground() {
+    	    // This method is called on a background thread and should generate a
+    	    // new set of data to be delivered back to the client.
+    	    return RecipeHelper.query(mCategory, getContext());
+    	  }
+    	 
+    	  /********************************************************/
+    	  /** (2) Deliver the results to the registered listener **/
+    	  /********************************************************/
+    	 
+    	  @Override
+    	  public void deliverResult(List<Recipe> data) {
+    	    if (isReset()) {
+    	      // The Loader has been reset; ignore the result and invalidate the data.
+    	      releaseResources(data);
+    	      return;
+    	    }
+    	 
+    	    // Hold a reference to the old data so it doesn't get garbage collected.
+    	    // We must protect it until the new data has been delivered.
+    	    List<Recipe> oldData = mData;
+    	    mData = data;
+    	 
+    	    if (isStarted()) {
+    	      // If the Loader is in a started state, deliver the results to the
+    	      // client. The superclass method does this for us.
+    	    	
+    	      super.deliverResult(data);
+    	    }
+    	 
+    	    // Invalidate the old data as we don't need it any more.
+    	    if (oldData != null && oldData != data) {
+    	      releaseResources(oldData);
+    	    }
+    	  }
+    	 
+    	  /*********************************************************/
+    	  /** (3) Implement the Loader’s state-dependent behavior **/
+    	  /*********************************************************/
+    	 
+    	  @Override
+    	  protected void onStartLoading() {
+    	    if (mData != null) {
+    	      // Deliver any previously loaded data immediately.
+    	      deliverResult(mData);
+    	    }
+    	 
+    	    // Begin monitoring the underlying data source.
+    	    /*
+    	    if (mObserver == null) {
+    	      mObserver = new SampleObserver();
+    	      // TODO: register the observer
+    	    }
+    	    */
+    	    
+    	    if (takeContentChanged() || mData == null) {
+    	      // When the observer detects a change, it should call onContentChanged()
+    	      // on the Loader, which will cause the next call to takeContentChanged()
+    	      // to return true. If this is ever the case (or if the current data is
+    	      // null), we force a new load.
+    	      forceLoad();
+    	    }
+    	  }
+    	 
+    	  @Override
+    	  protected void onStopLoading() {
+    	    // The Loader is in a stopped state, so we should attempt to cancel the 
+    	    // current load (if there is one).
+    	    cancelLoad();
+    	 
+    	    // Note that we leave the observer as is. Loaders in a stopped state
+    	    // should still monitor the data source for changes so that the Loader
+    	    // will know to force a new load if it is ever started again.
+    	  }
+    	 
+    	  @Override
+    	  protected void onReset() {
+    	    // Ensure the loader has been stopped.
+    	    onStopLoading();
+    	 
+    	    // At this point we can release the resources associated with 'mData'.
+    	    if (mData != null) {
+    	      releaseResources(mData);
+    	      mData = null;
+    	    }
+    	    
+    	    // The Loader is being reset, so we should stop monitoring for changes.
+    	    /*
+    	    if (mObserver != null) {
+    	      // TODO: unregister the observer
+    	      mObserver = null;
+    	    }
+    	    */
+    	  }
+    	  
+    	  @Override
+    	  public void onCanceled(List<Recipe> data) {
+    	    // Attempt to cancel the current asynchronous load.
+    	    super.onCanceled(data);
+    	 
+    	    // The load has been canceled, so we should release the resources
+    	    // associated with 'data'.
+    	    releaseResources(data);
+    	  }
+    	 
+    	  private void releaseResources(List<Recipe> data) {
+    	    // For a simple List, there is nothing to do. For something like a Cursor, we 
+    	    // would close it in this method. All resources associated with the Loader
+    	    // should be released here.
+    	  }
+    	 
+    	  /*********************************************************************/
+    	  /** (4) Observer which receives notifications when the data changes **/
+    	  /*********************************************************************/
+    	  
+    	  // NOTE: Implementing an observer is outside the scope of this post (this example
+    	  // uses a made-up "SampleObserver" to illustrate when/where the observer should 
+    	  // be initialized). 
+    	   
+    	  // The observer could be anything so long as it is able to detect content changes
+    	  // and report them to the loader with a call to onContentChanged(). For example,
+    	  // if you were writing a Loader which loads a list of all installed applications
+    	  // on the device, the observer could be a BroadcastReceiver that listens for the
+    	  // ACTION_PACKAGE_ADDED intent, and calls onContentChanged() on the particular 
+    	  // Loader whenever the receiver detects that a new application has been installed.
+    	  // Please don’t hesitate to leave a comment if you still find this confusing! :)
+    	}
+    
 }

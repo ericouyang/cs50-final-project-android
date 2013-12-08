@@ -16,12 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:dividerPadding="5dp"
         android:gravity="center_horizontal" >
 
         <ImageView
             android:id="@+id/image_create_recipe"
-            android:layout_width="100dp"
+            android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@string/description_recipe_list_item_image" />
 
@@ -34,7 +33,8 @@
             android:gravity="top|left"
             android:hint="@string/recipe_title"
             android:inputType="textMultiLine"
-            android:scrollbars="vertical" >
+            android:scrollbars="vertical"
+        	android:paddingLeft="5dp" >
         </EditText>
     </LinearLayout>
 

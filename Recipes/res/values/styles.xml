@@ -78,56 +78,39 @@
    	<style name="ViewRecipeItem" parent="ListItem"> 
    	</style>
    	
-   	
-   	<style name="ViewRecipeItem.Image" parent="ListItemElement">
-   	    <item name="android:paddingTop">10dp</item>
-   	    <item name="android:paddingBottom">10dp</item>
+   	<style name="ViewRecipeItemElement">
+   	    
+   	</style>
+   	<style name="ViewRecipeItem.Image" parent="ViewRecipeItemElement">
+   	    <item name="android:paddingTop">16dp</item>
+   	    <item name="android:paddingBottom">16dp</item>
    	    <item name="android:layout_width">match_parent</item>
     	<item name="android:layout_height">wrap_content</item>
     	<item name="android:layout_below">@id/recipe_list_item_created_at</item>
    	</style>
 
-   	<style name="ViewRecipeItem.Name" parent="ListItemElement">
+   	<style name="ViewRecipeItem.Name" parent="ViewRecipeItemElement">
    	     <item name="android:textSize">20sp</item>
+   	     <item name="android:paddingTop">10dp</item>
+   	     <item name="android:paddingLeft">20dp</item>
    	</style>
    	
    	<style name="ViewRecipeItem.UserName" parent="ListItemElement">
-   	     <item name="android:textSize">20sp</item>
-   	     <item name="android:layout_toRightOf">@id/view_recipe_name</item>
-   	</style>
-   	
-   	<style name="ViewRecipeItem.Instructions" parent="ListItemElement">
-   	     <item name="android:textSize">14sp</item>
+   	     <item name="android:textSize">16sp</item>
    	     <item name="android:paddingLeft">20dp</item>
-   	     <item name="android:layout_below">@id/view_recipe_noms</item>
+   	     <item name="android:layout_below">@id/view_recipe_name</item>
    	</style>
-   	
-   	<style name="ViewRecipeItem.Ingredients" parent="ListItemElement">
-   	     <item name="android:textSize">20sp</item>
-   	     <item name="android:paddingLeft">20dp</item>
-   	     <item name="android:layout_below">@id/view_recipe_ingredients</item>
-   	</style>
-   	
-   	<style name="ViewRecipeItem.CreatedAt" parent="ListItemElement">
-   	    <item name="android:textSize">14sp</item>
-   	    <item name="android:paddingLeft">20dp</item>
+
+   	<style name="ViewRecipeItem.CreatedAt" parent="ViewRecipeItemElement">
+   	    <item name="android:textSize">16sp</item>
+   	    <item name="android:paddingRight">20dp</item>
    	     <item name="android:layout_below">@id/view_recipe_image</item>
    	</style>
    	
-   	<style name="ViewRecipeItem.Noms" parent="ListItemElement">
+   	<style name="ViewRecipeItem.Noms" parent="ViewRecipeItemElement">
    	    <item name="android:textSize">14sp</item>
    	    <item name="android:paddingLeft">20dp</item>
    	     <item name="android:layout_below">@id/view_recipe_created_at</item>
-   	</style>
-   	
-   	<style name="ViewRecipeItem.Comments" parent="ListItemElement">
-   	    <item name="android:textSize">14sp</item>
-   	     <item name="android:paddingLeft">20dp</item>
-   	     <item name="android:layout_below">@id/view_recipe_instructions</item>
-   	</style>
-   	
-   	<style name="User.Name" parent="ListItemElement">
-   	    <item name="android:textSize">14sp</item>
    	</style>
    	
    	<style name="LoginFormContainer">

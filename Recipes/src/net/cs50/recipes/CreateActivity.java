@@ -148,7 +148,7 @@ public final class CreateActivity extends BaseActivity {
         }
     }
 
-    private class ExpandableListAdapter extends BaseExpandableListAdapter {
+    public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         @Override
         public Object getChild(int groupPosition, int childPosition) {
