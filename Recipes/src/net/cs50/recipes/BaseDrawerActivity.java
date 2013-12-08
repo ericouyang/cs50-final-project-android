@@ -32,7 +32,7 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     private String[] mDrawerItems;
 
     private Menu mMenu;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +46,8 @@ public abstract class BaseDrawerActivity extends BaseActivity {
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mDrawerItems));
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item,
+                mDrawerItems));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -56,13 +56,12 @@ public abstract class BaseDrawerActivity extends BaseActivity {
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-                R.string.drawer_open,  /* "open drawer" description for accessibility */
-                R.string.drawer_close  /* "close drawer" description for accessibility */
-                ) {
+        mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
+        mDrawerLayout, /* DrawerLayout object */
+        R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+        R.string.drawer_open, /* "open drawer" description for accessibility */
+        R.string.drawer_close /* "close drawer" description for accessibility */
+        ) {
             @Override
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(mTitle);
@@ -75,7 +74,7 @@ public abstract class BaseDrawerActivity extends BaseActivity {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        
+
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
@@ -83,14 +82,13 @@ public abstract class BaseDrawerActivity extends BaseActivity {
         }
     }
 
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         mMenu = menu;
-        
+
         return super.onPrepareOptionsMenu(menu);
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
@@ -111,81 +109,56 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     }
 
     private void selectItem(int position) {
-    	String item = mDrawerItems[position];
-    	Fragment fragment = null;
-    	
-    	if (item.equals("About"))
-    	{
-    		fragment = new AboutFragment();
-    	}
-    	
-    	if (item.equals("Home"))
-    	{
-    		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-    	}
-    	else if (item.equals("My Recipes"))
-    	{
-    		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-    		
-    		Bundle args = new Bundle();
-    	    args.putString(RecipeListFragment.KEY_CATEGORY, RecipeHelper.Category.MY_RECIPES.toString());
-    	    
-            RecipeListFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame, args);
-    	}
-    	else if (item.equals("Logout"))
-    	{
-    		SyncUtils.getAccountManager().removeAccount(SyncUtils.getCurrentAccount(), new AccountManagerCallback<Boolean>() {
-
-				@Override
-				public void run(AccountManagerFuture<Boolean> arg0) {
-					if(SyncUtils.getCurrentAccount() == null)
-					{
-						Intent k = new Intent(getBaseContext(), AuthenticatorActivity.class);
-					    startActivity(k);
-					}
-				}
-    			
-    		}, null);
-    	}
-    	
-    	if (fragment != null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment).commit();
- 
-            // update selected item and title, then close the drawer
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
-            setTitle(mDrawerItems[position]);
-            mDrawerLayout.closeDrawer(mDrawerList);
-        } 
-    	else {
-            // error in creating fragment
-            Log.e("MainActivity", "Error in creating fragment");
+        String item = mDrawerItems[position];
+        if (item.equals("About")) {
+        	AboutFragment fragment = AboutFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame);
         }
-    	
-    	mDrawerList.setItemChecked(position, true);
-    	mDrawerLayout.closeDrawer(mDrawerList);
-        /*
-        // update the main content by replacing fragments
-        Fragment fragment = new PlanetFragment();
-        Bundle args = new Bundle();
-        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-        fragment.setArguments(args);
 
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        if (item.equals("Home")) {
+            getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        } else if (item.equals("My Recipes")) {
+            getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        // update selected item and title, then close the drawer
+            Bundle args = new Bundle();
+            args.putString(RecipeListFragment.KEY_CATEGORY,
+                    RecipeHelper.Category.MY_RECIPES.toString());
+
+            RecipeListFragment fragment = RecipeListFragment.findOrCreateFragment(
+                    getSupportFragmentManager(), R.id.content_frame, args);
+        } else if (item.equals("Logout")) {
+            SyncUtils.getAccountManager().removeAccount(SyncUtils.getCurrentAccount(),
+                    new AccountManagerCallback<Boolean>() {
+
+                        @Override
+                        public void run(AccountManagerFuture<Boolean> arg0) {
+                            if (SyncUtils.getCurrentAccount() == null) {
+                                Intent k = new Intent(getBaseContext(), AuthenticatorActivity.class);
+                                startActivity(k);
+                            }
+                        }
+
+                    }, null);
+        }
+
         mDrawerList.setItemChecked(position, true);
-        setTitle(mDrawerItems[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
+        /*
+         * // update the main content by replacing fragments Fragment fragment = new
+         * PlanetFragment(); Bundle args = new Bundle();
+         * args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position); fragment.setArguments(args);
+         * 
+         * FragmentManager fragmentManager = getFragmentManager();
+         * fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+         * 
+         * // update selected item and title, then close the drawer
+         * mDrawerList.setItemChecked(position, true); setTitle(mDrawerItems[position]);
+         * mDrawerLayout.closeDrawer(mDrawerList);
          */
     }
 
     /**
-     * When using the ActionBarDrawerToggle, you must call it during
-     * onPostCreate() and onConfigurationChanged()...
+     * When using the ActionBarDrawerToggle, you must call it during onPostCreate() and
+     * onConfigurationChanged()...
      */
 
     @Override

@@ -1,13 +1,17 @@
 package net.cs50.recipes;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.cs50.recipes.util.ImageHelper;
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -16,12 +20,12 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -31,9 +35,6 @@ public final class CreateActivity extends BaseActivity {
 
     private static final int GROUP_INGREDIENTS = 0;
     private static final int GROUP_INSTRUCTIONS = 1;
-
-    private static final String TITLE_INGREDIENTS = "Ingredients";
-    private static final String TITLE_INSTRUCTIONS = "Instructions";
 
     private final OnClickListener onAdd = new OnClickListener() {
         @Override
@@ -85,9 +86,12 @@ public final class CreateActivity extends BaseActivity {
 
     LayoutInflater inflater;
 
+    ImageView imageView;
     EditText titleText;
     ExpandableListView detailsListView;
     ExpandableListAdapter listAdapter;
+
+    Bitmap image;
 
     private final List<String> ingredients = new ArrayList<String>();
     private final List<String> instructions = new ArrayList<String>();
@@ -114,17 +118,34 @@ public final class CreateActivity extends BaseActivity {
 
         setContentView(R.layout.activity_create);
 
+        imageView = (ImageView) findViewById(R.id.image_create_recipe);
+
         titleText = (EditText) findViewById(R.id.text_create_title);
         titleText.setOnFocusChangeListener(onUnfocusHideKeyboard);
 
         detailsListView = (ExpandableListView) findViewById(R.id.list_create_details);
         listAdapter = new ExpandableListAdapter();
         detailsListView.setAdapter(listAdapter);
+
+        showImage();
     }
 
-    public void hideKeyboard(View v) {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    private void showImage() {
+        Intent intent = getIntent();
+        Uri uri = intent.getData();
+        if (uri != null) {
+            try {
+                if (uri.getScheme().equalsIgnoreCase("content")) {
+                    String url = ImageHelper.getMediaPath(this, uri);
+                    if (url != null) {
+                        uri = Uri.parse("file://" + url);
+                    }
+                }
+                image = ImageHelper.imageFromUri(this, uri, ImageHelper.IMAGE_LENGTH);
+                imageView.setImageBitmap(image);
+            } catch (IOException e) {
+            }
+        }
     }
 
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -188,9 +209,9 @@ public final class CreateActivity extends BaseActivity {
         public Object getGroup(int groupPosition) {
             switch (groupPosition) {
             case GROUP_INGREDIENTS:
-                return TITLE_INGREDIENTS;
+                return R.string.create_group_ingredients;
             case GROUP_INSTRUCTIONS:
-                return TITLE_INSTRUCTIONS;
+                return R.string.create_group_instructions;
             default:
                 throw new IllegalArgumentException();
             }
@@ -209,14 +230,14 @@ public final class CreateActivity extends BaseActivity {
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
                 ViewGroup parent) {
-            String groupTitle = (String) getGroup(groupPosition);
+            int groupTitleId = (Integer) getGroup(groupPosition);
 
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.create_list_group, null);
             }
 
             TextView textListGroup = (TextView) convertView.findViewById(R.id.text_list_group);
-            textListGroup.setText(groupTitle);
+            textListGroup.setText(groupTitleId);
 
             ImageButton buttonAdd = (ImageButton) convertView.findViewById(R.id.btn_create_add);
             buttonAdd.setTag(R.id.TAG_GROUP, groupPosition);
