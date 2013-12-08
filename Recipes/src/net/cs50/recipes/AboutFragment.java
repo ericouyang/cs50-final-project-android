@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+// fragment for the app about page
 public class AboutFragment extends Fragment {
 
     private static final String TAG = "about_fragment";

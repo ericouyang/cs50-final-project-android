@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+// this activity allows user to create recipes
 public final class CreateActivity extends BaseActivity {
 
     private static final String TAG = "create_activity";
@@ -39,6 +40,7 @@ public final class CreateActivity extends BaseActivity {
     private static final int GROUP_INGREDIENTS = 0;
     private static final int GROUP_INSTRUCTIONS = 1;
 
+    // create listers creating, editing, and deleting.
     private final OnClickListener onAdd = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -96,6 +98,7 @@ public final class CreateActivity extends BaseActivity {
 
     Bitmap image;
 
+    // empty ingredients and instructions for now.
     private final List<String> ingredients = new ArrayList<String>();
     private final List<String> instructions = new ArrayList<String>();
 
@@ -103,11 +106,12 @@ public final class CreateActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // set up action bar
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        // set up view
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         setContentView(R.layout.activity_create);
 
         imageView = (ImageView) findViewById(R.id.image_create_recipe);
@@ -134,12 +138,14 @@ public final class CreateActivity extends BaseActivity {
         showImage();
     }
 
+    // set up async task
     private void startUpload() {
         final String name = titleText.getText().toString();
         new HttpHelper.AddRecipeAsyncTask().execute(getContentResolver(), image, name, ingredients,
                 instructions);
     }
 
+    // show the captured image
     private void showImage() {
         Intent intent = getIntent();
         Uri uri = intent.getData();
@@ -158,6 +164,7 @@ public final class CreateActivity extends BaseActivity {
         }
     }
 
+    //custom list expander adapter
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         @Override
@@ -182,6 +189,7 @@ public final class CreateActivity extends BaseActivity {
                 View convertView, ViewGroup parent) {
             final String itemText = (String) getChild(groupPosition, childPosition);
 
+            // convert existing view for new item
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.create_list_item, null);
             }
@@ -267,6 +275,7 @@ public final class CreateActivity extends BaseActivity {
         }
     }
 
+    // custom popups 
     private class PopupEditor extends PopupWindow implements OnClickListener {
 
         private View view;

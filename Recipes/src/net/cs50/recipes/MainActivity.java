@@ -5,6 +5,7 @@ import android.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
 
+// primary activity -- configure to be the main view
 public class MainActivity extends BaseDrawerActivity {
 
     private static String TAG = "MainActivity";
@@ -18,9 +19,9 @@ public class MainActivity extends BaseDrawerActivity {
 
         getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
+        // set up fragment
         Bundle args = new Bundle();
         args.putString(RecipeListFragment.KEY_CATEGORY, RecipeHelper.Category.LATEST.toString());
-
         RecipeListFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame,
                 args);
 

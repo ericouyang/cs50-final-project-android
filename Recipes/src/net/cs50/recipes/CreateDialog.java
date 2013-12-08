@@ -14,6 +14,9 @@ import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 
+// class to handle the creation of the dialog fragment
+// gives uses the opportunity to take a new photo or use an existing photo
+// for a new recipe
 public class CreateDialog extends DialogFragment implements OnClickListener {
 
     public static final String TAG = "create_dialog";
@@ -30,6 +33,7 @@ public class CreateDialog extends DialogFragment implements OnClickListener {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+    	// set up dialog box
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_create_title)
                 .setSingleChoiceItems(R.array.dialog_create_actions, 0, this)

@@ -71,7 +71,7 @@
                 android:resource="@xml/authenticator" />
         </service>
         <service
-            android:name=".SyncService"
+            android:name="net.cs50.recipes.sync.SyncService"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />

@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.cs50.recipes.R;
+import net.cs50.recipes.models.Recipe;
 import net.cs50.recipes.provider.RecipeContract;
-import net.cs50.recipes.types.Recipe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +38,7 @@ public class RecipeHelper {
     private RecipeHelper() {
     }
 
+    // parses the input stream and returns a list of recipes
     public static List<Recipe> parse(InputStream in) throws IOException, JSONException {
         List<Recipe> list = new LinkedList<Recipe>();
         JSONArray recipes = (JSONArray) new JSONTokener(HttpHelper.getString(in)).nextValue();
@@ -48,6 +49,7 @@ public class RecipeHelper {
         return list;
     }
 
+    // parses the recipe from the JSONObject
     public static Recipe getRecipe(JSONObject recipe) throws JSONException {
         String recipeId = recipe.getString("id");
         String name = recipe.getString("name");
@@ -93,9 +95,11 @@ public class RecipeHelper {
         return r;
     }
 
+    // obtains a sorted list of recipes stored in the database based on a category
     public static List<Recipe> query(Category c, Context context) {
         Log.i(TAG, "query for " + c);
 
+        // determine SQL strings for sort order and selection
         String sortOrder = null;
         String selection = null;
         switch (c) {
@@ -109,14 +113,17 @@ public class RecipeHelper {
             break;
         }
 
-        Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
+        // build recipe uri
+        Uri recipeUri = RecipeContract.BASE_CONTENT_URI.buildUpon()
                 .appendPath(RecipeContract.Recipe.TABLE_NAME).build();
 
-        Cursor cursor = context.getContentResolver().query(recipeUrl,
+        // query content provider for all recipes
+        Cursor cursor = context.getContentResolver().query(recipeUri,
                 RecipeContract.Recipe.PROJECTION_ALL_FIELDS, selection, null, sortOrder);
 
         List<Recipe> recipes = new ArrayList<Recipe>();
 
+        // retrieve each recipe and add it to the list
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 Recipe r = createRecipeFromCursor(cursor);
@@ -124,18 +131,15 @@ public class RecipeHelper {
                     recipes.add(r);
                 }
             }
-        } else {
-
-            // Insert code here to report an error if the cursor is null or the provider threw an
-            // exception.
         }
 
         return recipes;
     }
 
-    public static Recipe getRecipe(Uri recipeUrl, Context context) {
+    // gets a specific recipe from the uri provided
+    public static Recipe getRecipe(Uri recipeUri, Context context) {
 
-        Cursor cursor = context.getContentResolver().query(recipeUrl,
+        Cursor cursor = context.getContentResolver().query(recipeUri,
                 RecipeContract.Recipe.PROJECTION_ALL_FIELDS, null, null, null);
 
         cursor.moveToFirst();
@@ -143,10 +147,12 @@ public class RecipeHelper {
         return createRecipeFromCursor(cursor);
     }
 
+    // creates a recipe object from data retrieved and stored in cursor
     public static Recipe createRecipeFromCursor(Cursor cursor) {
         if (cursor == null) {
             return null;
         }
+        // get properties of the recipe
         int id = cursor.getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_ID);
         String recipeId = cursor
                 .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_RECIPE_ID);
@@ -165,11 +171,14 @@ public class RecipeHelper {
         long updatedAt = cursor
                 .getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT);
 
+        // create recipe
         Recipe r = new Recipe(id, recipeId, name, likes, createdAt, updatedAt);
+        // add recipe image if it exists
         if (primaryImageURL != null && !primaryImageURL.isEmpty()) {
             r.addImage(primaryImageURL);
         }
 
+        // parse ingredients, instructions and comments from the JSONArray they were stored as
         JSONArray ingredientsJSONArray = null;
         JSONArray instructionsJSONArray = null;
         JSONArray commentsJSONArray = null;
@@ -208,18 +217,21 @@ public class RecipeHelper {
         return r;
     }
 
+    // adapter for the list view
     public static class RecipeAdapter extends ArrayAdapter<Recipe> {
         public RecipeAdapter(Context context, int resource, List<Recipe> recipes) {
             super(context, resource, recipes);
         }
-
+        
+        // set the data for the adapter
         public void setData(List<Recipe> data) {
             clear();
             if (data != null) {
                 addAll(data);
             }
         }
-
+        
+        // returns the view for the list item
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Recipe recipe = getItem(position);

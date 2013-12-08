@@ -2,8 +2,8 @@ package net.cs50.recipes.accounts;
 
 import net.cs50.recipes.BaseActivity;
 import net.cs50.recipes.R;
-import net.cs50.recipes.SyncUtils;
 import net.cs50.recipes.util.HttpHelper;
+import net.cs50.recipes.util.SyncUtils;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -23,26 +23,29 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// activity to handle user authentication
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
+	// static strings to faciliate cross class communication
     public final static String ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE";
     public final static String ARG_AUTH_TYPE = "AUTH_TYPE";
     public final static String ARG_ACCOUNT_NAME = "ACCOUNT_NAME";
     public final static String ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
-
     public static final String KEY_ERROR_MESSAGE = "ERR_MSG";
-
     public final static String PARAM_USER_PASS = "USER_PASS";
 
+    // reference to account manager
     private AccountManager mAccountManager;
+    
+    // type of token we're trying to get
     private String mAuthTokenType;
     private String mAccountType;
 
-    // Values for email and password at the time of the login attempt.
+    // Values for username and password at the time of the login attempt
     private String mUsername;
     private String mPassword;
 
-    // UI references.
+    // UI references
     private EditText mUsernameView;
     private EditText mPasswordView;
     private View mLoginFormView;
@@ -55,6 +58,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         setContentView(R.layout.activity_login);
 
+        // initialize Activity with intent parameters
         mAccountManager = AccountManager.get(getBaseContext());
         mAccountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
         mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
@@ -132,8 +136,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        // The sign up activity returned that the user has successfully created an account
-        // requestCode == REQ_SIGNUP &&
+        // The sign up activity returned that the user has successfully logged in
         if (resultCode == RESULT_OK) {
             finishLogin(data);
         } else
@@ -152,7 +155,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password.
+        // Check for a password and verifies min length of password
         if (TextUtils.isEmpty(mPassword)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
@@ -163,23 +166,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             cancel = true;
         }
 
-        /*
-         * // Check for a valid email address. if (TextUtils.isEmpty(mEmail)) {
-         * mEmailView.setError(getString(R.string.error_field_required)); focusView = mEmailView;
-         * cancel = true; } else if (!mEmail.contains("@")) {
-         * mEmailView.setError(getString(R.string.error_invalid_email)); focusView = mEmailView;
-         * cancel = true; }
-         */
-
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
+            // error. focus screen on the item with the error
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+            // show progress spinner
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
             showProgress(true);
+            
+            // set up and run task to attempt to authorize user
             new AsyncTask<Void, Void, Intent>() {
                 @Override
                 protected Intent doInBackground(Void... params) {
@@ -205,17 +200,18 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         }
     }
 
+    // complete the log in and pass back the result of login
     private void finishLogin(Intent intent) {
         if (intent != null) {
             String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
             final Account account = new Account(accountName, AccountService.ACCOUNT_TYPE);
+            
             if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
                 String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
                 String authtokenType = mAuthTokenType;
-                // Creating the account on the device and setting the auth token we got
-                // (Not setting the auth token will cause another call to the server to authenticate
-                // the user)
+                
+                // save auth token in account manager, preferences, and base activity 
                 mAccountManager.addAccountExplicitly(account, accountPassword, null);
                 mAccountManager.setAuthToken(account, authtokenType, authtoken);
 
@@ -233,6 +229,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
             finish();
         } else {
+    		// authentication failed
+        	
             showProgress(false);
             Toast.makeText(this, "Please verify your credentials", Toast.LENGTH_SHORT).show();
         }

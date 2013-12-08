@@ -1,19 +1,3 @@
-/*
- * Copyright 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package net.cs50.recipes.accounts;
 
 import net.cs50.recipes.util.HttpHelper;
@@ -30,6 +14,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
+// service for accounts for our app
 public class AccountService extends Service {
     private static final String TAG = "RecipesAccountService";
 
@@ -55,6 +40,8 @@ public class AccountService extends Service {
         return mAuthenticator.getIBinder();
     }
 
+    // authenticator class that interfaces with Android system for handling user accounts
+    // based off of 
     public class Authenticator extends AbstractAccountAuthenticator {
 
         private Context mContext;
@@ -96,13 +83,12 @@ public class AccountService extends Service {
         public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
                 String authTokenType, Bundle bundle) throws NetworkErrorException {
 
-            // Extract the username and password from the Account Manager, and ask
-            // the server for an appropriate AuthToken.
             final AccountManager am = AccountManager.get(mContext);
 
+            // get authToken from account manager
             String authToken = am.peekAuthToken(account, authTokenType);
 
-            // Lets give another try to authenticate the user
+            // if authToken empty, try to get new authentication token 
             if (TextUtils.isEmpty(authToken)) {
                 final String password = am.getPassword(account);
                 if (password != null) {
@@ -110,7 +96,7 @@ public class AccountService extends Service {
                 }
             }
 
-            // If we get an authToken - we return it
+            // If we get an authToken - we return it as a bundle
             if (!TextUtils.isEmpty(authToken)) {
                 final Bundle result = new Bundle();
                 result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
@@ -119,9 +105,7 @@ public class AccountService extends Service {
                 return result;
             }
 
-            // If we get here, then we couldn't access the user's password - so we
-            // need to re-prompt them for their credentials. We do that by creating
-            // an intent to display our AuthenticatorActivity.
+            // prompt users for credentials via the AuthenticatorActivity
             final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
             intent.putExtra(AuthenticatorActivity.ARG_ACCOUNT_TYPE, account.type);

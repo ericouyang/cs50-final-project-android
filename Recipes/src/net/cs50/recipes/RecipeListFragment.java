@@ -1,27 +1,12 @@
-/*
- * Copyright 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package net.cs50.recipes;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.cs50.recipes.models.Recipe;
 import net.cs50.recipes.provider.RecipeContract;
-import net.cs50.recipes.types.Recipe;
 import net.cs50.recipes.util.RecipeHelper;
+import net.cs50.recipes.util.SyncUtils;
 import net.cs50.recipes.util.RecipeHelper.Category;
 import net.cs50.recipes.util.RecipeHelper.RecipeAdapter;
 import net.cs50.recipes.util.RecipeHelper.RecipeLoader;
@@ -47,50 +32,31 @@ import android.widget.ListView;
 import android.widget.SpinnerAdapter;
 
 /**
- * List fragment containing a list of Atom entry objects (articles) stored in the local database.
+ * List fragment for recipes
+ * implemented as a fragment for flexibility reasons
  * 
- * <p>
- * Database access is mediated by a content provider, specified in
- * {@link com.example.android.network.sync.basicsyncadapter.provider.FeedProvider}. This content
- * provider is automatically populated by {@link SyncService}.
- * 
- * <p>
- * Selecting an item from the displayed list displays the article in the default browser.
- * 
- * <p>
- * If the content provider doesn't return any data, then the first sync hasn't run yet. This sync
- * adapter assumes data exists in the provider once a sync has run. If your app doesn't work like
- * this, you should add a flag that notes if a sync has run, so you can differentiate between "no
- * available data" and "no initial sync", and display this in the UI.
- * 
- * <p>
- * The ActionBar displays a "Refresh" button. When the user clicks "Refresh", the sync adapter runs
- * immediately. An indeterminate ProgressBar element is displayed, showing that the sync is
- * occurring.
+ * selection of item brings user to the view article acitivity (via an intent)
  */
 public class RecipeListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<List<Recipe>> {
 
     private static final String TAG = "RecipeListFragment";
 
+    // internal key for the bundle which configures the setup of the fragment
     public static final String KEY_CATEGORY = "category";
 
+    // the list adapter for this list
     private RecipeAdapter mAdapter;
 
+    // list of recipe objects
     private List<Recipe> mRecipes;
 
+    // loader to handle async calls for recipes
     private RecipeLoader mRecipeLoader;
 
     private Menu mOptionsMenu;
 
-    /**
-     * Handle to a SyncObserver. The ProgressBar element is visible until the SyncObserver reports
-     * that the sync is complete.
-     * 
-     * <p>
-     * This allows us to delete our SyncObserver once the application is no longer in the
-     * foreground.
-     */
+    // handle to sync observer
     private Object mSyncObserverHandle;
 
     private OnNavigationListener mOnNavigationListener;
@@ -106,6 +72,7 @@ public class RecipeListFragment extends ListFragment implements
     public RecipeListFragment() {
     }
 
+    // helper static method which returns either a previously created fragment or makes a new one
     public static RecipeListFragment findOrCreateFragment(FragmentManager fm, int containerId,
             Bundle bundle) {
         Log.i(TAG, "attempting to reload old fragment");
@@ -115,14 +82,19 @@ public class RecipeListFragment extends ListFragment implements
             Log.i(TAG, "no old fragment, creating a new one");
             fragment = new RecipeListFragment();
             fm.beginTransaction().replace(containerId, fragment, TAG).commit();
+            
+            // set arguments to be used later
             fragment.setArguments(bundle);
         } else {
+        	
+        	// update the category for this fragment
             fragment.updateCategory(Category.valueOf(bundle.getString(KEY_CATEGORY)));
-
         }
+        
         return fragment;
     }
 
+    // setup the listview for a particular category
     public void updateCategory(Category category) {
         mRecipeLoader.setCategory(category);
         if (category == RecipeHelper.Category.MY_RECIPES) {
@@ -134,9 +106,13 @@ public class RecipeListFragment extends ListFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // ensure persistence of data across fragment states
         setRetainInstance(true);
+        
+        // allow us to register option menu handles
         setHasOptionsMenu(true);
 
+        // create an empty arraylist, to be populated later by loader
         mRecipes = new ArrayList<Recipe>();
     }
 
@@ -144,13 +120,13 @@ public class RecipeListFragment extends ListFragment implements
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // setup list adapter for recipes list
         mAdapter = new RecipeHelper.RecipeAdapter(getActivity(), R.layout.recipe_list_item,
                 mRecipes);
-
         setListAdapter(mAdapter);
 
+        // set up loader
         getLoaderManager().initLoader(0, null, this);
-
         setEmptyText(getText(R.string.loading));
     }
 
@@ -186,6 +162,7 @@ public class RecipeListFragment extends ListFragment implements
 
         mOptionsMenu = menu;
 
+        // on change of navigation's spinner (which allows user to select category for list)
         mOnNavigationListener = new OnNavigationListener() {
             // Get the same strings provided for the drop-down's ArrayAdapter
             String[] strings = getResources().getStringArray(R.array.home_filters_list);
@@ -213,6 +190,7 @@ public class RecipeListFragment extends ListFragment implements
                 mOnNavigationListener);
     }
 
+    // handle action bar item clicks
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(TAG, item.getTitle() + " clicked");
@@ -236,13 +214,14 @@ public class RecipeListFragment extends ListFragment implements
                     RecipeContract.CONTENT_AUTHORITY);
 
             setRefreshActionButtonState(syncActive || syncPending);
-            SyncUtils.TriggerRefresh(SyncUtils.getCurrentAccount());
+            SyncUtils.triggerRefresh(SyncUtils.getCurrentAccount());
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    // we receive result from an activity that we've called when creating a recipe
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
@@ -261,14 +240,7 @@ public class RecipeListFragment extends ListFragment implements
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    /**
-     * Query the content provider for data.
-     * 
-     * <p>
-     * Loaders do queries in a background thread. They also provide a ContentObserver that is
-     * triggered when data in the content provider changes. When the sync adapter updates the
-     * content provider, the ContentObserver responds by resetting the loader and then reloading it.
-     */
+    // perform query of database on background thread
     @Override
     public Loader<List<Recipe>> onCreateLoader(int i, Bundle bundle) {
         Log.i(TAG, "loader created");
@@ -283,10 +255,7 @@ public class RecipeListFragment extends ListFragment implements
         return mRecipeLoader;
     }
 
-    /**
-     * Move the Cursor returned by the query into the ListView adapter. This refreshes the existing
-     * UI with the data in the Cursor.
-     */
+    // handle changes in recipes list by updating adapter
     @Override
     public void onLoadFinished(Loader<List<Recipe>> recipeLoader, List<Recipe> recipes) {
         mAdapter.setData(recipes);
@@ -295,46 +264,30 @@ public class RecipeListFragment extends ListFragment implements
         setRefreshActionButtonState(false);
     }
 
-    /**
-     * Called when the ContentObserver defined for the content provider detects that data has
-     * changed. The ContentObserver resets the loader, and then re-runs the loader. In the adapter,
-     * set the Cursor value to null. This removes the reference to the Cursor, allowing it to be
-     * garbage-collected.
-     */
-
+    // called when the observer detects changes in data (an "invalidated" data set)
     @Override
     public void onLoaderReset(Loader<List<Recipe>> recipeLoader) {
         mAdapter.notifyDataSetInvalidated();
     }
 
-    /**
-     * Load an article in the default browser when selected by the user.
-     */
+    // set up an intent for the recipe to be viewed in detail
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
-        // Get a URI for the selected item, then start an Activity that displays the URI. Any
-        // Activity that filters for ACTION_VIEW and a URI can accept this. In most cases, this will
-        // be a browser.
-
-        // Get the item at the selected position, in the form of a Cursor.
+        // Get the item at the selected position and construct the URL we'll use for our intent
         Recipe recipe = mAdapter.getItem(position);
         Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
                 .appendPath(RecipeContract.Recipe.TABLE_NAME)
                 .appendPath(Integer.toString(recipe.getId())).build();
 
+        // create intent and start view recipe activity
         Intent i = new Intent(getActivity(), ViewRecipeActivity.class);
         i.setData(recipeUrl);
         startActivity(i);
     }
 
-    /**
-     * Crate a new anonymous SyncStatusObserver. It's attached to the app's ContentResolver in
-     * onResume(), and removed in onPause(). If status changes, it sets the state of the Refresh
-     * button. If a sync is active or pending, the Refresh button is replaced by an indeterminate
-     * ProgressBar; otherwise, the button itself is displayed.
-     */
+    // observer for changes in the recipe loader
     private SyncStatusObserver mObserver = new SyncStatusObserver() {
         @Override
         public void onStatusChanged(int which) {
@@ -342,13 +295,7 @@ public class RecipeListFragment extends ListFragment implements
         }
     };
 
-    /**
-     * Set the state of the Refresh button. If a sync is active, turn on the ProgressBar widget.
-     * Otherwise, turn it off.
-     * 
-     * @param refreshing
-     *            True if an active sync is occurring, false otherwise
-     */
+    // set the refresh action buton state
     public void setRefreshActionButtonState(boolean refreshing) {
         if (mOptionsMenu == null) {
             return;

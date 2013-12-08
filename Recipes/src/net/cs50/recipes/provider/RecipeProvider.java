@@ -15,17 +15,9 @@ public class RecipeProvider extends ContentProvider {
 
     RecipeDatabase mDbHelper;
 
-    /**
-     * Content authority for this provider.
-     */
+    // assign authority to the recipe contract authority
     private static final String AUTHORITY = RecipeContract.CONTENT_AUTHORITY;
 
-    // The constants below represent individual URI routes, as IDs. Every URI pattern recognized by
-    // this ContentProvider is defined using sUriMatcher.addURI(), and associated with one of these
-    // IDs.
-    //
-    // When a incoming URI is run through sUriMatcher, it will be tested against the defined
-    // URI patterns, and the corresponding route ID will be returned.
     /**
      * URI ID for route: /recipes
      */
@@ -52,7 +44,7 @@ public class RecipeProvider extends ContentProvider {
     }
 
     /**
-     * Determine the mime type for recipes returned by a given URI.
+     * Determine the MIME type for recipes returned by a given URI.
      */
     @Override
     public String getType(Uri uri) {
@@ -78,17 +70,17 @@ public class RecipeProvider extends ContentProvider {
         int uriMatch = sUriMatcher.match(uri);
         switch (uriMatch) {
         case ROUTE_RECIPES_ID:
-            // Return a single entry, by ID.
+            // query for single recipe
             String id = uri.getLastPathSegment();
             builder.where(BaseColumns._ID + "=?", id);
         case ROUTE_RECIPES:
             // Return all known entries.
             builder.table(RecipeContract.Recipe.TABLE_NAME).where(selection, selectionArgs);
             Cursor c = builder.query(db, projection, sortOrder);
-            // Note: Notification URI must be manually set here for loaders to correctly
-            // register ContentObservers.
             Context ctx = getContext();
             assert ctx != null;
+            
+            // set notification url so that observers know when content is changed
             c.setNotificationUri(ctx.getContentResolver(), uri);
             return c;
         default:
@@ -97,7 +89,7 @@ public class RecipeProvider extends ContentProvider {
     }
 
     /**
-     * Insert a new recipe into the database.
+     * Insert a new recipe into the database -- only supports batch operation currently
      */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
@@ -107,6 +99,7 @@ public class RecipeProvider extends ContentProvider {
         Uri result;
         switch (match) {
         case ROUTE_RECIPES:
+        	// insert multiple recipes
             long id = db.insertOrThrow(RecipeContract.Recipe.TABLE_NAME, null, values);
             result = Uri.parse(RecipeContract.Recipe.CONTENT_URI + "/" + id);
             break;
@@ -115,7 +108,8 @@ public class RecipeProvider extends ContentProvider {
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        // Send broadcast to registered ContentObservers, to refresh UI.
+        
+        // send broadcast to registered observers so that UI can be refreshed
         Context ctx = getContext();
         assert ctx != null;
         ctx.getContentResolver().notifyChange(uri, null, false);
@@ -144,7 +138,8 @@ public class RecipeProvider extends ContentProvider {
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        // Send broadcast to registered ContentObservers, to refresh UI.
+        
+        // send broadcast to registered observers so that UI can be refreshed
         Context ctx = getContext();
         assert ctx != null;
         ctx.getContentResolver().notifyChange(uri, null, false);
@@ -181,10 +176,7 @@ public class RecipeProvider extends ContentProvider {
     }
 
     /**
-     * SQLite backend for @{link FeedProvider}.
-     * 
-     * Provides access to an disk-backed, SQLite datastore which is utilized by FeedProvider. This
-     * database should never be accessed by other parts of the application directly.
+     * SQLite database for Recipe Provider
      */
     static class RecipeDatabase extends SQLiteOpenHelper {
         /** Schema version. */
@@ -228,8 +220,6 @@ public class RecipeProvider extends ContentProvider {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // This database is only a cache for online data, so its upgrade policy is
-            // to simply to discard the data and start over
             db.execSQL(SQL_DELETE_RECIPES_TABLE);
             onCreate(db);
         }
