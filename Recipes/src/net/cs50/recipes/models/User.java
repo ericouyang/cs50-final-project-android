@@ -1,4 +1,4 @@
-package net.cs50.recipes.types;
+package net.cs50.recipes.models;
 
 public class User {
     private final int mId;
@@ -9,9 +9,6 @@ public class User {
     private final long mCreatedAt;
     private long mUpdatedAt;
 
-    public User() {
-        this(0, "", "", "", "", 0, 0);
-    }
 
     public User(int id, String userId, String firstName, String lastName, String profileImageURL,
             long createdAt, long updatedAt) {

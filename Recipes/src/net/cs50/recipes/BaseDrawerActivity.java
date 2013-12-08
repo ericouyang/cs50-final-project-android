@@ -2,6 +2,7 @@ package net.cs50.recipes;
 
 import net.cs50.recipes.accounts.AuthenticatorActivity;
 import net.cs50.recipes.util.RecipeHelper;
+import net.cs50.recipes.util.SyncUtils;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.ActionBar;
@@ -18,6 +19,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+/*
+ * Abstract class which creates the navigation drawer for activities which need one.
+ */
 public abstract class BaseDrawerActivity extends BaseActivity {
 
     private DrawerLayout mDrawerLayout;
@@ -36,28 +40,25 @@ public abstract class BaseDrawerActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         mTitle = mDrawerTitle = getTitle();
+        
         mDrawerItems = getResources().getStringArray(R.array.drawer_items);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
+        
         mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item,
                 mDrawerItems));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        // enable ActionBar app icon to behave as action to toggle nav drawer
+        // set up action bat to use navigation drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
-        // ActionBarDrawerToggle ties together the the proper interactions
-        // between the sliding drawer and the action bar app icon
-        mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-        mDrawerLayout, /* DrawerLayout object */
-        R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-        R.string.drawer_open, /* "open drawer" description for accessibility */
-        R.string.drawer_close /* "close drawer" description for accessibility */
+        mDrawerToggle = new ActionBarDrawerToggle(this,
+	        mDrawerLayout,
+	        R.drawable.ic_drawer, 
+	        R.string.drawer_open,
+	        R.string.drawer_close
         ) {
             @Override
             public void onDrawerClosed(View view) {
@@ -82,14 +83,12 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         mMenu = menu;
-
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        // ActionBarDrawerToggle will take care of this.
+    	// toggle the drawer using the action bar's icon position
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -97,7 +96,7 @@ public abstract class BaseDrawerActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /* The click listner for ListView in the navigation drawer */
+    // click listener for nav drawer list view
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -105,18 +104,24 @@ public abstract class BaseDrawerActivity extends BaseActivity {
         }
     }
 
+    // select the item of drawer at given position
     private void selectItem(int position) {
         String item = mDrawerItems[position];
+        
         if (item.equals("About")) {
             getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+            
+            // change to about page
             AboutFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame);
         } else if (item.equals("Home")) {
-            Bundle args = new Bundle();
+        	getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        
+            // change the home page
+        	Bundle args = new Bundle();
             args.putString(RecipeListFragment.KEY_CATEGORY, RecipeHelper.Category.LATEST.toString());
-
             RecipeListFragment.findOrCreateFragment(getSupportFragmentManager(),
                     R.id.content_frame, args);
-            getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+            
         } else if (item.equals("My Recipes")) {
             getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
@@ -143,18 +148,6 @@ public abstract class BaseDrawerActivity extends BaseActivity {
 
         mDrawerList.setItemChecked(position, true);
         mDrawerLayout.closeDrawer(mDrawerList);
-        /*
-         * // update the main content by replacing fragments Fragment fragment = new
-         * PlanetFragment(); Bundle args = new Bundle();
-         * args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position); fragment.setArguments(args);
-         * 
-         * FragmentManager fragmentManager = getFragmentManager();
-         * fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-         * 
-         * // update selected item and title, then close the drawer
-         * mDrawerList.setItemChecked(position, true); setTitle(mDrawerItems[position]);
-         * mDrawerLayout.closeDrawer(mDrawerList);
-         */
     }
 
     /**
@@ -165,14 +158,14 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
+        // Sync the toggle state after onRestoreInstanceState
         mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggls
+        // pass config changes to drawer toggle
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 }

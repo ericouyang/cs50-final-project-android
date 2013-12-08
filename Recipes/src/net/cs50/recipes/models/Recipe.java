@@ -1,8 +1,9 @@
-package net.cs50.recipes.types;
+package net.cs50.recipes.models;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.cs50.recipes.R;
 import net.cs50.recipes.util.HttpHelper;
 
 import org.json.JSONArray;
@@ -11,8 +12,10 @@ import org.json.JSONObject;
 import android.text.format.Time;
 import android.util.Log;
 
+// class to represent recipe in memory
 public class Recipe {
     private final String TAG = "Recipe";
+    
     private int mId;
     private final String mRecipeId;
     private final String mName;
@@ -25,6 +28,8 @@ public class Recipe {
     private boolean mCurrentUserLiked;
     private final long mCreatedAt;
     private long mUpdatedAt;
+    
+    private final String DEFAULT_USER_NAME = "John Harvard";
 
     public Recipe(int id, String recipeId, String name, int likes, long createdAt, long updatedAt) {
         Log.i("Recipe", "num likes " + likes);
@@ -63,7 +68,7 @@ public class Recipe {
     }
 
     public String getUserName() {
-        return "Fred W";
+        return DEFAULT_USER_NAME;
     }
 
     public long getCreatedAt() {
@@ -126,7 +131,7 @@ public class Recipe {
     }
 
     public Comment addComment(String content) {
-        Comment comment = new Comment(content);
+        Comment comment = new Comment(content, "", DEFAULT_USER_NAME, 0);
         if (mComments.add(comment)) {
             return comment;
         }
@@ -141,6 +146,7 @@ public class Recipe {
         return mComments;
     }
 
+    // construct json string representing comments in memory
     public String getCommentsJSONString() {
         try {
             JSONArray array = new JSONArray();
@@ -168,6 +174,7 @@ public class Recipe {
         return mComments.size();
     }
 
+    // toggle like on recipe
     public boolean toggleLike() {
         boolean changePerformed;
 

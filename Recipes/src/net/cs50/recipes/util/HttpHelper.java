@@ -14,9 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.cs50.recipes.BaseActivity;
-import net.cs50.recipes.SyncUtils;
+import net.cs50.recipes.models.Recipe;
 import net.cs50.recipes.provider.RecipeContract;
-import net.cs50.recipes.types.Recipe;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -34,15 +33,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+// helper class to perform HTTP requests
 public class HttpHelper {
     private static final String TAG = "HttpHelper";
 
+    // url paths
     private static final String BASE_URL = "http://nom.hrvd.io/";
-
     private static final String CREATE_USER_URI = "user/create";
-
     private static final String AUTHORIZE_USER_URI = "authorize/";
-
     private static final String RECIPE_URI = "recipe";
 
     // Network connection timeout, in milliseconds.
@@ -53,6 +51,7 @@ public class HttpHelper {
 
     private static String mAuthToken = null;
 
+    /* app currently does not support user signups via the mobile app
     public static String signUp(String firstName, String lastName, String username, String password)
             throws Exception {
         List<NameValuePair> params = new ArrayList<NameValuePair>(4);
@@ -76,7 +75,9 @@ public class HttpHelper {
 
         return authToken;
     }
-
+	*/
+    
+    // authorize the user, return the auth token
     public static String authorize(String username, String password) {
         List<NameValuePair> params = new ArrayList<NameValuePair>(2);
         params.add(new BasicNameValuePair("username", username));
@@ -105,6 +106,7 @@ public class HttpHelper {
         return authToken;
     }
 
+    // like the given recipe
     public static boolean like(String id) {
         try {
             InputStream stream = getStream(RECIPE_URI + "/" + id + "/like", "POST", true);
@@ -121,6 +123,7 @@ public class HttpHelper {
         return false;
     }
 
+    // unlike the given recipe
     public static boolean unlike(String id) {
         try {
             InputStream stream = getStream(RECIPE_URI + "/" + id + "/like", "DELETE", true);
@@ -136,7 +139,8 @@ public class HttpHelper {
 
         return false;
     }
-
+    
+    // add a given comment a notify data change via content resolver
     public static boolean addComment(ContentResolver cr, Uri recipeUri, String recipeId,
             String content) {
         List<NameValuePair> params = new ArrayList<NameValuePair>(1);
@@ -161,22 +165,29 @@ public class HttpHelper {
         return false;
     }
 
+    // get HTTP stream (cascading function, see below)
     public static InputStream getStream(String uri, String requestMethod,
             List<NameValuePair> params, boolean includeAuthToken) throws IOException {
+    	
+    	// helpful logging for debugging
         Log.i(TAG, "Uri: " + uri);
         Log.i(TAG, "Request Method: " + requestMethod);
         Log.i(TAG, "Include Auth Token: " + includeAuthToken);
+        
+        // setup URL connection
         URL url = new URL(BASE_URL + uri);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(NET_READ_TIMEOUT_MILLIS /* milliseconds */);
-        conn.setConnectTimeout(NET_CONNECT_TIMEOUT_MILLIS /* milliseconds */);
+        conn.setReadTimeout(NET_READ_TIMEOUT_MILLIS);
+        conn.setConnectTimeout(NET_CONNECT_TIMEOUT_MILLIS);
         conn.setRequestMethod(requestMethod);
         conn.setDoInput(true);
 
+        // set up request parameters, if needed
         if (params != null || includeAuthToken) {
             conn.setDoOutput(true);
 
             if (includeAuthToken) {
+            	// add auth token to parameters to be sent
                 if (params == null) {
                     params = new ArrayList<NameValuePair>(1);
                 }
@@ -185,6 +196,7 @@ public class HttpHelper {
 
             Log.i(TAG, "Params: " + params.toString());
 
+            // write parameters to output stream
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
             writer.write(URLEncodedUtils.format(params, "UTF-8"));
@@ -193,31 +205,38 @@ public class HttpHelper {
             os.close();
         }
 
+        // connect to server
         conn.connect();
 
         Log.i(TAG, conn.getHeaderFields().toString());
 
+        // return input stream for further processing
         return new BufferedInputStream(conn.getInputStream());
     }
 
+    // simplified version of getStream(), allows for a specific request method
     public static InputStream getStream(String uri, String requestMethod) throws IOException {
         return getStream(uri, requestMethod, null);
     }
 
+    // simplified version of getStream(), allows for setting request method and parameters
     public static InputStream getStream(String uri, String requestMethod, List<NameValuePair> params)
             throws IOException {
         return getStream(uri, requestMethod, params, false);
     }
 
+   // simplified version of getStream(), allows for specific request method and the inclusion of an auth token
     public static InputStream getStream(String uri, String requestMethod, boolean includeAuthToken)
             throws IOException {
         return getStream(uri, requestMethod, null, includeAuthToken);
     }
 
+   // simplified version of getStream(), just perform a GET request on URL
     public static InputStream getStream(String uri) throws IOException {
         return getStream(uri, "GET");
     }
 
+    // convert InputString to String
     public static String getString(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buffer = new byte[4096];
@@ -228,21 +247,23 @@ public class HttpHelper {
         return new String(out.toByteArray());
     }
 
+    // perform a POST request to upload recipe
     public static boolean uploadRecipe(ContentResolver cr, Bitmap bitmap, String name,
             List<String> ingredients, List<String> instructions) {
+    	
+    	// setup params
         List<NameValuePair> params = new ArrayList<NameValuePair>(2);
         params.add(new BasicNameValuePair("userId", Integer.toString(1)));
         params.add(new BasicNameValuePair("name", name));
-
         for (int i = 0; i < ingredients.size(); i++) {
             params.add(new BasicNameValuePair("ingredients[" + i + "]", ingredients.get(i)));
         }
-
         for (int i = 0; i < instructions.size(); i++) {
             params.add(new BasicNameValuePair("instructions[" + i + "]", instructions.get(i)));
         }
 
         try {
+        	// perform POST
             InputStream is = getStream(RECIPE_URI + "/create", "POST", params, true);
 
             JSONObject o = new JSONObject(getString(is));
@@ -250,6 +271,7 @@ public class HttpHelper {
 
             Recipe r = RecipeHelper.getRecipe(o);
 
+            // next step: upload image
             return uploadImage(cr, r.getRecipeId(), bitmap);
         } catch (Exception e) {
             Log.e(TAG, "Error occured while uploading recipe", e);
@@ -257,12 +279,14 @@ public class HttpHelper {
         }
     }
 
+    // constants for performing our form upload
     private static final String ATTACHMENT_NAME = "image";
     private static final String ATTACHMENT_FILE_NAME = "image.png";
     private static final String CRLF = "\r\n";
     private static final String TWO_HYPHENS = "--";
     private static final String BOUNDARY = "----NomAndroid";
 
+    // upload image -- based on tutorials below:
     // http://sunil-android.blogspot.com/2013/03/image-upload-on-server.html
     // http://stackoverflow.com/questions/11766878/sending-files-using-post-with-httpurlconnection
     private static boolean uploadImage(ContentResolver cr, String id, Bitmap image) {
@@ -272,28 +296,32 @@ public class HttpHelper {
             stream.close();
             byte[] bytes = stream.toByteArray();
 
+            // setup HTTPURLConnection
             HttpURLConnection httpUrlConnection = null;
             URL url = new URL(BASE_URL + RECIPE_URI + "/" + id + "/uploadImages?access_token="
                     + BaseActivity.getAccessToken());
             httpUrlConnection = (HttpURLConnection) url.openConnection();
             httpUrlConnection.setUseCaches(false);
             httpUrlConnection.setDoOutput(true);
-
             httpUrlConnection.setRequestMethod("POST");
             httpUrlConnection.setRequestProperty("Connection", "Keep-Alive");
             httpUrlConnection.setRequestProperty("Cache-Control", "no-cache");
             httpUrlConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary="
                     + BOUNDARY);
 
+            // begin output
             DataOutputStream request = new DataOutputStream(httpUrlConnection.getOutputStream());
 
+            // begin content
             request.writeBytes(TWO_HYPHENS + BOUNDARY + CRLF);
             request.writeBytes("Content-Disposition: form-data; name=\"" + ATTACHMENT_NAME
                     + "\";filename=\"" + ATTACHMENT_FILE_NAME + "\"" + CRLF);
             request.writeBytes(CRLF);
 
+            // write image to stream
             request.write(bytes);
 
+            // end content
             request.writeBytes(CRLF);
             request.writeBytes(TWO_HYPHENS + BOUNDARY + TWO_HYPHENS + CRLF);
 
@@ -302,6 +330,7 @@ public class HttpHelper {
 
             Log.i(TAG, httpUrlConnection.getHeaderFields().toString());
 
+            // get response from server
             InputStream is = new BufferedInputStream(httpUrlConnection.getInputStream());
 
             JSONObject o = new JSONObject(getString(is));
@@ -309,6 +338,7 @@ public class HttpHelper {
 
             Recipe r = RecipeHelper.getRecipe(o);
 
+            // set up content to be inserted into local database via content provider
             ContentValues cv = new ContentValues();
             cv.put(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getRecipeId());
             cv.put(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName());
@@ -320,7 +350,10 @@ public class HttpHelper {
             cv.put(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt());
             cv.put(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, r.getUpdatedAt());
 
+            // insert new recipe
             cr.insert(RecipeContract.Recipe.CONTENT_URI, cv);
+            
+            // notify listeners that change has occurred
             cr.notifyChange(RecipeContract.Recipe.CONTENT_URI, null, false);
             return true;
         } catch (Exception e) {
@@ -329,6 +362,7 @@ public class HttpHelper {
         }
     }
 
+    // task to add recipe asynchronously
     public static class AddRecipeAsyncTask extends AsyncTask<Object, Void, Boolean> {
         @SuppressWarnings("unchecked")
         @Override
@@ -338,6 +372,7 @@ public class HttpHelper {
         }
     }
 
+    // task to add comment asynchronously
     public static class AddCommentAsyncTask extends AsyncTask<Object, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Object... params) {
@@ -346,6 +381,7 @@ public class HttpHelper {
         }
     }
 
+    // task to like recipe asynchronously
     public static class LikeAsyncTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {
@@ -353,6 +389,7 @@ public class HttpHelper {
         }
     }
 
+    // task to unlike recipe asynchronously
     public static class UnlikeAsyncTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {
