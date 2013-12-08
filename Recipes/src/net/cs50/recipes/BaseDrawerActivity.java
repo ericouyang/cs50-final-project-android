@@ -1,8 +1,10 @@
 package net.cs50.recipes;
 
 import net.cs50.recipes.accounts.AuthenticatorActivity;
+import net.cs50.recipes.util.RecipeHelper;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,6 +31,8 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     private CharSequence mTitle;
     private String[] mDrawerItems;
 
+    private Menu mMenu;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,16 +83,13 @@ public abstract class BaseDrawerActivity extends BaseActivity {
         }
     }
 
-    /* Called whenever we call invalidateOptionsMenu() */
-    /*
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        mMenu = menu;
         
         return super.onPrepareOptionsMenu(menu);
     }
-	*/
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -117,7 +119,20 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     		fragment = new AboutFragment();
     	}
     	
-    	if (item.equals("Logout"))
+    	if (item.equals("Home"))
+    	{
+    		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+    	}
+    	else if (item.equals("My Recipes"))
+    	{
+    		getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+    		
+    		Bundle args = new Bundle();
+    	    args.putString(RecipeListFragment.KEY_CATEGORY, RecipeHelper.Category.MY_RECIPES.toString());
+    	    
+            RecipeListFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame, args);
+    	}
+    	else if (item.equals("Logout"))
     	{
     		SyncUtils.getAccountManager().removeAccount(SyncUtils.getCurrentAccount(), new AccountManagerCallback<Boolean>() {
 

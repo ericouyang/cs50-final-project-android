@@ -209,6 +209,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, match.getName())
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, match.getIngredientsJSONString())
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS, match.getInstructionsJSONString())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_COMMENTS, match.getCommentsJSONString())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_LIKES, match.getNumLikes())
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, match.getImage(0))
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, match.getUpdatedAt())
                             .build());
@@ -237,6 +239,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, r.getIngredientsJSONString())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS, r.getInstructionsJSONString())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_COMMENTS, r.getCommentsJSONString())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_LIKES, r.getNumLikes())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, r.getImage(0))
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, r.getUpdatedAt())

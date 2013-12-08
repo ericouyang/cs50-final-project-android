@@ -45,10 +45,12 @@ public class RecipeHelper {
             JSONObject recipe = recipes.getJSONObject(i);
             String recipeId = recipe.getString("id");
             String name = recipe.getString("name");
+            int likes = recipe.getInt("votes");
+            Log.i(TAG, "num likes " + likes);
             long createdAt = recipe.getLong("createdAt");
             long updatedAt = recipe.getLong("updatedAt");
 
-            Recipe r = new Recipe(recipeId, name, createdAt, updatedAt);
+            Recipe r = new Recipe(recipeId, name, likes, createdAt, updatedAt);
 
             JSONArray images = recipe.optJSONArray("images");
             if (images != null) {
@@ -62,7 +64,7 @@ public class RecipeHelper {
             if (comments != null) {
                 for (int j = 0, commentsLen = comments.length(); j < commentsLen; j++) {
                     JSONObject comment = comments.getJSONObject(j);
-                    r.addComment(comment.getString("content"), comment.getString("userId"),
+                    r.addComment(comment.getString("content"), comment.getString("userId"), comment.getString("userName"),
                             comment.getLong("createdAt"));
                 }
             }
@@ -86,23 +88,26 @@ public class RecipeHelper {
     }
 
     public static List<Recipe> query(Category c, Context context) {
-    	String sortOrder = null;
+    	Log.i(TAG, "query for " + c);
     	
+    	String sortOrder = null;
+    	String selection = null;
         switch (c) {
-        case TOP:
-        	sortOrder = RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc";
-        	break;
-        case LATEST:
-        	sortOrder = RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc";
-        	break;
-        case MY_RECIPES:
+	        case TOP:
+	        	sortOrder = RecipeContract.Recipe.COLUMN_NAME_LIKES + " desc";
+	        	break;
+	        case MY_RECIPES:
+	        	selection = RecipeContract.Recipe.COLUMN_NAME_USER_ID + "=1";
+	        case LATEST:
+	        	sortOrder = RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + " desc";
+	        	break;
         }
 
         Uri recipeUrl = RecipeContract.BASE_CONTENT_URI.buildUpon()
                 .appendPath(RecipeContract.Recipe.TABLE_NAME).build();
 
         Cursor cursor = context.getContentResolver().query(recipeUrl,
-                RecipeContract.Recipe.PROJECTION_ALL_FIELDS, null, null, sortOrder);
+                RecipeContract.Recipe.PROJECTION_ALL_FIELDS, selection, null, sortOrder);
 
         List<Recipe> recipes = new ArrayList<Recipe>();
 
@@ -146,18 +151,23 @@ public class RecipeHelper {
                 .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INGREDIENTS);
         String instructionsJSONString = cursor
                 .getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_INSTRUCTIONS);
+        int likes = cursor
+                .getInt(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_LIKES);
+        String commentsJSONString = cursor
+        		.getString(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_COMMENTS);
         long createdAt = cursor
                 .getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT);
         long updatedAt = cursor
                 .getLong(RecipeContract.Recipe.PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT);
 
-        Recipe r = new Recipe(id, recipeId, name, createdAt, updatedAt);
+        Recipe r = new Recipe(id, recipeId, name, likes, createdAt, updatedAt);
         if (primaryImageURL != null && !primaryImageURL.isEmpty()) {
             r.addImage(primaryImageURL);
         }
 
         JSONArray ingredientsJSONArray = null;
         JSONArray instructionsJSONArray = null;
+        JSONArray commentsJSONArray = null;
         try {
             if (ingredientsJSONString != null) {
                 ingredientsJSONArray = new JSONArray(ingredientsJSONString);
@@ -174,6 +184,16 @@ public class RecipeHelper {
                         r.addInstruction(instructionsJSONArray.getString(i));
                     }
                 }
+            }
+            if (commentsJSONString != null) {
+            	commentsJSONArray = new JSONArray(commentsJSONString);
+            	if (commentsJSONArray != null) {
+            		for (int i = 0; i < commentsJSONArray.length(); i++)
+            		{
+            			JSONObject comment = commentsJSONArray.getJSONObject(i);
+            			r.addComment(comment.getString("content"), comment.getString("userId"), comment.getString("userName"), comment.getLong("createdAt"));
+            		}
+            	}
             }
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON: " + e.toString());
