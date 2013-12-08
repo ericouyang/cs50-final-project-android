@@ -46,7 +46,7 @@ public class ImageHelper {
             }
         };
 
-        Log.i(TAG, "Image Cache Created");
+        Log.i(TAG, "Image Cache Created. Size: " + cacheSize);
     }
 
     private ImageHelper() {
