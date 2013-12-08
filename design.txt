@@ -1,0 +1,18 @@
+	The centerpiece of the project is the Android mobile application, which allows users to discover, share, and upvote recipes. On the application, users are able to take photos of their recipes, share them with other users, browse recipes, and upvote (“nom”) ones that they like. 
+
+	We split the main activities into 3 classes - Home, View, and Create. Home enables you to view all of the recipes and order them according to “Latest” and “Top”. It also is the portal to the other activities, as well as minor activities and actions such as the About page and logging out. The View Activity allows you to view the details of a recipe, including the ingredients and instructions to make the dish. It also gives you the option to “Nom” the recipe, or to comment on it to provide your feedback. The Create Activity, as its name suggests, allows you to create and share a recipe from scratch. You can add an image by taking a new photo or choosing an existing one, add the title of the recipe, as well as add, edit, and delete instructions and ingredients.
+
+	Behind the user interface, we have implemented various Android tools to facilitate authentication, synchronization, much in the background, so as to not hold up and lag the UI thread. The content provider, for examples, abstracts the database interactions for retrieving our saved local cache of recipes. The Sync Service allows for a specific user’s account to be synced on a time schedule and on demand. 
+
+	We’ve also implemented various helper classes in order for us to handle tasks like HTTP requests to our server, manage a memory cache of photos (so that they do not need to be reloaded on orientation changes and activity changes, such as from the main activity to the view recipe activity). The Recipe Helper also provides a List Adapter, which allows us to display them in a list view on the main activity, as well as an asynchronous loader to populate that adapter. This class also contains a JSON parser which takes the server response and turns it into an easily usable object (see below) for the content provider, list adapters, as well as other views.
+
+	Our program also consists of several models so that we can access in memory representations of our objects and perform high level tasks with them. We found this to be advantageous over built in implementations such as the database cursor because of the increased flexibility in representing complex recipes with lists of instructions, ingredients, and comments. 
+
+	In addition, we have created a web backend server with SailsJS on top of NodeJS that allows for user creation and authentication (via access tokens) as well as performs basic operations for recipes, including image uploads. Our SailsJS app implemented a MongoDB database to persist data to the server disk. We chose MongoDB over a database engine such as MySQL because it natively supports JSON (and thus nesting of objects, such as comments, within other objects, such as recipes). Our server provides the ability to store and edit data as well as serve up content efficiently and flexibly to the mobile application. Our web backend was created as a RESTFUL implementation of CRUD operations on users and recipes, which allowed us to easily administer the site through a REST client such as the Chrome extension, Postman.
+
+We’re serving this API as well as a simple splash page via nom.hrvd.io. 
+GitHub repo for the Android Application: https://github.com/ericouyang/cs50-final-project-android
+GitHub repo for the SailsJS Application: https://github.com/ericouyang/cs50-final-project-backend
+
+
+
