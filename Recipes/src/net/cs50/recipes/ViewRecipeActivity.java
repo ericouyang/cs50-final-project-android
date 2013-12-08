@@ -21,12 +21,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,12 +36,8 @@ public class ViewRecipeActivity extends BaseActivity {
     private ImageView mRecipeImageView;
     private TextView mRecipeUserName;
     private TextView mRecipeNoms;
-    private ListView mRecipeComments;
     private TextView mRecipeCreatedAt;
-    private ListView mRecipeIngredients;
-    private ListView mRecipeInstructions;
     private Recipe recipe;
-    private ArrayAdapter<Comment> commentsAdapter;
     private ShareActionProvider mShareActionProvider;
 
     private Uri recipeUri;
@@ -236,8 +230,8 @@ public class ViewRecipeActivity extends BaseActivity {
                 }
                 final Comment comment = (Comment) getChild(groupPosition, childPosition);
                 TextView commentItem = (TextView) convertView.findViewById(R.id.text_list_item);
-                commentItem.setText("\"" + comment.getContent() + "\"" + " from " + comment.getUserName() + " on "
-                        + comment.getCreatedAt());
+                commentItem.setText("\"" + comment.getContent() + "\"" + " from "
+                        + comment.getUserName() + " on " + comment.getCreatedAt());
                 break;
             }
 
