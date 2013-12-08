@@ -65,6 +65,10 @@ public class RecipeContract {
 
         public static final String COLUMN_NAME_USER_ID = "user_id";
         
+        public static final String COLUMN_NAME_LIKES = "likes";
+        
+        public static final String COLUMN_NAME_COMMENTS = "comments";
+        
         public static final String COLUMN_NAME_CREATED_AT = "created_at";
 
         public static final String COLUMN_NAME_UPDATED_AT = "updated_at";
@@ -82,6 +86,8 @@ public class RecipeContract {
             COLUMN_NAME_TAGS,
             COLUMN_NAME_PRIMARY_IMAGE_URL,
             COLUMN_NAME_USER_ID,
+            COLUMN_NAME_LIKES,
+            COLUMN_NAME_COMMENTS,
             COLUMN_NAME_CREATED_AT,
             COLUMN_NAME_UPDATED_AT
         };
@@ -96,7 +102,9 @@ public class RecipeContract {
         public static final int PROJECTION_ALL_FIELDS_COLUMN_TAGS = 6;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_PRIMARY_IMAGE_URL = 7;
         public static final int PROJECTION_ALL_FIELDS_COLUMN_USER_ID = 8;
-        public static final int PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT = 9;
-        public static final int PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT = 10;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_LIKES = 9;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_COMMENTS = 10;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_CREATED_AT = 11;
+        public static final int PROJECTION_ALL_FIELDS_COLUMN_UPDATED_AT = 12;
     }
 }

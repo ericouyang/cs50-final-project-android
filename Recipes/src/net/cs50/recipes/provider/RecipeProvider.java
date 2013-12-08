@@ -215,19 +215,10 @@ public class RecipeProvider extends ContentProvider {
                         RecipeContract.Recipe.COLUMN_NAME_TAGS + TYPE_TEXT + COMMA_SEP +
                         RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL + TYPE_TEXT + COMMA_SEP +
                         RecipeContract.Recipe.COLUMN_NAME_USER_ID + TYPE_TEXT + COMMA_SEP +
+                        RecipeContract.Recipe.COLUMN_NAME_LIKES + TYPE_INTEGER + COMMA_SEP +
+                        RecipeContract.Recipe.COLUMN_NAME_COMMENTS + TYPE_TEXT + COMMA_SEP +
                         RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + TYPE_INTEGER + COMMA_SEP +
                         RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT + TYPE_INTEGER +
-                ")";
-        
-        /** SQL statement to create "comment" table. */
-        private static final String SQL_CREATE_COMMENTS_TABLE =
-                "CREATE TABLE " + CommentContract.Comment.TABLE_NAME + " (" +
-                		CommentContract.Comment._ID + " INTEGER PRIMARY KEY," + 
-                		CommentContract.Comment.COLUMN_NAME_RECIPE_ID + TYPE_TEXT + COMMA_SEP +
-                        CommentContract.Comment.COLUMN_NAME_CONTENT + TYPE_TEXT + COMMA_SEP +
-                        CommentContract.Comment.COLUMN_NAME_USER_ID + TYPE_TEXT + COMMA_SEP +
-                        CommentContract.Comment.COLUMN_NAME_CREATED_AT + TYPE_INTEGER + COMMA_SEP +
-                        CommentContract.Comment.COLUMN_NAME_UPDATED_AT + TYPE_INTEGER +
                 ")";
 
         /** SQL statement to drop "entry" table. */
@@ -241,7 +232,6 @@ public class RecipeProvider extends ContentProvider {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(SQL_CREATE_RECIPES_TABLE);
-            db.execSQL(SQL_CREATE_COMMENTS_TABLE);
         }
 
         @Override
