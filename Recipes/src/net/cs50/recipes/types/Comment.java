@@ -5,6 +5,7 @@ public class Comment {
 	private String mContent;
 	private final User mUser;
 	private final String mUserId;
+	private final String mUserName;
 	private final long mCreatedAt;
 	private long mUpdatedAt;
 	
@@ -18,12 +19,13 @@ public class Comment {
 		this(0, content, user, createdAt, updatedAt);
 	}
 	
-	public Comment(String content, String userId, long createdAt)
+	public Comment(String content, String userId, String userName, long createdAt)
 	{
 		mId = 0;
 		mContent = content;
 		mUser = null;
 		mUserId = userId;
+		mUserName = userName;
 		mCreatedAt = createdAt;
 		mUpdatedAt = 0;
 	}
@@ -34,9 +36,15 @@ public class Comment {
 		mContent = content;
 		mUser = user;
 		if (user != null)
+		{
 			mUserId = user.getUserId();
+			mUserName = "";
+		}
 		else
+		{
 			mUserId = "";
+			mUserName = "";
+		}
 		mCreatedAt = createdAt;
 		mUpdatedAt = updatedAt;
 	}
@@ -59,6 +67,10 @@ public class Comment {
 
 	public User getUser() {
 		return mUser;
+	}
+	
+	public String getUserName() {
+		return mUserName;
 	}
 
 	public long getCreatedAt() {

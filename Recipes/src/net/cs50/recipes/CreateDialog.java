@@ -2,7 +2,6 @@ package net.cs50.recipes;
 
 import java.io.File;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -13,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 
 public class CreateDialog extends DialogFragment implements OnClickListener {
 
@@ -25,6 +25,8 @@ public class CreateDialog extends DialogFragment implements OnClickListener {
     private Action selected = Action.IMAGE_CAPTURE;
 
     private File imageFile;
+
+    private Fragment context;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -49,6 +51,14 @@ public class CreateDialog extends DialogFragment implements OnClickListener {
             selected = Action.values()[which];
             break;
         }
+    }
+
+    public void setFragmentContext(Fragment context) {
+        this.context = context;
+    }
+
+    public File getImageFile() {
+        return imageFile;
     }
 
     private void onOK() {
@@ -81,7 +91,11 @@ public class CreateDialog extends DialogFragment implements OnClickListener {
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
-        startActivityForResult(intent, selected.ordinal());
+        if (context != null) {
+            context.startActivityForResult(intent, selected.ordinal());
+        } else {
+            getActivity().startActivityForResult(intent, selected.ordinal());
+        }
     }
 
     private void showGallery() {
@@ -89,24 +103,11 @@ public class CreateDialog extends DialogFragment implements OnClickListener {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, selected.ordinal());
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            Intent intent = new Intent(getActivity(), CreateActivity.class);
-            switch (CreateDialog.Action.values()[requestCode]) {
-            case IMAGE_CAPTURE:
-                intent.setData(Uri.fromFile(imageFile));
-                break;
-            case IMAGE_SELECT:
-                intent.setData(data.getData());
-                break;
-            }
-            startActivity(intent);
+        if (context != null) {
+            context.startActivityForResult(intent, selected.ordinal());
+        } else {
+            getActivity().startActivityForResult(intent, selected.ordinal());
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

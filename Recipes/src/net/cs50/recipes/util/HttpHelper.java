@@ -73,10 +73,12 @@ public class HttpHelper {
 		{
 			InputStream stream = getStream(AUTHORIZE_USER_URI, "POST", params);
             
-            JSONObject user = (JSONObject) new JSONTokener(getString(stream)).nextValue();
-            authToken = user.getString("access_token");
-            
-            Log.i(TAG, authToken);
+            JSONObject res = (JSONObject) new JSONTokener(getString(stream)).nextValue();
+            if (res.has("access_token"))
+            {
+            	authToken = res.getString("access_token");
+            	Log.i(TAG, authToken);
+            }
             
         } catch (JSONException e) {
         	Log.e(TAG, "Error parsing JSON: " + e.toString());

@@ -26,8 +26,8 @@ import net.cs50.recipes.util.RecipeHelper.Category;
 import net.cs50.recipes.util.RecipeHelper.RecipeAdapter;
 import net.cs50.recipes.util.RecipeHelper.RecipeLoader;
 import android.accounts.Account;
-import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
@@ -73,6 +73,8 @@ public class RecipeListFragment extends ListFragment implements
 
     private static final String TAG = "RecipeListFragment";
 
+    public static final String KEY_CATEGORY = "category";
+
     private RecipeAdapter mAdapter;
 
     private List<Recipe> mRecipes;
@@ -93,6 +95,10 @@ public class RecipeListFragment extends ListFragment implements
 
     private OnNavigationListener mOnNavigationListener;
 
+    private boolean mShowButtons = true;
+
+    private CreateDialog createDialog;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the fragment (e.g. upon
      * screen orientation changes).
@@ -100,7 +106,8 @@ public class RecipeListFragment extends ListFragment implements
     public RecipeListFragment() {
     }
 
-    public static RecipeListFragment findOrCreateFragment(FragmentManager fm, int containerId) {
+    public static RecipeListFragment findOrCreateFragment(FragmentManager fm, int containerId,
+            Bundle bundle) {
         Log.i(TAG, "attempting to reload old fragment");
 
         RecipeListFragment fragment = (RecipeListFragment) fm.findFragmentByTag(TAG);
@@ -108,13 +115,19 @@ public class RecipeListFragment extends ListFragment implements
             Log.i(TAG, "no old fragment, creating a new one");
             fragment = new RecipeListFragment();
             fm.beginTransaction().add(containerId, fragment, TAG).commit();
-        }
+            fragment.setArguments(bundle);
+        } else {
+            fragment.updateCategory(Category.valueOf(bundle.getString(KEY_CATEGORY)));
 
+        }
         return fragment;
     }
 
     public void updateCategory(Category category) {
         mRecipeLoader.setCategory(category);
+        if (category == RecipeHelper.Category.MY_RECIPES) {
+            mShowButtons = false;
+        }
     }
 
     @Override
@@ -169,8 +182,9 @@ public class RecipeListFragment extends ListFragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        mOptionsMenu = menu;
         inflater.inflate(R.menu.main, menu);
+
+        mOptionsMenu = menu;
 
         mOnNavigationListener = new OnNavigationListener() {
             // Get the same strings provided for the drop-down's ArrayAdapter
@@ -195,8 +209,6 @@ public class RecipeListFragment extends ListFragment implements
         SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.home_filters_list, android.R.layout.simple_spinner_dropdown_item);
 
-        getActivity().getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
         getActivity().getActionBar().setListNavigationCallbacks(mSpinnerAdapter,
                 mOnNavigationListener);
     }
@@ -207,8 +219,9 @@ public class RecipeListFragment extends ListFragment implements
 
         switch (item.getItemId()) {
         case R.id.menu_add:
-            CreateDialog dialog = new CreateDialog();
-            dialog.show(getFragmentManager(), CreateDialog.TAG);
+            createDialog = new CreateDialog();
+            createDialog.setFragmentContext(this);
+            createDialog.show(getFragmentManager(), CreateDialog.TAG);
             return true;
         case R.id.menu_refresh:
             Log.i(TAG, "Refreshing...");
@@ -230,6 +243,24 @@ public class RecipeListFragment extends ListFragment implements
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            Intent intent = new Intent(getActivity(), CreateActivity.class);
+            switch (CreateDialog.Action.values()[requestCode]) {
+            case IMAGE_CAPTURE:
+                intent.setData(Uri.fromFile(createDialog.getImageFile()));
+                break;
+            case IMAGE_SELECT:
+                intent.setData(data.getData());
+                break;
+            }
+            startActivity(intent);
+        }
+        createDialog = null;
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     /**
      * Query the content provider for data.
      * 
@@ -240,11 +271,15 @@ public class RecipeListFragment extends ListFragment implements
      */
     @Override
     public Loader<List<Recipe>> onCreateLoader(int i, Bundle bundle) {
-
         Log.i(TAG, "loader created");
 
-        mRecipeLoader = new RecipeHelper.RecipeLoader(getActivity(), RecipeHelper.Category.LATEST);
+        Category category = Category.valueOf(getArguments().getString(KEY_CATEGORY));
 
+        mRecipeLoader = new RecipeHelper.RecipeLoader(getActivity(), category);
+
+        if (category == RecipeHelper.Category.MY_RECIPES) {
+            mShowButtons = false;
+        }
         return mRecipeLoader;
     }
 
