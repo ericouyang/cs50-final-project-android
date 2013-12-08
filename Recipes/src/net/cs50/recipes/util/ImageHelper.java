@@ -20,7 +20,7 @@ import android.widget.ImageView;
 
 public class ImageHelper {
 
-    public static final int IMAGE_LENGTH = 512;
+    public static final int IMAGE_LENGTH = 1024;
 
     private static final String TAG = "ImageHelper";
     private static final String REMOTE_URL = "http://ericouyang.com:1337/";

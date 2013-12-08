@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.cs50.recipes.util.HttpHelper;
 import net.cs50.recipes.util.ImageHelper;
 import android.app.ActionBar;
 import android.content.Context;
@@ -30,6 +31,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 public final class CreateActivity extends BaseActivity {
+
+    private static final String TAG = "create_activity";
 
     private static final int POPUP_HEIGHT = 122;
 
@@ -127,7 +130,22 @@ public final class CreateActivity extends BaseActivity {
         listAdapter = new ExpandableListAdapter();
         detailsListView.setAdapter(listAdapter);
 
+        Button createButton = (Button) findViewById(R.id.btn_create);
+        createButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startUpload();
+                finish();
+            }
+        });
+
         showImage();
+    }
+
+    private void startUpload() {
+        final String name = titleText.getText().toString();
+        new HttpHelper.AddRecipeAsyncTask().execute(getContentResolver(), image, name, ingredients,
+                instructions);
     }
 
     private void showImage() {

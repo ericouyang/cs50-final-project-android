@@ -5,15 +5,12 @@ import net.cs50.recipes.util.RecipeHelper;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -111,10 +108,8 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     private void selectItem(int position) {
         String item = mDrawerItems[position];
         if (item.equals("About")) {
-        	AboutFragment fragment = AboutFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame);
-        }
-
-        if (item.equals("Home")) {
+            AboutFragment.findOrCreateFragment(getSupportFragmentManager(), R.id.content_frame);
+        } else if (item.equals("Home")) {
             getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         } else if (item.equals("My Recipes")) {
             getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -123,8 +118,8 @@ public abstract class BaseDrawerActivity extends BaseActivity {
             args.putString(RecipeListFragment.KEY_CATEGORY,
                     RecipeHelper.Category.MY_RECIPES.toString());
 
-            RecipeListFragment fragment = RecipeListFragment.findOrCreateFragment(
-                    getSupportFragmentManager(), R.id.content_frame, args);
+            RecipeListFragment.findOrCreateFragment(getSupportFragmentManager(),
+                    R.id.content_frame, args);
         } else if (item.equals("Logout")) {
             SyncUtils.getAccountManager().removeAccount(SyncUtils.getCurrentAccount(),
                     new AccountManagerCallback<Boolean>() {
