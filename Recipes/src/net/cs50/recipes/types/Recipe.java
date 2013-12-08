@@ -3,12 +3,15 @@ package net.cs50.recipes.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.cs50.recipes.util.HttpHelper;
+
 import org.json.JSONArray;
 
 import android.text.format.Time;
 import android.util.Log;
 
 public class Recipe {
+	private final String TAG = "Recipe";
 	private int mId;
 	private final String mRecipeId;
 	private final String mName;
@@ -161,7 +164,21 @@ public class Recipe {
 	
 	public boolean toggleLike()
 	{
-		mCurrentUserLiked = !mCurrentUserLiked;
+		boolean changePerformed;
+		
+		Log.i(TAG, "Current User Liked " + mCurrentUserLiked);
+		if (mCurrentUserLiked)
+		{
+			changePerformed = HttpHelper.like(mRecipeId);
+		}
+		else
+		{
+			changePerformed = HttpHelper.unlike(mRecipeId);
+		}
+		if (changePerformed)
+			mCurrentUserLiked = !mCurrentUserLiked;
+		
+		Log.i(TAG, "Change user liked " + changePerformed);
 		return mCurrentUserLiked;
 	}
 }

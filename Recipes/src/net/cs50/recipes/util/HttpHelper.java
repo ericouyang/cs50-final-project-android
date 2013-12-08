@@ -11,6 +11,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.cs50.recipes.SyncUtils;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -19,22 +21,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 public class HttpHelper {
 	private static final String TAG = "HttpHelper";
 	
-    private static final String BASE_URL = "http://ericouyang.com:1337/";
+    private static final String BASE_URL = "http://nom.hrvd.io/";
 
     private static final String CREATE_USER_URI = "user/create";
     
-    private static final String AUTHORIZE_USER_URI = "authorize";
+    private static final String AUTHORIZE_USER_URI = "authorize/";
+    
+    private static final String RECIPE_URI = "recipe";
     
     // Network connection timeout, in milliseconds.
     private static final int NET_CONNECT_TIMEOUT_MILLIS = 15000;  // 15 seconds
 
     // Network read timeout, in milliseconds.
     private static final int NET_READ_TIMEOUT_MILLIS = 10000;  // 10 seconds
+    
+    private static String mAuthToken = null;
     
 	public static String signUp(String firstName, String lastName, String username, String password)
 			throws Exception 
@@ -77,6 +84,8 @@ public class HttpHelper {
             if (res.has("access_token"))
             {
             	authToken = res.getString("access_token");
+            	
+            	mAuthToken = authToken;
             	Log.i(TAG, authToken);
             }
             
@@ -89,6 +98,60 @@ public class HttpHelper {
         }
 
         return authToken;
+	}
+	
+	public static boolean like(String id)
+	{
+		try
+		{
+			InputStream stream = getStream(RECIPE_URI + id + "/like", "POST", true);
+            
+			if (getString(stream).equals("true"))
+				return true;
+        } catch (ClientProtocolException e) {
+        	e.printStackTrace();
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+
+        return false;
+	}
+	
+	public static boolean unlike(String id)
+	{
+		try
+		{
+			InputStream stream = getStream(RECIPE_URI + id + "/like", "DELETE", true);
+            
+			if (getString(stream).equals("true"))
+				return true;
+        } catch (ClientProtocolException e) {
+        	e.printStackTrace();
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+
+        return false;
+	}
+	
+	public static boolean addComment(String id, String content)
+	{
+		List<NameValuePair> params = new ArrayList<NameValuePair>(1);
+		params.add(new BasicNameValuePair("content", content));
+		
+		try
+		{
+			InputStream stream = getStream(RECIPE_URI + id + "/addComment", "POST", params, true);
+            
+			if (getString(stream).equals("true"))
+				return true;
+        } catch (ClientProtocolException e) {
+        	e.printStackTrace();
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+
+        return false;
 	}
 	
 	public static InputStream getStream(String uri, String requestMethod, List<NameValuePair> params, boolean includeAuthToken)
@@ -128,15 +191,20 @@ public class HttpHelper {
         return conn.getInputStream();
 	}
 	
+	public static InputStream getStream(String uri, String requestMethod) throws IOException
+	{
+		return getStream(uri, requestMethod, null);
+	}
+	
 	public static InputStream getStream(String uri, String requestMethod, List<NameValuePair> params) 
 		throws IOException
 	{
 		return getStream(uri, requestMethod, params, false);
 	}
 	
-	public static InputStream getStream(String uri, String requestMethod) throws IOException
+	public static InputStream getStream(String uri, String requestMethod, boolean includeAuthToken) throws IOException
 	{
-		return getStream(uri, requestMethod, null);
+		return getStream(uri, requestMethod, null, includeAuthToken);
 	}
 	
 	public static InputStream getStream(String uri) throws IOException
@@ -156,6 +224,9 @@ public class HttpHelper {
 	
 	private static String getAuthToken()
 	{
-		return "";
+		if (mAuthToken != null)
+			return mAuthToken;
+		return SyncUtils.getCurrentAuthToken();
 	}
+	
 }
