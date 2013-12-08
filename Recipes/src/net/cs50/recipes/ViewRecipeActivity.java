@@ -239,7 +239,7 @@ public class ViewRecipeActivity extends BaseActivity {
                 }
                 final Comment comment = (Comment) getChild(groupPosition, childPosition);
                 TextView commentItem = (TextView) convertView.findViewById(R.id.text_list_item);
-                commentItem.setText(comment.getContent() + " by " + comment.getUserName() + " on "
+                commentItem.setText("\"" + comment.getContent() + "\"" + " from " + comment.getUserName() + " on "
                         + comment.getCreatedAt());
                 break;
             }
