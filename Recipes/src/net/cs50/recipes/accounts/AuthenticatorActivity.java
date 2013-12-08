@@ -8,6 +8,7 @@ import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AuthenticatorActivity extends AccountAuthenticatorActivity{
 
@@ -195,37 +197,53 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
 				        protected Intent doInBackground(Void... params) {
 				            String authtoken = HttpHelper.authorize(mUsername, mPassword);
 				            
-				            final Intent res = new Intent();
-				            res.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
-				            res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
-				            res.putExtra(AccountManager.KEY_AUTHTOKEN, authtoken);
-				            res.putExtra(PARAM_USER_PASS, mPassword);
-				            return res;
+				            if (authtoken == null)
+				            {
+			            		return null;
+				            }
+				            else
+				            {
+					            final Intent res = new Intent();
+					            res.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
+					            res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
+					            res.putExtra(AccountManager.KEY_AUTHTOKEN, authtoken);
+					            res.putExtra(PARAM_USER_PASS, mPassword);
+					            return res;
+				            }
 				        }
 				        @Override
 				        protected void onPostExecute(Intent intent) {
-				            finishLogin(intent);
+				        		finishLogin(intent);
 				        }
 				    }.execute();
 				}
 	}
 	
 	private void finishLogin(Intent intent) {
-	    String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-	    String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
-	    final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
-	    if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
-	        String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-	        String authtokenType = mAuthTokenType;
-	        // Creating the account on the device and setting the auth token we got
-	        // (Not setting the auth token will cause another call to the server to authenticate the user)
-	        mAccountManager.addAccountExplicitly(account, accountPassword, null);
-	        mAccountManager.setAuthToken(account, authtokenType, authtoken);
-	    } else {
-	        mAccountManager.setPassword(account, accountPassword);
-	    }
-	    setAccountAuthenticatorResult(intent.getExtras());
-	    setResult(RESULT_OK, intent);
-	    finish();
+		if (intent != null)
+		{
+		    String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+		    String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
+		    final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+		    if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
+		        String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+		        String authtokenType = mAuthTokenType;
+		        // Creating the account on the device and setting the auth token we got
+		        // (Not setting the auth token will cause another call to the server to authenticate the user)
+		        mAccountManager.addAccountExplicitly(account, accountPassword, null);
+		        mAccountManager.setAuthToken(account, authtokenType, authtoken);
+		    } else {
+		        mAccountManager.setPassword(account, accountPassword);
+		    }
+		    setAccountAuthenticatorResult(intent.getExtras());
+		    setResult(RESULT_OK, intent);
+			
+		    finish();
+		}
+		else
+		{
+			showProgress(false);
+			Toast.makeText(this, "Please verify your credentials", Toast.LENGTH_SHORT).show();
+		}
 	}
 }
