@@ -48,8 +48,8 @@ public class CreateDialog extends DialogFragment implements OnClickListener {
             onOK();
             break;
         default:
-        	if (which < 0)
-        		which = 0;
+            if (which < 0)
+                which = 0;
             selected = Action.values()[which];
             break;
         }

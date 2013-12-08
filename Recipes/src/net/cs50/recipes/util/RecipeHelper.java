@@ -66,9 +66,9 @@ public class RecipeHelper {
         }
 
         JSONArray comments = recipe.optJSONArray("comments");
-       
+
         if (comments != null) {
-        	Log.i(TAG, comments.toString());
+            Log.i(TAG, comments.toString());
             for (int j = 0, commentsLen = comments.length(); j < commentsLen; j++) {
                 JSONObject comment = comments.getJSONObject(j);
                 r.addComment(comment.getString("content"), comment.getString("userId"),
@@ -191,7 +191,7 @@ public class RecipeHelper {
                 }
             }
             if (commentsJSONString != null) {
-            	Log.i(TAG, commentsJSONString);
+                Log.i(TAG, commentsJSONString);
                 commentsJSONArray = new JSONArray(commentsJSONString);
                 if (commentsJSONArray != null) {
                     for (int i = 0; i < commentsJSONArray.length(); i++) {

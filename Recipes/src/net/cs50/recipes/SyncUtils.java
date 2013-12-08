@@ -33,101 +33,95 @@ import android.util.Log;
  * Static helper methods for working with the sync framework.
  */
 public class SyncUtils {
-	private static final String TAG = "SyncUtils";
-	
-    private static final long SYNC_FREQUENCY = 60 * 60;  // 1 hour (in seconds)
+    private static final String TAG = "SyncUtils";
+
+    private static final long SYNC_FREQUENCY = 60 * 60; // 1 hour (in seconds)
     private static final String CONTENT_AUTHORITY = RecipeContract.CONTENT_AUTHORITY;
-    
+
     private static AccountManager mAccountManager;
-	
+
     private static String mAuthToken = null;
-    
-    public static void attachAccountManager(AccountManager accountManager)
-    {
-    	mAccountManager = accountManager;
+
+    public static void attachAccountManager(AccountManager accountManager) {
+        mAccountManager = accountManager;
     }
-    
-	public static AccountManager getAccountManager()
-	{
-		return mAccountManager;
-	}
-	
-    public static Account getCurrentAccount()
-	{
-		Account[] accounts = mAccountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);
-		Log.i(TAG, "num accounts " + accounts.length);
-		if (accounts.length > 0)
-			return accounts[0];
-		return null;
-	}
-    
+
+    public static AccountManager getAccountManager() {
+        return mAccountManager;
+    }
+
+    public static Account getCurrentAccount() {
+        Account[] accounts = mAccountManager.getAccountsByType(AccountService.ACCOUNT_TYPE);
+        Log.i(TAG, "num accounts " + accounts.length);
+        if (accounts.length > 0)
+            return accounts[0];
+        return null;
+    }
+
     /*
-    public static String getCurrentAuthToken()
-    {
-    	if (mAuthToken != null)
-    		return mAuthToken;
-    	
-    	AccountManagerFuture<Bundle> future = mAccountManager.getAuthToken(getCurrentAccount(), AccountService.AUTH_TOKEN_TYPE, null, null, null, null);
-    	try 
-    	{
-    		Bundle result = future.getResult();
-    		mAuthToken = result.getString(AccountManager.KEY_AUTHTOKEN);
-    		return mAuthToken;
-    	}
-    	catch (Exception e)
-    	{
-    		return "";
-    	}
-    	
-    }
-	*/
-    
+     * public static String getCurrentAuthToken() { if (mAuthToken != null) return mAuthToken;
+     * 
+     * AccountManagerFuture<Bundle> future = mAccountManager.getAuthToken(getCurrentAccount(),
+     * AccountService.AUTH_TOKEN_TYPE, null, null, null, null); try { Bundle result =
+     * future.getResult(); mAuthToken = result.getString(AccountManager.KEY_AUTHTOKEN); return
+     * mAuthToken; } catch (Exception e) { return ""; }
+     * 
+     * }
+     */
+
     /**
      * Create an entry for this application in the system account list, if it isn't already there.
-     *
-     * @param context Context
+     * 
+     * @param context
+     *            Context
      */
     public static void CreateSyncAccount(Context context) {
-    	
-        AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-        
-        AccountManagerFuture<Bundle> future = accountManager.addAccount(AccountService.ACCOUNT_TYPE, AccountService.AUTH_TOKEN_TYPE, null, null, (Activity) context, new AccountManagerCallback<Bundle>() {
-            @Override
-            public void run(AccountManagerFuture<Bundle> future) {
-                try {
-                    Bundle result = future.getResult();
-                    
-                    String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
-                    String accountType = result.getString(AccountManager.KEY_ACCOUNT_TYPE);	
-                    
-                    Account account = new Account(accountName, accountType);
-                    
-                    // Inform the system that this account supports sync
-                    ContentResolver.setIsSyncable(account, CONTENT_AUTHORITY, 1);
-                    // Inform the system that this account is eligible for auto sync when the network is up
-                    ContentResolver.setSyncAutomatically(account, CONTENT_AUTHORITY, true);
-                    // Recommend a schedule for automatic synchronization. The system may modify this based
-                    // on other scheduled syncs and network utilization.
-                    ContentResolver.addPeriodicSync(
-                            account, CONTENT_AUTHORITY, new Bundle(),SYNC_FREQUENCY);
-                    
-                    Log.d("SyncUtils", "AddNewAccount Bundle is " + result);
 
-                    TriggerRefresh(account);
-                    
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, null);
+        AccountManager accountManager = (AccountManager) context
+                .getSystemService(Context.ACCOUNT_SERVICE);
+
+        AccountManagerFuture<Bundle> future = accountManager.addAccount(
+                AccountService.ACCOUNT_TYPE, AccountService.AUTH_TOKEN_TYPE, null, null,
+                (Activity) context, new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        try {
+                            Bundle result = future.getResult();
+
+                            String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
+                            String accountType = result.getString(AccountManager.KEY_ACCOUNT_TYPE);
+
+                            Account account = new Account(accountName, accountType);
+
+                            // Inform the system that this account supports sync
+                            ContentResolver.setIsSyncable(account, CONTENT_AUTHORITY, 1);
+                            // Inform the system that this account is eligible for auto sync when
+                            // the network is up
+                            ContentResolver.setSyncAutomatically(account, CONTENT_AUTHORITY, true);
+                            // Recommend a schedule for automatic synchronization. The system may
+                            // modify this based
+                            // on other scheduled syncs and network utilization.
+                            ContentResolver.addPeriodicSync(account, CONTENT_AUTHORITY,
+                                    new Bundle(), SYNC_FREQUENCY);
+
+                            Log.d("SyncUtils", "AddNewAccount Bundle is " + result);
+
+                            TriggerRefresh(account);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, null);
     }
 
     /**
      * Helper method to trigger an immediate sync ("refresh").
-     *
-     * <p>This should only be used when we need to preempt the normal sync schedule. Typically, this
+     * 
+     * <p>
+     * This should only be used when we need to preempt the normal sync schedule. Typically, this
      * means the user has pressed the "refresh" button.
-     *
+     * 
      * Note that SYNC_EXTRAS_MANUAL will cause an immediate sync, without any optimization to
      * preserve battery life. If you know new data is available (perhaps via a GCM notification),
      * but the user is not actively waiting for that data, you should omit this flag; this will give
@@ -138,10 +132,9 @@ public class SyncUtils {
         // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        ContentResolver.requestSync(
-                account,      // Sync account
+        ContentResolver.requestSync(account, // Sync account
                 RecipeContract.CONTENT_AUTHORITY, // Content authority
-                b);                                      // Extras
+                b); // Extras
     }
-    
+
 }

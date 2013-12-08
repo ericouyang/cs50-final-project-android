@@ -118,7 +118,7 @@ public final class CreateActivity extends BaseActivity {
         detailsListView = (ExpandableListView) findViewById(R.id.list_create_details);
         listAdapter = new ExpandableListAdapter();
         detailsListView.setAdapter(listAdapter);
-        
+
         detailsListView.expandGroup(0);
         detailsListView.expandGroup(1);
 

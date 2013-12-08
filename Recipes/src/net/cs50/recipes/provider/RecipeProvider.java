@@ -83,8 +83,7 @@ public class RecipeProvider extends ContentProvider {
             builder.where(BaseColumns._ID + "=?", id);
         case ROUTE_RECIPES:
             // Return all known entries.
-            builder.table(RecipeContract.Recipe.TABLE_NAME)
-            .where(selection, selectionArgs);
+            builder.table(RecipeContract.Recipe.TABLE_NAME).where(selection, selectionArgs);
             Cursor c = builder.query(db, projection, sortOrder);
             // Note: Notification URI must be manually set here for loaders to correctly
             // register ContentObservers.
@@ -134,16 +133,13 @@ public class RecipeProvider extends ContentProvider {
         int count;
         switch (match) {
         case ROUTE_RECIPES:
-            count = builder.table(RecipeContract.Recipe.TABLE_NAME)
-            .where(selection, selectionArgs)
-            .delete(db);
+            count = builder.table(RecipeContract.Recipe.TABLE_NAME).where(selection, selectionArgs)
+                    .delete(db);
             break;
         case ROUTE_RECIPES_ID:
             String id = uri.getLastPathSegment();
             count = builder.table(RecipeContract.Recipe.TABLE_NAME)
-                    .where(BaseColumns._ID + "=?", id)
-                    .where(selection, selectionArgs)
-                    .delete(db);
+                    .where(BaseColumns._ID + "=?", id).where(selection, selectionArgs).delete(db);
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -166,15 +162,13 @@ public class RecipeProvider extends ContentProvider {
         int count;
         switch (match) {
         case ROUTE_RECIPES:
-            count = builder.table(RecipeContract.Recipe.TABLE_NAME)
-            .where(selection, selectionArgs)
-            .update(db, values);
+            count = builder.table(RecipeContract.Recipe.TABLE_NAME).where(selection, selectionArgs)
+                    .update(db, values);
             break;
         case ROUTE_RECIPES_ID:
             String id = uri.getLastPathSegment();
             count = builder.table(RecipeContract.Recipe.TABLE_NAME)
-                    .where(BaseColumns._ID + "=?", id)
-                    .where(selection, selectionArgs)
+                    .where(BaseColumns._ID + "=?", id).where(selection, selectionArgs)
                     .update(db, values);
             break;
         default:
@@ -188,7 +182,7 @@ public class RecipeProvider extends ContentProvider {
 
     /**
      * SQLite backend for @{link FeedProvider}.
-     *
+     * 
      * Provides access to an disk-backed, SQLite datastore which is utilized by FeedProvider. This
      * database should never be accessed by other parts of the application directly.
      */
@@ -204,26 +198,24 @@ public class RecipeProvider extends ContentProvider {
         private static final String COMMA_SEP = ",";
 
         /** SQL statement to create "recipe" table. */
-        private static final String SQL_CREATE_RECIPES_TABLE =
-                "CREATE TABLE " + RecipeContract.Recipe.TABLE_NAME + " (" +
-                		RecipeContract.Recipe._ID + " INTEGER PRIMARY KEY," + 
-                        RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_NAME + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_IMAGES + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_TAGS + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_USER_ID + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_LIKES + TYPE_INTEGER + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_COMMENTS + TYPE_TEXT + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + TYPE_INTEGER + COMMA_SEP +
-                        RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT + TYPE_INTEGER +
-                ")";
+        private static final String SQL_CREATE_RECIPES_TABLE = "CREATE TABLE "
+                + RecipeContract.Recipe.TABLE_NAME + " (" + RecipeContract.Recipe._ID
+                + " INTEGER PRIMARY KEY," + RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID + TYPE_TEXT
+                + COMMA_SEP + RecipeContract.Recipe.COLUMN_NAME_NAME + TYPE_TEXT + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_IMAGES + TYPE_TEXT + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS + TYPE_TEXT + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS + TYPE_TEXT + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_TAGS + TYPE_TEXT + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL + TYPE_TEXT + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_USER_ID + TYPE_TEXT + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_LIKES + TYPE_INTEGER + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_COMMENTS + TYPE_TEXT + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_CREATED_AT + TYPE_INTEGER + COMMA_SEP
+                + RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT + TYPE_INTEGER + ")";
 
         /** SQL statement to drop "entry" table. */
-        private static final String SQL_DELETE_RECIPES_TABLE =
-                "DROP TABLE IF EXISTS " + RecipeContract.Recipe.TABLE_NAME;
+        private static final String SQL_DELETE_RECIPES_TABLE = "DROP TABLE IF EXISTS "
+                + RecipeContract.Recipe.TABLE_NAME;
 
         public RecipeDatabase(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);

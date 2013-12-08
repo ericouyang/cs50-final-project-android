@@ -48,11 +48,13 @@ import android.util.Log;
 
 /**
  * Define a sync adapter for the app.
- *
- * <p>This class is instantiated in {@link SyncService}, which also binds SyncAdapter to the system.
+ * 
+ * <p>
+ * This class is instantiated in {@link SyncService}, which also binds SyncAdapter to the system.
  * SyncAdapter should only be initialized in SyncService, never anywhere else.
- *
- * <p>The system calls onPerformSync() via an RPC call through the IBinder object supplied by
+ * 
+ * <p>
+ * The system calls onPerformSync() via an RPC call through the IBinder object supplied by
  * SyncService.
  */
 class SyncAdapter extends AbstractThreadedSyncAdapter {
@@ -89,23 +91,24 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
      * required to read data from the network, parse it, and store it in the content provider is
      * done here. Extending AbstractThreadedSyncAdapter ensures that all methods within SyncAdapter
      * run on a background thread. For this reason, blocking I/O and other long-running tasks can be
-     * run <em>in situ</em>, and you don't have to set up a separate thread for them.
-     .
-     *
-     * <p>This is where we actually perform any work required to perform a sync.
+     * run <em>in situ</em>, and you don't have to set up a separate thread for them. .
+     * 
+     * <p>
+     * This is where we actually perform any work required to perform a sync.
      * {@link AbstractThreadedSyncAdapter} guarantees that this will be called on a non-UI thread,
      * so it is safe to peform blocking I/O here.
-     *
-     * <p>The syncResult argument allows you to pass information back to the method that triggered
-     * the sync.
+     * 
+     * <p>
+     * The syncResult argument allows you to pass information back to the method that triggered the
+     * sync.
      */
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
             ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Beginning network synchronization");
         try {
-        	
-        	String uri = RecipeContract.RECIPES_URI;
+
+            String uri = RecipeContract.RECIPES_URI;
             InputStream stream = null;
 
             try {
@@ -145,23 +148,26 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Read XML from an input stream, storing it into the content provider.
-     *
-     * <p>This is where incoming data is persisted, committing the results of a sync. In order to
+     * 
+     * <p>
+     * This is where incoming data is persisted, committing the results of a sync. In order to
      * minimize (expensive) disk operations, we compare incoming data with what's already in our
      * database, and compute a merge. Only changes (insert/update/delete) will result in a database
      * write.
-     *
-     * <p>As an additional optimization, we use a batch operation to perform all database writes at
+     * 
+     * <p>
+     * As an additional optimization, we use a batch operation to perform all database writes at
      * once.
-     *
-     * <p>Merge strategy:
-     * 1. Get cursor to all items in feed<br/>
+     * 
+     * <p>
+     * Merge strategy: 1. Get cursor to all items in feed<br/>
      * 2. For each item, check if it's in the incoming data.<br/>
-     *    a. YES: Remove from "incoming" list. Check if data has mutated, if so, perform
-     *            database UPDATE.<br/>
-     *    b. NO: Schedule DELETE from database.<br/>
+     * a. YES: Remove from "incoming" list. Check if data has mutated, if so, perform database
+     * UPDATE.<br/>
+     * b. NO: Schedule DELETE from database.<br/>
      * (At this point, incoming database only contains missing items.)<br/>
      * 3. For any items remaining in incoming list, ADD to database.
+     * 
      * @throws OperationApplicationException
      * @throws RemoteException
      */
@@ -178,7 +184,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Build hash table of incoming entries
         Map<String, Recipe> recipeMap = new HashMap<String, Recipe>();
         for (Recipe r : recipes) {
-        	recipeMap.put(r.getRecipeId(), r);
+            recipeMap.put(r.getRecipeId(), r);
         }
 
         // Get list of all items
@@ -205,15 +211,20 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 if (match.getUpdatedAt() != updatedAt) {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
-                    batch.add(ContentProviderOperation.newUpdate(existingUri)
+                    batch.add(ContentProviderOperation
+                            .newUpdate(existingUri)
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, match.getName())
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, match.getIngredientsJSONString())
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS, match.getInstructionsJSONString())
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_COMMENTS, match.getCommentsJSONString())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS,
+                                    match.getIngredientsJSONString())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS,
+                                    match.getInstructionsJSONString())
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_COMMENTS,
+                                    match.getCommentsJSONString())
                             .withValue(RecipeContract.Recipe.COLUMN_NAME_LIKES, match.getNumLikes())
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, match.getImage(0))
-                            .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT, match.getUpdatedAt())
-                            .build());
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL,
+                                    match.getImage(0))
+                            .withValue(RecipeContract.Recipe.COLUMN_NAME_UPDATED_AT,
+                                    match.getUpdatedAt()).build());
                     syncResult.stats.numUpdates++;
                 } else {
                     Log.i(TAG, "No action: " + existingUri);
@@ -234,12 +245,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Add new items
         for (Recipe r : recipeMap.values()) {
             Log.i(TAG, "Scheduling insert: recipeId=" + r.getRecipeId());
-            batch.add(ContentProviderOperation.newInsert(RecipeContract.Recipe.CONTENT_URI)
+            batch.add(ContentProviderOperation
+                    .newInsert(RecipeContract.Recipe.CONTENT_URI)
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_RECIPE_ID, r.getRecipeId())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_NAME, r.getName())
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS, r.getIngredientsJSONString())
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS, r.getInstructionsJSONString())
-                    .withValue(RecipeContract.Recipe.COLUMN_NAME_COMMENTS, r.getCommentsJSONString())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_INGREDIENTS,
+                            r.getIngredientsJSONString())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_INSTRUCTIONS,
+                            r.getInstructionsJSONString())
+                    .withValue(RecipeContract.Recipe.COLUMN_NAME_COMMENTS,
+                            r.getCommentsJSONString())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_LIKES, r.getNumLikes())
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_PRIMARY_IMAGE_URL, r.getImage(0))
                     .withValue(RecipeContract.Recipe.COLUMN_NAME_CREATED_AT, r.getCreatedAt())
@@ -250,10 +265,10 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         Log.i(TAG, "Merge solution ready. Applying batch update");
         mContentResolver.applyBatch(RecipeContract.CONTENT_AUTHORITY, batch);
-        mContentResolver.notifyChange(
-                RecipeContract.Recipe.CONTENT_URI, // URI where data was modified
-                null,                           // No local observer
-                false);                         // IMPORTANT: Do not sync to network
+        mContentResolver.notifyChange(RecipeContract.Recipe.CONTENT_URI, // URI where data was
+                                                                         // modified
+                null, // No local observer
+                false); // IMPORTANT: Do not sync to network
         // This sample doesn't support uploads, but if *your* code does, make sure you set
         // syncToNetwork=false in the line above to prevent duplicate syncs.
     }
@@ -262,15 +277,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
      * Given a string representation of a URL, sets up a connection and gets an input stream.
      */
     /*
-    private InputStream downloadUrl(final URL url) throws IOException {
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(NET_READ_TIMEOUT_MILLIS);
-        conn.setConnectTimeout(NET_CONNECT_TIMEOUT_MILLIS);
-        conn.setRequestMethod("GET");
-        conn.setDoInput(true);
-        // Starts the query
-        conn.connect();
-        return conn.getInputStream();
-    }
-    */
+     * private InputStream downloadUrl(final URL url) throws IOException { HttpURLConnection conn =
+     * (HttpURLConnection) url.openConnection(); conn.setReadTimeout(NET_READ_TIMEOUT_MILLIS);
+     * conn.setConnectTimeout(NET_CONNECT_TIMEOUT_MILLIS); conn.setRequestMethod("GET");
+     * conn.setDoInput(true); // Starts the query conn.connect(); return conn.getInputStream(); }
+     */
 }

@@ -37,9 +37,8 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Helper for building selection clauses for {@link SQLiteDatabase}. Each
- * appended clause is combined using {@code AND}. This class is <em>not</em>
- * thread safe.
+ * Helper for building selection clauses for {@link SQLiteDatabase}. Each appended clause is
+ * combined using {@code AND}. This class is <em>not</em> thread safe.
  */
 public class SelectionBuilder {
     private static final String TAG = "basicsyncadapter";
@@ -60,8 +59,8 @@ public class SelectionBuilder {
     }
 
     /**
-     * Append the given selection clause to the internal state. Each clause is
-     * surrounded with parenthesis and combined using {@code AND}.
+     * Append the given selection clause to the internal state. Each clause is surrounded with
+     * parenthesis and combined using {@code AND}.
      */
     public SelectionBuilder where(String selection, String... selectionArgs) {
         if (TextUtils.isEmpty(selection)) {
@@ -109,7 +108,7 @@ public class SelectionBuilder {
 
     /**
      * Return selection string for current internal state.
-     *
+     * 
      * @see #getSelectionArgs()
      */
     public String getSelection() {
@@ -118,7 +117,7 @@ public class SelectionBuilder {
 
     /**
      * Return selection arguments for current internal state.
-     *
+     * 
      * @see #getSelection()
      */
     public String[] getSelectionArgs() {
@@ -150,10 +149,11 @@ public class SelectionBuilder {
     /**
      * Execute query using the current internal state as {@code WHERE} clause.
      */
-    public Cursor query(SQLiteDatabase db, String[] columns, String groupBy,
-                        String having, String orderBy, String limit) {
+    public Cursor query(SQLiteDatabase db, String[] columns, String groupBy, String having,
+            String orderBy, String limit) {
         assertTable();
-        if (columns != null) mapColumns(columns);
+        if (columns != null)
+            mapColumns(columns);
         Log.v(TAG, "query(columns=" + Arrays.toString(columns) + ") " + this);
         return db.query(mTable, columns, getSelection(), getSelectionArgs(), groupBy, having,
                 orderBy, limit);

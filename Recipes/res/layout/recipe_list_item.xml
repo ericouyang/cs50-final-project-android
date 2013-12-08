@@ -30,9 +30,10 @@
 
     <ImageView
         android:id="@+id/recipe_list_item_image"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="0dp"
+        android:gravity="center"
         android:contentDescription="@string/description_recipe_list_item_image" />
 
     <TextView
